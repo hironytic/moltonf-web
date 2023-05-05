@@ -26,6 +26,7 @@ import type { MoltonfDB } from "./lib/storage/MoltonfDB"
 import type { IDBPDatabase } from "idb"
 import { StoryStore } from "./lib/storage/StoryStore"
 import { openMoltonfDB } from "./lib/storage/MoltonfDB"
+import { WorkspaceStore } from "./lib/storage/WorkspaceStore"
 
 export class AppContext {
   static Key = Symbol()
@@ -49,5 +50,9 @@ export class AppContext {
   
   async getStoryStore(): Promise<StoryStore> {
     return new StoryStore(await this.readyDB())
+  }
+  
+  async getWorkspaceStore(): Promise<WorkspaceStore> {
+    return new WorkspaceStore(await this.readyDB())
   }
 }

@@ -1,5 +1,5 @@
 //
-// MoltonfDB.ts
+// Workspace.ts
 //
 // Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
 //
@@ -22,41 +22,9 @@
 // THE SOFTWARE.
 //
 
-import type { DBSchema, IDBPDatabase } from "idb"
-import type { Story } from "../story/Story"
-import { openDB } from "idb"
-import type { StoryEntry } from "./StoryStore"
-import type { Workspace } from "../workspace/Workspace"
-
-export const StoreNames = {
-  STORIES: "stories",
-  STORY_ENTRIES: "storyEntries",
-  WORKSPACES: "workspaces",
-} as const
-
-export interface MoltonfDB extends DBSchema {
-  stories: {
-    key: number
-    value: Story
-  }
-
-  storyEntries: {
-    key: number
-    value: StoryEntry
-  }
-  
-  workspaces: {
-    key: number
-    value: Workspace
-  }
-}
-
-export async function openMoltonfDB(): Promise<IDBPDatabase<MoltonfDB>> {
-  return await openDB<MoltonfDB>("moltonf-db", 1, {
-    upgrade(database: IDBPDatabase<MoltonfDB>) {
-      database.createObjectStore(StoreNames.STORIES, { autoIncrement: true })
-      database.createObjectStore(StoreNames.STORY_ENTRIES, { keyPath: "id" })
-      database.createObjectStore(StoreNames.WORKSPACES, { keyPath: "id", autoIncrement: true })
-    }
-  })
+export interface Workspace {
+  id: number
+  name: string
+  storyId: number
+  // TODO: other stuff...
 }

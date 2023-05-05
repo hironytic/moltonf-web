@@ -1,5 +1,5 @@
 //
-// StoryStore.ts
+// WorkspaceStore.ts
 //
 // Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
 //
@@ -24,46 +24,44 @@
 
 import type { IDBPDatabase } from "idb"
 import type { MoltonfDB } from "./MoltonfDB"
-import type { Story } from "../story/Story"
+import type { Workspace } from "../workspace/Workspace"
 import { StoreNames } from "./MoltonfDB"
 
 /**
- * Storage for stories.
- * 
- * Stories are saved in IndexedDB.
+ * Storage for workspaces.
+ *
+ * Workspaces are saved in IndexedDB.
  */
-export class StoryStore {
+export class WorkspaceStore {
   private _db: IDBPDatabase<MoltonfDB>
 
   constructor(db: IDBPDatabase<MoltonfDB>) {
     this._db = db
   }
-  
-  async add(story: Story): Promise<number> {
-    const tx = this._db.transaction([StoreNames.STORIES, StoreNames.STORY_ENTRIES], "readwrite")
-    const storiesStore = tx.objectStore(StoreNames.STORIES)
-    const storyNamesStore = tx.objectStore(StoreNames.STORY_ENTRIES)
-    const key = await storiesStore.add(story)
-    await storyNamesStore.put({
-      id: key,
-      name: story.villageFullName,
-    })
+
+  async add(workspace: Omit<Workspace, "id">): Promise<number> {
+    const tx = this._db.transaction(StoreNames.WORKSPACES, "readwrite")
+    // @ts-ignore It's OK to omit id because it is created by "autoIncrement"
+    const key = await tx.store.add(workspace)
     await tx.done
     return key
   }
   
-  async remove(id: number): Promise<void> {
-    const tx = this._db.transaction([StoreNames.STORIES, StoreNames.STORY_ENTRIES], "readwrite")
-    const storiesStore = tx.objectStore(StoreNames.STORIES)
-    const storyNamesStore = tx.objectStore(StoreNames.STORY_ENTRIES)
-    await storiesStore.delete(id)
-    await storyNamesStore.delete(id)
+  async update(workspace: Workspace) {
+    const tx = this._db.transaction(StoreNames.WORKSPACES, "readwrite")
+    await tx.store.put(workspace)
     await tx.done
   }
   
-  async getEntries(): Promise<StoryEntry[]> {
-    const result: StoryEntry[] = []
-    const tx = this._db.transaction(StoreNames.STORY_ENTRIES)
+  async remove(id: number) {
+    const tx = this._db.transaction(StoreNames.WORKSPACES, "readwrite")
+    await tx.store.delete(id)
+    await tx.done
+  }
+
+  async getWorkspaces(): Promise<Workspace[]> {
+    const result: Workspace[] = []
+    const tx = this._db.transaction(StoreNames.WORKSPACES)
     let cursor = await tx.store.openCursor()
     while (cursor !== null) {
       result.push(cursor.value)
@@ -72,13 +70,8 @@ export class StoryStore {
     return result
   }
   
-  async getStory(id: number): Promise<Story | undefined> {
-    const tx = this._db.transaction(StoreNames.STORIES)
+  async getWorkspace(id: number): Promise<Workspace | undefined> {
+    const tx = this._db.transaction(StoreNames.WORKSPACES)
     return await tx.store.get(id)
   }
-}
-
-export interface StoryEntry {
-  id: number
-  name: string
 }
