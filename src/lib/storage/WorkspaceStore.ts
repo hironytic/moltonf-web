@@ -41,8 +41,8 @@ export class WorkspaceStore {
 
   async add(workspace: Omit<Workspace, "id">): Promise<number> {
     const tx = this._db.transaction(StoreNames.WORKSPACES, "readwrite")
-    // @ts-ignore It's OK to omit id because it is created by "autoIncrement"
-    const key = await tx.store.add(workspace)
+    // It's OK to omit id because it is created by "autoIncrement"
+    const key = await tx.store.add(workspace as Workspace)
     await tx.done
     return key
   }
