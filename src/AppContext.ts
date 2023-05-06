@@ -23,20 +23,32 @@
 //
 
 import type { MoltonfDB } from "./lib/storage/MoltonfDB"
+import { openMoltonfDB } from "./lib/storage/MoltonfDB"
 import type { IDBPDatabase } from "idb"
 import { StoryStore } from "./lib/storage/StoryStore"
-import { openMoltonfDB } from "./lib/storage/MoltonfDB"
 import { WorkspaceStore } from "./lib/storage/WorkspaceStore"
+import type { Readable } from "svelte/store"
+import { derived, writable } from "svelte/store"
+import type { Scene } from "./Scene"
+import { SelectWorkspaceScene } from "./lib/scene/select-workspace/SelectWorkspaceScene"
 
 export class AppContext {
-  static Key = Symbol()
+  static readonly Key = Symbol()
   
   private _dbPromise: Promise<IDBPDatabase<MoltonfDB> | undefined>
+  private _scene$ = writable<Scene>(new SelectWorkspaceScene(this))
   
   constructor() {
     this._dbPromise = Promise.resolve(undefined)
   }
 
+  get scene$(): Readable<Scene> { return this._scene$ }
+  
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  sceneAs$<T>(sceneClass: new (...args: any[]) => T): Readable<T | undefined> {
+    return derived(this._scene$, it => (it instanceof sceneClass) ? it : undefined)
+  }
+  
   private async readyDB(): Promise<IDBPDatabase<MoltonfDB>> {
     const db = await this._dbPromise
     if (db !== undefined) {
@@ -54,5 +66,9 @@ export class AppContext {
   
   async getWorkspaceStore(): Promise<WorkspaceStore> {
     return new WorkspaceStore(await this.readyDB())
+  }
+  
+  changeScene(scene: Scene) {
+    this._scene$.set(scene)
   }
 }

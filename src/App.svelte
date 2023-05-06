@@ -23,8 +23,34 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
+  import { AppContext } from "./AppContext"
+  import { setContext } from "svelte"
+  import SelectWorkspace from "./lib/scene/select-workspace/SelectWorkspace.svelte"
+  import NewWorkspace from "./lib/scene/new-workspace/NewWorkspace.svelte"
+  import Watching from "./lib/scene/watching/Watching.svelte"
+  import { SelectWorkspaceScene } from "./lib/scene/select-workspace/SelectWorkspaceScene"
+  import { NewWorkspaceScene } from "./lib/scene/new-workspace/NewWorkspaceScene"
+  import { WatchingScene } from "./lib/scene/watching/WatchingScene"
+
+  const appContext = new AppContext()
+  setContext(AppContext.Key, appContext)
+
+  const scene$ = appContext.scene$
 </script>
 
-<main>
-  <h1>Moltonf</h1>
+<main class="h-screen">
+  <div class="flex flex-col h-full">
+    <div class="bg-black border-b-2 border-b-gray-900">
+      <p class="text-lg font-medium pl-4 py-1">Moltonf</p>
+    </div>
+      <div class="grow overflow-y-clip">
+        {#if $scene$ instanceof SelectWorkspaceScene}
+          <SelectWorkspace/>
+        {:else if $scene$ instanceof NewWorkspaceScene}
+          <NewWorkspace/>
+        {:else if $scene$ instanceof WatchingScene}
+          <Watching/>
+        {/if}
+      </div>
+  </div>
 </main>
