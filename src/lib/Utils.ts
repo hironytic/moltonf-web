@@ -1,5 +1,5 @@
 //
-// WatchingScene.ts
+// Utils.ts
 //
 // Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
 //
@@ -22,15 +22,7 @@
 // THE SOFTWARE.
 //
 
-import { type AppContext } from "../../../AppContext"
-import { Scene } from "../../../Scene"
-import type { Workspace } from "../../workspace/Workspace"
-
-export class WatchingScene extends Scene {
-  readonly workspace: Workspace
-  
-  constructor(appContext: AppContext, workspace: Workspace) {
-    super(appContext)
-    this.workspace = workspace
-  }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function doNothing(..._args: unknown[]) {
+  // do nothing
 }

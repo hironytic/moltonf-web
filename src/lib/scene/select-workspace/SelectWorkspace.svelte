@@ -32,7 +32,6 @@ THE SOFTWARE.
   import DeleteIcon from "../../icon/DeleteIcon.svelte"
   import { readable, type Readable } from "svelte/store"
   import type { Workspace } from "../../workspace/Workspace"
-  import { NewWorkspaceScene } from "../new-workspace/NewWorkspaceScene"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(SelectWorkspaceScene)
@@ -40,10 +39,6 @@ THE SOFTWARE.
   
   let workspaces$: Readable<Workspace[] | undefined>
   $: workspaces$ = scene?.workspaces$ ?? readable(undefined)
-  
-  function onNewWorkspace() {
-    appContext.changeScene(new NewWorkspaceScene(appContext))
-  }
 </script>
 
 <div class="h-full flex flex-col place-items-center place-content-center">
@@ -54,7 +49,7 @@ THE SOFTWARE.
       <HeaderTitle class="mb-4">観戦データを作成しましょう！</HeaderTitle>
       
       <div class="my-12 flex justify-center">
-        <Button color="red" on:click={() => onNewWorkspace()}>1つ目の観戦データを作成する</Button>
+        <Button color="red" on:click={() => scene?.createNewWorkspace()}>1つ目の観戦データを作成する</Button>
       </div>
 
       <div class="text-sm">
@@ -87,7 +82,7 @@ THE SOFTWARE.
         {/each}
       </Listgroup>
       <div class="flex justify-end">
-        <Button color="red" class="mt-2" on:click={() => onNewWorkspace()}>
+        <Button color="red" class="mt-2" on:click={() => scene?.createNewWorkspace()}>
           <WorkspaceIcon size="1.25rem" class="mr-2"/>
           新しい観戦データを作る
         </Button>

@@ -1,5 +1,5 @@
 <!--
-NewWorkspace.svelte
+InputWorkspaceName.svelte
 
 Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
 
@@ -25,24 +25,19 @@ THE SOFTWARE.
 <script lang="ts">
   import { getContext } from "svelte"
   import { AppContext } from "../../../AppContext"
-  import { NewWorkspaceScene, type NewWorkspaceStep, NewWorkspaceSteps } from "./NewWorkspaceScene"
-  import type { Readable } from "svelte/store"
-  import { readable } from "svelte/store"
-  import SelectStory from "./SelectStory.svelte"
-  import InputWorkspaceName from "./InputWorkspaceName.svelte"
+  import { NewWorkspaceScene } from "./NewWorkspaceScene"
+  import HeaderTitle from "../../ui-component/HeaderTitle.svelte"
+  import { Button } from "flowbite-svelte"
+  import ChevronLeftIcon from "../../icon/ChevronLeftIcon.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(NewWorkspaceScene)
   $: scene = $scene$
-  
-  let step$: Readable<NewWorkspaceStep | undefined>
-  $: step$ = scene?.step$ ?? readable(undefined)
 </script>
 
-<div class="h-full flex flex-col place-items-center place-content-center">
-  {#if $step$ === NewWorkspaceSteps.SELECT_STORY}
-    <SelectStory/>
-  {:else if $step$ === NewWorkspaceSteps.INPUT_NAME}
-    <InputWorkspaceName/>
-  {/if}
+<div class="bg-black max-w-[600px] p-10 rounded-md overflow-y-auto">
+  <Button color="alternative" size="xs" on:click={() => scene?.backFromInputNameStep()}>
+    <ChevronLeftIcon size="1rem"/> 戻る
+  </Button>
+  <HeaderTitle class="mt-4">観戦データの名前</HeaderTitle>
 </div>

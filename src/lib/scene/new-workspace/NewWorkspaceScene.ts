@@ -24,9 +24,75 @@
 
 import { type AppContext } from "../../../AppContext"
 import { Scene } from "../../../Scene"
+import { type Readable, writable } from "svelte/store"
+import { WatchingScene } from "../watching/WatchingScene"
+import type { Story } from "../../story/Story"
+import { SelectWorkspaceScene } from "../select-workspace/SelectWorkspaceScene"
 
 export class NewWorkspaceScene extends Scene {
   constructor(appContext: AppContext) {
     super(appContext)
   }
+  
+  private readonly _step$ = writable<NewWorkspaceStep>(NewWorkspaceSteps.SELECT_STORY)
+  get step$(): Readable<NewWorkspaceStep> { return this._step$ }
+
+  private _storyId: number | undefined = undefined
+  private readonly _storyId$ = writable<number | undefined>(undefined)
+  private _name: string | undefined = undefined
+  private readonly _name$ = writable<string | undefined>(undefined)
+  
+  get storyId$(): Readable<number | undefined> { return this._storyId$ }
+
+  selectStory(storyId: number) {
+    this._storyId = storyId
+    this._storyId$.set(storyId)
+
+    this._step$.set(NewWorkspaceSteps.INPUT_NAME)
+  }
+  
+  async registerNewStory(story: Story): Promise<void> {
+    const storyStore = await this.appContext.getStoryStore()
+    const storyId = await storyStore.add(story)
+    this.selectStory(storyId)
+  }
+  
+  backFromSelectStoryStep() {
+    this.appContext.changeScene(new SelectWorkspaceScene(this.appContext))
+  }
+  
+  get name$(): Readable<string | undefined> { return this._name$ }
+  
+  setName(name: string) {
+    this._name = name
+    this._name$.set(name)
+  }
+  
+  backFromInputNameStep() {
+    this._step$.set(NewWorkspaceSteps.SELECT_STORY)
+  }
+  
+  async registerNewWorkspace(): Promise<void> {
+    if (this._storyId === undefined || this._name === undefined) {
+      console.error("Story ID or name is not set!")
+    } else {
+      const workspaceStore = await this.appContext.getWorkspaceStore()
+      const workspaceData = {
+        storyId: this._storyId,
+        name: this._name,
+      }
+      const workspaceId = await workspaceStore.add(workspaceData)
+      
+      this.appContext.changeScene(new WatchingScene(this.appContext, {
+        id: workspaceId,
+        ...workspaceData
+      }))
+    }
+  }
 }
+
+export const NewWorkspaceSteps = {
+  SELECT_STORY: "selectStory",
+  INPUT_NAME: "inputName",
+} as const
+export type NewWorkspaceStep = typeof NewWorkspaceSteps[keyof typeof NewWorkspaceSteps]

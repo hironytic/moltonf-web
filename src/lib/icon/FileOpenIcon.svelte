@@ -1,5 +1,5 @@
 <!--
-NewWorkspace.svelte
+FileOpenIcon.svelte
 
 Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
 
@@ -23,26 +23,12 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
-  import { getContext } from "svelte"
-  import { AppContext } from "../../../AppContext"
-  import { NewWorkspaceScene, type NewWorkspaceStep, NewWorkspaceSteps } from "./NewWorkspaceScene"
-  import type { Readable } from "svelte/store"
-  import { readable } from "svelte/store"
-  import SelectStory from "./SelectStory.svelte"
-  import InputWorkspaceName from "./InputWorkspaceName.svelte"
+  import { Icon } from "@steeze-ui/svelte-icon"
+  import { FileOpen } from "@steeze-ui/material-design-icons"
 
-  const appContext = getContext<AppContext>(AppContext.Key)
-  const scene$ = appContext.sceneAs$(NewWorkspaceScene)
-  $: scene = $scene$
-  
-  let step$: Readable<NewWorkspaceStep | undefined>
-  $: step$ = scene?.step$ ?? readable(undefined)
+  export let size = "1.5rem"
+  let className: string | undefined = undefined
+  export { className as class }
 </script>
 
-<div class="h-full flex flex-col place-items-center place-content-center">
-  {#if $step$ === NewWorkspaceSteps.SELECT_STORY}
-    <SelectStory/>
-  {:else if $step$ === NewWorkspaceSteps.INPUT_NAME}
-    <InputWorkspaceName/>
-  {/if}
-</div>
+<Icon src={FileOpen} theme="outlined" fill="currentColor" size={size} class={className}/>
