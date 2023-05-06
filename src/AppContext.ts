@@ -31,23 +31,59 @@ import type { Readable } from "svelte/store"
 import { derived, writable } from "svelte/store"
 import type { Scene } from "./Scene"
 import { SelectWorkspaceScene } from "./lib/scene/select-workspace/SelectWorkspaceScene"
+import type { ExtendedMessageBoxItem, MessageBoxItem } from "./lib/MessageBoxItem"
 
 export class AppContext {
   static readonly Key = Symbol()
   
   private _dbPromise: Promise<IDBPDatabase<MoltonfDB> | undefined>
-  private _scene$ = writable<Scene>(new SelectWorkspaceScene(this))
+  private readonly _scene$ = writable<Scene>(new SelectWorkspaceScene(this))
+  private readonly _messageBoxItems$ = writable<ExtendedMessageBoxItem[]>([])
   
   constructor() {
     this._dbPromise = Promise.resolve(undefined)
   }
 
+  //#region Scene
+  
   get scene$(): Readable<Scene> { return this._scene$ }
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sceneAs$<T>(sceneClass: new (...args: any[]) => T): Readable<T | undefined> {
     return derived(this._scene$, it => (it instanceof sceneClass) ? it : undefined)
   }
+  
+  //#endregion
+
+  //#region Message box
+  
+  get messageBoxItems$(): Readable<ExtendedMessageBoxItem[]> { return this._messageBoxItems$ }
+  
+  showMessageBox(item: MessageBoxItem): Promise<string | undefined> {
+    return new Promise(resolve => {
+      this._messageBoxItems$.update(it => {
+        it.push({
+          ...item,
+          selected: undefined,
+          resolve,
+        })
+        return it
+      })
+    })
+  }
+  
+  onMessageBoxClosed() {
+    this._messageBoxItems$.update(it => {
+      const lastItem = it.pop()
+      if (lastItem !== undefined) {
+        lastItem.resolve(lastItem.selected)
+      }
+      return it
+    })
+  }
+  
+  //#endregion
+  
   
   private async readyDB(): Promise<IDBPDatabase<MoltonfDB>> {
     const db = await this._dbPromise

@@ -31,6 +31,7 @@ THE SOFTWARE.
   import { SelectWorkspaceScene } from "./lib/scene/select-workspace/SelectWorkspaceScene"
   import { NewWorkspaceScene } from "./lib/scene/new-workspace/NewWorkspaceScene"
   import { WatchingScene } from "./lib/scene/watching/WatchingScene"
+  import MessageBox from "./lib/MessageBox.svelte"
 
   const appContext = new AppContext()
   setContext(AppContext.Key, appContext)
@@ -53,4 +54,5 @@ THE SOFTWARE.
         {/if}
       </div>
   </div>
+  <MessageBox/>
 </main>
