@@ -41,8 +41,8 @@ THE SOFTWARE.
   const scene$ = appContext.sceneAs$(NewWorkspaceScene)
   $: scene = $scene$
 
-  let currentStoryId$: Readable<number | undefined>
-  $: currentStoryId$ = scene?.storyId$ ?? readable(undefined)
+  let currentStoryEntry$: Readable<StoryEntry | undefined>
+  $: currentStoryEntry$ = scene?.storyEntry$ ?? readable(undefined)
   
   const storyEntries$ = writable<StoryEntry[] | undefined>(undefined)
 
@@ -121,11 +121,11 @@ THE SOFTWARE.
 
     <Listgroup active class="mt-4">
       {#each $storyEntries$ as item (item.id)}
-        <ListgroupItem on:click={() => scene?.selectStory(item.id)}>
+        <ListgroupItem on:click={() => scene?.selectStory(item)}>
           <div class="flex items-center space-x-2">
             <StoryIcon size="1.25rem"/>
             <span>{item.name}</span>
-            {#if $currentStoryId$ === item.id}
+            {#if $currentStoryEntry$?.id === item.id}
               <CheckIcon size="1.25rem" class="text-gray-300"/>
             {/if}
           </div>

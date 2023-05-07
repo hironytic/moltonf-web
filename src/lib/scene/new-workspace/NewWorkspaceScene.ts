@@ -28,6 +28,7 @@ import { type Readable, writable } from "svelte/store"
 import { WatchingScene } from "../watching/WatchingScene"
 import type { Story } from "../../story/Story"
 import { SelectWorkspaceScene } from "../select-workspace/SelectWorkspaceScene"
+import type { StoryEntry } from "../../storage/StoryStore"
 
 export class NewWorkspaceScene extends Scene {
   constructor(appContext: AppContext) {
@@ -37,16 +38,16 @@ export class NewWorkspaceScene extends Scene {
   private readonly _step$ = writable<NewWorkspaceStep>(NewWorkspaceSteps.SELECT_STORY)
   get step$(): Readable<NewWorkspaceStep> { return this._step$ }
 
-  private _storyId: number | undefined = undefined
-  private readonly _storyId$ = writable<number | undefined>(undefined)
+  private _storyEntry: StoryEntry | undefined = undefined
+  private readonly _storyEntry$ = writable<StoryEntry | undefined>(undefined)
   private _name: string | undefined = undefined
   private readonly _name$ = writable<string | undefined>(undefined)
-  
-  get storyId$(): Readable<number | undefined> { return this._storyId$ }
 
-  selectStory(storyId: number) {
-    this._storyId = storyId
-    this._storyId$.set(storyId)
+  get storyEntry$(): Readable<StoryEntry | undefined> { return this._storyEntry$ }  
+
+  selectStory(storyEntry: StoryEntry) {
+    this._storyEntry = storyEntry
+    this._storyEntry$.set(storyEntry)
 
     this._step$.set(NewWorkspaceSteps.INPUT_NAME)
   }
@@ -54,7 +55,11 @@ export class NewWorkspaceScene extends Scene {
   async registerNewStory(story: Story): Promise<void> {
     const storyStore = await this.appContext.getStoryStore()
     const storyId = await storyStore.add(story)
-    this.selectStory(storyId)
+    
+    this.selectStory({
+      id: storyId,
+      name: story.villageFullName
+    })
   }
   
   backFromSelectStoryStep() {
@@ -69,16 +74,19 @@ export class NewWorkspaceScene extends Scene {
   }
   
   backFromInputNameStep() {
+    this._name = undefined
+    this._name$.set(undefined)
+    
     this._step$.set(NewWorkspaceSteps.SELECT_STORY)
   }
   
   async registerNewWorkspace(): Promise<void> {
-    if (this._storyId === undefined || this._name === undefined) {
-      console.error("Story ID or name is not set!")
+    if (this._storyEntry === undefined || this._name === undefined) {
+      console.error("Story or name is not set!")
     } else {
       const workspaceStore = await this.appContext.getWorkspaceStore()
       const workspaceData = {
-        storyId: this._storyId,
+        storyId: this._storyEntry.id,
         name: this._name,
       }
       const workspaceId = await workspaceStore.add(workspaceData)
