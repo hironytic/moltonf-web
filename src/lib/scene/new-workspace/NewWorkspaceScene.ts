@@ -29,6 +29,7 @@ import { WatchingScene } from "../watching/WatchingScene"
 import type { Story } from "../../story/Story"
 import { SelectWorkspaceScene } from "../select-workspace/SelectWorkspaceScene"
 import type { StoryEntry } from "../../storage/StoryStore"
+import { currentValueWritable } from "../../CurrentValueStore"
 
 export class NewWorkspaceScene extends Scene {
   constructor(appContext: AppContext) {
@@ -38,15 +39,12 @@ export class NewWorkspaceScene extends Scene {
   private readonly _step$ = writable<NewWorkspaceStep>(NewWorkspaceSteps.SELECT_STORY)
   get step$(): Readable<NewWorkspaceStep> { return this._step$ }
 
-  private _storyEntry: StoryEntry | undefined = undefined
-  private readonly _storyEntry$ = writable<StoryEntry | undefined>(undefined)
-  private _name: string | undefined = undefined
-  private readonly _name$ = writable<string | undefined>(undefined)
+  private readonly _storyEntry$ = currentValueWritable<StoryEntry | undefined>(undefined)
+  private readonly _name$ = currentValueWritable<string | undefined>(undefined)
 
   get storyEntry$(): Readable<StoryEntry | undefined> { return this._storyEntry$ }  
 
   selectStory(storyEntry: StoryEntry) {
-    this._storyEntry = storyEntry
     this._storyEntry$.set(storyEntry)
 
     this._step$.set(NewWorkspaceSteps.INPUT_NAME)
@@ -69,25 +67,23 @@ export class NewWorkspaceScene extends Scene {
   get name$(): Readable<string | undefined> { return this._name$ }
   
   setName(name: string) {
-    this._name = name
     this._name$.set(name)
   }
   
   backFromInputNameStep() {
-    this._name = undefined
     this._name$.set(undefined)
     
     this._step$.set(NewWorkspaceSteps.SELECT_STORY)
   }
   
   async registerNewWorkspace(): Promise<void> {
-    if (this._storyEntry === undefined || this._name === undefined) {
+    if (this._storyEntry$.currentValue === undefined || this._name$.currentValue === undefined) {
       console.error("Story or name is not set!")
     } else {
       const workspaceStore = await this.appContext.getWorkspaceStore()
       const workspaceData = {
-        storyId: this._storyEntry.id,
-        name: this._name,
+        storyId: this._storyEntry$.currentValue.id,
+        name: this._name$.currentValue,
       }
       const workspaceId = await workspaceStore.add(workspaceData)
       
