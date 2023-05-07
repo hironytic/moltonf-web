@@ -32,17 +32,25 @@ THE SOFTWARE.
   import { NewWorkspaceScene } from "./lib/scene/new-workspace/NewWorkspaceScene"
   import { WatchingScene } from "./lib/scene/watching/WatchingScene"
   import MessageBox from "./lib/MessageBox.svelte"
+  import { Button } from "flowbite-svelte"
 
   const appContext = new AppContext()
   setContext(AppContext.Key, appContext)
 
   const scene$ = appContext.scene$
+  
+  function goToSelectWorkspace() {
+    appContext.changeScene(new SelectWorkspaceScene(appContext))
+  }
 </script>
 
 <main class="h-screen">
   <div class="flex flex-col h-full">
-    <div class="bg-black border-b-2 border-b-gray-900">
+    <div class="bg-black border-b-2 border-b-gray-900 flex items-center h-[60px]">
       <p class="text-lg font-medium pl-4 py-1">Moltonf</p>
+      {#if $scene$ instanceof WatchingScene}
+        <Button color="light" size="xs" class="ml-10" on:click={() => goToSelectWorkspace()}>観戦データ一覧へ</Button>
+      {/if}
     </div>
       <div class="grow overflow-y-clip">
         {#if $scene$ instanceof SelectWorkspaceScene}
