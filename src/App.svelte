@@ -32,6 +32,7 @@ THE SOFTWARE.
   import { NewWorkspaceScene } from "./lib/scene/new-workspace/NewWorkspaceScene"
   import { WatchingScene } from "./lib/scene/watching/WatchingScene"
   import MessageBox from "./lib/MessageBox.svelte"
+  import NavBar from "./lib/NavBar.svelte"
 
   const appContext = new AppContext()
   setContext(AppContext.Key, appContext)
@@ -41,18 +42,16 @@ THE SOFTWARE.
 
 <main class="h-screen">
   <div class="flex flex-col h-full">
-    <div class="bg-black border-b-2 border-b-gray-900">
-      <p class="text-lg font-medium pl-4 py-1">Moltonf</p>
+    <NavBar/>
+    <div class="grow overflow-y-clip">
+      {#if $scene$ instanceof SelectWorkspaceScene}
+        <SelectWorkspace/>
+      {:else if $scene$ instanceof NewWorkspaceScene}
+        <NewWorkspace/>
+      {:else if $scene$ instanceof WatchingScene}
+        <Watching/>
+      {/if}
     </div>
-      <div class="grow overflow-y-clip">
-        {#if $scene$ instanceof SelectWorkspaceScene}
-          <SelectWorkspace/>
-        {:else if $scene$ instanceof NewWorkspaceScene}
-          <NewWorkspace/>
-        {:else if $scene$ instanceof WatchingScene}
-          <Watching/>
-        {/if}
-      </div>
   </div>
   <MessageBox/>
 </main>

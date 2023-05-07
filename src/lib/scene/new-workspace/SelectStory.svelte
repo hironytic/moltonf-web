@@ -56,7 +56,6 @@ THE SOFTWARE.
   })
 
   async function onArchiveFileSelect(file: File | undefined) {
-    console.log(file)
     if (file !== undefined) {
       const story = await loadStoryFromArchiveFile(file)
 

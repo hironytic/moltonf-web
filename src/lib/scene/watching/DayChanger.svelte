@@ -1,5 +1,5 @@
 <!--
-Watching.svelte
+DayChanger.svelte
 
 Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
 
@@ -23,31 +23,27 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
+  import { Button, ButtonGroup } from "flowbite-svelte"
   import { getContext } from "svelte"
   import { AppContext } from "../../../AppContext"
-  import { WatchingScene } from "./WatchingScene"
-  import type { Readable } from "svelte/store"
-  import type { Story } from "../../story/Story"
-  import { readable } from "svelte/store"
-  import { Spinner } from "flowbite-svelte"
-  import StoryElementsView from "./StoryElementsView.svelte"
+  import { type WatchableDay, WatchingScene } from "./WatchingScene"
+  import { type Readable, readable } from "svelte/store"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(WatchingScene)
   $: scene = $scene$
-
-  let story$: Readable<Story | undefined>
-  $: story$ = scene?.story$ ?? readable(undefined)
+  
+  let watchableDays$: Readable<WatchableDay[]>
+  $: watchableDays$ = scene?.watchableDays$ ?? readable([])
+  
+  let currentDay$: Readable<number>
+  $: currentDay$ = scene?.currentDay$ ?? readable(0)
 </script>
 
-{#if $story$ === undefined}
-  <div class="h-full flex flex-col place-items-center place-content-center">
-    <Spinner />
-  </div>
-{:else}
-  <div class="h-full flex flex-col place-items-center">
-    <div class="bg-black text-sm max-w-[600px] p-6 rounded-md overflow-y-auto">
-      <StoryElementsView/>
-    </div>
-  </div>
-{/if}
+<ButtonGroup class="overflow-x-auto">
+  {#each $watchableDays$ as wday}
+    <Button size="xs" color="red" class="shrink-0" on:click={() => scene?.changeCurrentDay(wday.day)} outline={wday.day !== $currentDay$}>
+      {wday.text}
+    </Button>
+  {/each}
+</ButtonGroup>

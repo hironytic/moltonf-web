@@ -25,12 +25,114 @@
 import { type AppContext } from "../../../AppContext"
 import { Scene } from "../../../Scene"
 import type { Workspace } from "../../workspace/Workspace"
+import { derived, type Readable } from "svelte/store"
+import type { Story } from "../../story/Story"
+import { currentValueWritable } from "../../CurrentValueStore"
+import type { StoryElement } from "../../story/StoryElement"
+import type { Avatar } from "../../story/Avatar"
+import { PeriodTypes } from "../../story/PeriodType"
+import { createFaceIconUrlMap } from "./FaceIconUtils"
 
 export class WatchingScene extends Scene {
-  readonly workspace: Workspace
-  
   constructor(appContext: AppContext, workspace: Workspace) {
     super(appContext)
     this.workspace = workspace
+    
+    this.watchableDays$ = derived(this._story$, story => {
+      if (story === undefined) {
+        return [{day: 0, text: "プロローグ"}]
+      }
+      
+      const result: WatchableDay[] = []
+      for (let ix = 0; ix < story.periods.length; ix++) {
+        let text = ""
+        if (story.periods[ix]?.type === PeriodTypes.PROLOGUE) {
+          text = "プロローグ"
+        } else if (story.periods[ix]?.type === PeriodTypes.EPILOGUE) {
+          text = "エピローグ"
+        } else {
+          text = `${ix}日目`
+        }
+        result.push({
+          day: ix,
+          text,
+        })
+      }
+      return result
+    })
+    
+    this.currentStoryElements$ = derived([this._story$, this._currentDay$], ([story, currentDay]) => {
+      if (story === undefined) {
+        return []
+      }
+      
+      const period = story.periods[currentDay]
+      if (period === undefined) {
+        return []
+      }
+      
+      // TODO: filter it
+      return period.elements
+    })
+    
+    this.avatarMap$ = derived(this._story$, story => {
+      if (story === undefined) {
+        return new Map()
+      }
+      
+      return new Map(story.avatarList.map(it => [it.avatarId, it]))
+    })
+    
+    this.faceIconUrlMap$ = derived(this._story$, story => {
+      if (story === undefined) {
+        return new Map()
+      }
+      return createFaceIconUrlMap(story)
+    })
+    
+    void this.loadStory()
   }
+
+  private readonly _story$ = currentValueWritable<Story | undefined>(undefined)
+  private readonly _currentDay$ = currentValueWritable<number>(0)
+  
+  readonly workspace: Workspace
+
+  async saveWorkspace() {
+    const workspaceStore = await this.appContext.getWorkspaceStore()
+    await workspaceStore.update(this.workspace)
+  }
+  
+  get story$(): Readable<Story | undefined> { return this._story$ }
+  
+  private async loadStory() {
+    const storyStore = await this.appContext.getStoryStore()
+    const story = await storyStore.getStory(this.workspace.storyId)
+    //TODO: check errors
+    this._story$.set(story)
+  }
+  
+  readonly avatarMap$: Readable<Map<string, Avatar>>
+  readonly faceIconUrlMap$: Readable<Map<string | symbol, string>>
+  
+  get currentDay$(): Readable<number> { return this._currentDay$ }
+  readonly watchableDays$: Readable<WatchableDay[]>
+  
+  changeCurrentDay(day: number) {
+    const story = this._story$.currentValue
+    if (story === undefined) {
+      return
+    }
+    
+    if (0 <= day && day < story.periods.length) {
+      this._currentDay$.set(day)
+    }
+  }
+  
+  readonly currentStoryElements$: Readable<StoryElement[]>
+}
+
+export interface WatchableDay {
+  day: number
+  text: string
 }

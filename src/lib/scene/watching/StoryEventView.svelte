@@ -1,5 +1,5 @@
 <!--
-Watching.svelte
+StoryEventView.svelte
 
 Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
 
@@ -23,31 +23,49 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
-  import { getContext } from "svelte"
-  import { AppContext } from "../../../AppContext"
-  import { WatchingScene } from "./WatchingScene"
-  import type { Readable } from "svelte/store"
-  import type { Story } from "../../story/Story"
-  import { readable } from "svelte/store"
-  import { Spinner } from "flowbite-svelte"
-  import StoryElementsView from "./StoryElementsView.svelte"
+  import type { StoryEvent } from "../../story/StoryEvent"
+  import { StoryElementTypes } from "../../story/StoryElement"
+  import { EventFamilies } from "../../story/EventFamily"
+  import { EventNames } from "../../story/StoryEventName"
 
-  const appContext = getContext<AppContext>(AppContext.Key)
-  const scene$ = appContext.sceneAs$(WatchingScene)
-  $: scene = $scene$
-
-  let story$: Readable<Story | undefined>
-  $: story$ = scene?.story$ ?? readable(undefined)
+  export let storyEvent: StoryEvent = {
+    elementId: "",
+    elementType: StoryElementTypes.STORY_EVENT,
+    eventFamily: EventFamilies.ANNOUNCE,
+    eventName: EventNames.START_ENTRY,
+    messageLines: [],
+  } as StoryEvent
+  
 </script>
 
-{#if $story$ === undefined}
-  <div class="h-full flex flex-col place-items-center place-content-center">
-    <Spinner />
-  </div>
-{:else}
-  <div class="h-full flex flex-col place-items-center">
-    <div class="bg-black text-sm max-w-[600px] p-6 rounded-md overflow-y-auto">
-      <StoryElementsView/>
-    </div>
-  </div>
-{/if}
+<div class="p-2 ef-{storyEvent.eventFamily}">
+  <p class="message">
+  {#each storyEvent.messageLines as line, index}
+    {#if index !== 0}
+      <br/>
+    {/if}
+    {line}
+  {/each}
+  </p>
+</div> 
+
+<style>
+  .message {
+    font-family: "sans-serif";
+  }
+  
+  .ef-announce {
+    border: 1px solid #ddd;
+    color: #ddd;
+  }
+
+  .ef-order {
+    border: 1px solid #f44;
+    color: #f44;
+  }
+
+  .ef-extra {
+    border: 1px solid #888;
+    color: #888;
+  }
+</style>

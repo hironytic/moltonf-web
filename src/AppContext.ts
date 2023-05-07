@@ -52,6 +52,10 @@ export class AppContext {
   sceneAs$<T>(sceneClass: new (...args: any[]) => T): Readable<T | undefined> {
     return derived(this._scene$, it => (it instanceof sceneClass) ? it : undefined)
   }
+
+  changeScene(scene: Scene) {
+    this._scene$.set(scene)
+  }
   
   //#endregion
 
@@ -83,7 +87,8 @@ export class AppContext {
   }
   
   //#endregion
-  
+
+  //#region Stores
   
   private async readyDB(): Promise<IDBPDatabase<MoltonfDB>> {
     const db = await this._dbPromise
@@ -104,7 +109,5 @@ export class AppContext {
     return new WorkspaceStore(await this.readyDB())
   }
   
-  changeScene(scene: Scene) {
-    this._scene$.set(scene)
-  }
+  //#endregion
 }
