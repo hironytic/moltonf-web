@@ -26,6 +26,6 @@ THE SOFTWARE.
   export let color = "currentColor"
 </script>
 
-<svg  fill={color} width="16px" height="8px" viewBox="0 0 16 8" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<svg fill={color} width="16px" height="8px" viewBox="0 0 16 8" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
   <polygon points="16 0 16 8 6.6 8"></polygon>
 </svg>
