@@ -1,5 +1,5 @@
 <!--
-Watching.svelte
+ThoughtTail.svelte
 
 Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
 
@@ -23,31 +23,10 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
-  import { getContext } from "svelte"
-  import { AppContext } from "../../../AppContext"
-  import { WatchingScene } from "./WatchingScene"
-  import type { Readable } from "svelte/store"
-  import type { Story } from "../../story/Story"
-  import { readable } from "svelte/store"
-  import { Spinner } from "flowbite-svelte"
-  import StoryElementsView from "./StoryElementsView.svelte"
-
-  const appContext = getContext<AppContext>(AppContext.Key)
-  const scene$ = appContext.sceneAs$(WatchingScene)
-  $: scene = $scene$
-
-  let story$: Readable<Story | undefined>
-  $: story$ = scene?.story$ ?? readable(undefined)
+  export let color = "currentColor"
 </script>
 
-{#if $story$ === undefined}
-  <div class="h-full flex flex-col place-items-center place-content-center">
-    <Spinner />
-  </div>
-{:else}
-  <div class="h-full flex flex-col place-items-center">
-    <div class="bg-black text-sm max-w-[600px] p-6 rounded-md overflow-y-auto">
-      <StoryElementsView/>
-    </div>
-  </div>
-{/if}
+<svg  fill={color} width="16px" height="8px" viewBox="0 0 16 8" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <circle cx="11" cy="4" r="3"></circle>
+  <circle cx="4" cy="5" r="2"></circle>
+</svg>

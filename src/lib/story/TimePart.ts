@@ -45,11 +45,27 @@ export interface TimePart {
  * @param milliseconds Number of milliseconds
  */
 export function timePartFromMilliseconds(milliseconds: number): TimePart {
+  let ms = milliseconds
+
+  const millisecondPart = ms % 1000
+  ms -= millisecondPart
+  ms /= 1000
+
+  const secondPart = ms % 60
+  ms -= secondPart
+  ms /= 60
+
+  const minutePart = ms % 60
+  ms -= minutePart
+  ms /= 60
+  
+  const hourPart = ms
+  
   return {
-    hourPart: milliseconds / (1000 * 60 * 60),
-    minutePart: (milliseconds / (1000 * 60)) % 60,
-    secondPart: (milliseconds / 1000) % 60,
-    millisecondPart: milliseconds % 1000,
+    hourPart,
+    minutePart,
+    secondPart,
+    millisecondPart,
   }
 }
 
@@ -62,4 +78,15 @@ export function millisecondsFromTimePart(timePart: TimePart): number {
     timePart.minutePart * (1000 * 60) +
     timePart.secondPart * 1000 +
     timePart.millisecondPart
+}
+
+/**
+ * Make string which specifies the time (HH:MM) from milliseconds. 
+ * @param milliseconds Number of milliseconds
+ */
+export function timeString(milliseconds: number): string {
+  const tp = timePartFromMilliseconds(milliseconds)
+  return tp.hourPart.toString(10).padStart(2, "0")
+    + ":"
+    + tp.minutePart.toString(10).padStart(2, "0")
 }

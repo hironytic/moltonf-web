@@ -23,12 +23,12 @@
 //
 
 import type { TalkType } from "./TalkType"
-import { StoryElementTypes } from "./StoryElement"
+import { type StoryElementBase, StoryElementTypes } from "./StoryElement"
 
 /**
  * Represents a talk which appears in story.
  */
-export interface Talk {
+export interface Talk extends StoryElementBase {
   /** Type of this element */
   readonly elementType: typeof StoryElementTypes.TALK
 

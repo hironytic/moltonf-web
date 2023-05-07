@@ -1,5 +1,5 @@
 <!--
-Watching.svelte
+NavBar.svelte
 
 Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
 
@@ -23,31 +23,38 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
+  import { AppContext } from "../AppContext"
   import { getContext } from "svelte"
-  import { AppContext } from "../../../AppContext"
-  import { WatchingScene } from "./WatchingScene"
-  import type { Readable } from "svelte/store"
-  import type { Story } from "../../story/Story"
-  import { readable } from "svelte/store"
-  import { Spinner } from "flowbite-svelte"
-  import StoryElementsView from "./StoryElementsView.svelte"
+  import { WatchingScene } from "./scene/watching/WatchingScene"
+  import { Button } from "flowbite-svelte"
+  import DayChanger from "./scene/watching/DayChanger.svelte"
+  import { SelectWorkspaceScene } from "./scene/select-workspace/SelectWorkspaceScene"
+  import ChevronLeftIcon from "./icon/ChevronLeftIcon.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
-  const scene$ = appContext.sceneAs$(WatchingScene)
-  $: scene = $scene$
-
-  let story$: Readable<Story | undefined>
-  $: story$ = scene?.story$ ?? readable(undefined)
+  const watchingScene$ = appContext.sceneAs$(WatchingScene)
+  
+  let title: string | undefined
+  $: title = $watchingScene$?.workspace.name
+  
+  function goToSelectWorkspace() {
+    appContext.changeScene(new SelectWorkspaceScene(appContext))
+  }
 </script>
 
-{#if $story$ === undefined}
-  <div class="h-full flex flex-col place-items-center place-content-center">
-    <Spinner />
+<div class="px-4 bg-black border-b-2 border-b-gray-900 flex items-center h-[6rem] shrink-0">
+  <div class="flex flex-col space-y-1">
+    <p class="text-lg font-medium">Moltonf</p>
+    {#if $watchingScene$ !== undefined}
+      <Button color="light" size="xs" on:click={() => goToSelectWorkspace()}>
+          <ChevronLeftIcon size="1rem"/> 観戦データ選択
+      </Button>
+    {/if}
   </div>
-{:else}
-  <div class="h-full flex flex-col place-items-center">
-    <div class="bg-black text-sm max-w-[600px] p-6 rounded-md overflow-y-auto">
-      <StoryElementsView/>
-    </div>
+  <div class="ml-4 grow flex flex-col items-start space-y-1">
+  {#if $watchingScene$ !== undefined}
+      <p class="text-lg font-medium">{title ?? ""}</p>
+      <DayChanger/>
+  {/if}
   </div>
-{/if}
+</div>

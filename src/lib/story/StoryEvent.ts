@@ -22,7 +22,7 @@
 // THE SOFTWARE.
 //
 
-import { StoryElementTypes } from "./StoryElement"
+import { type StoryElementBase, StoryElementTypes } from "./StoryElement"
 import { EventFamilies } from "./EventFamily"
 import type { Player } from "./Player"
 import { EventNames } from "./StoryEventName"
@@ -32,7 +32,7 @@ import { EventNames } from "./StoryEventName"
  */
 export type StoryEvent = StoryEventAnnounce | StoryEventOrder | StoryEventExtra
 
-interface StoryEventBase {
+interface StoryEventBase extends StoryElementBase {
   /** Type of this element */
   readonly elementType: typeof StoryElementTypes.STORY_EVENT
 

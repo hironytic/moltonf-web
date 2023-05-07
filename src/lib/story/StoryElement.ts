@@ -36,3 +36,8 @@ export const StoryElementTypes = {
 } as const
 
 export type StoryElementType = typeof StoryElementTypes[keyof typeof StoryElementTypes]
+
+export interface StoryElementBase {
+  /** String which identifies this story element in the story */
+  readonly elementId: string
+}

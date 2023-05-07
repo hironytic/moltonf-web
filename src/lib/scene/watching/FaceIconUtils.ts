@@ -1,5 +1,5 @@
 //
-// Utils.ts
+// FaceIconUtils.ts
 //
 // Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
 //
@@ -22,12 +22,33 @@
 // THE SOFTWARE.
 //
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function doNothing(..._args: unknown[]) {
-  // do nothing
+import type { Story } from "../../story/Story"
+
+export const graveIcon = Symbol()
+
+export function createFaceIconUrlMap(story: Story): Map<string | symbol, string> {
+  const result = new Map<string | symbol, string>()
+  for (const avatar of story.avatarList) {
+    if (avatar.faceIconURI !== undefined) {
+      result.set(avatar.avatarId, createFaceIconUrl(story.baseURI, avatar.faceIconURI))
+    }
+  }
+  result.set(graveIcon, createFaceIconUrl(story.baseURI, story.graveIconURI))
+  return result
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function unusedParameter(..._args: unknown[]) {
-  // do nothing
+function createFaceIconUrl(baseURI: string, iconURI: string): string {
+  function relocateBaseURI(baseURI: string): string {
+    switch (baseURI) {
+      case "http://www.wolfg.x0.com/":
+        return "http://ninjinix.x0.com/wolfg/"
+      case "http://ninjin002.x0.com/wolff/":
+        return "http://ninjinix.x0.com/wolff/"
+      default:
+        return baseURI
+    }
+  }
+  
+  const url = new URL(iconURI, relocateBaseURI(baseURI))
+  return url.href
 }
