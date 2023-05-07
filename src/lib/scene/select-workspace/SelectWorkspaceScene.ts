@@ -38,7 +38,7 @@ export class SelectWorkspaceScene extends Scene {
   private _workspaces$ = writable<Workspace[] | undefined>(undefined)
   get workspaces$(): Readable<Workspace[] | undefined> { return this._workspaces$ }
   
-  async reloadWorkspaces(): Promise<void> {
+  private async reloadWorkspaces(): Promise<void> {
     const workspaceStore = await this.appContext.getWorkspaceStore()
     this._workspaces$.set(await workspaceStore.getWorkspaces())
   }
@@ -49,5 +49,11 @@ export class SelectWorkspaceScene extends Scene {
   
   createNewWorkspace() {
     this.appContext.changeScene(new NewWorkspaceScene(this.appContext))
+  }
+  
+  async deleteWorkspace(workspaceId: number) {
+    const workspaceStore = await this.appContext.getWorkspaceStore()
+    await workspaceStore.remove(workspaceId)
+    this._workspaces$.set(await workspaceStore.getWorkspaces())
   }
 }
