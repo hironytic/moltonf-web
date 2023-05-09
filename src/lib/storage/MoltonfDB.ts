@@ -25,38 +25,45 @@
 import type { DBSchema, IDBPDatabase } from "idb"
 import type { Story } from "../story/Story"
 import { openDB } from "idb"
-import type { StoryEntry } from "./StoryStore"
 import type { Workspace } from "../workspace/Workspace"
 
 export const StoreNames = {
   STORIES: "stories",
-  STORY_ENTRIES: "storyEntries",
   WORKSPACES: "workspaces",
+} as const
+
+export const IndexNames = {
+  STORIES: {
+    NAME: "name",
+  } as const,
+  
+  WORKSPACES: {
+    LAST_MODIFIED: "lastModified",
+  }
 } as const
 
 export interface MoltonfDB extends DBSchema {
   stories: {
     key: number
     value: Story
+    indexes: { "name": string }
   }
 
-  storyEntries: {
-    key: number
-    value: StoryEntry
-  }
-  
   workspaces: {
     key: number
     value: Workspace
+    indexes: { "lastModified": Date }
   }
 }
 
 export async function openMoltonfDB(): Promise<IDBPDatabase<MoltonfDB>> {
   return await openDB<MoltonfDB>("moltonf-db", 1, {
     upgrade(database: IDBPDatabase<MoltonfDB>) {
-      database.createObjectStore(StoreNames.STORIES, { autoIncrement: true })
-      database.createObjectStore(StoreNames.STORY_ENTRIES, { keyPath: "id" })
-      database.createObjectStore(StoreNames.WORKSPACES, { keyPath: "id", autoIncrement: true })
+      const storiesStore = database.createObjectStore(StoreNames.STORIES, { autoIncrement: true })
+      storiesStore.createIndex(IndexNames.STORIES.NAME, "villageFullName", { unique: false })
+      
+      const workspacesStore = database.createObjectStore(StoreNames.WORKSPACES, { keyPath: "id", autoIncrement: true })
+      workspacesStore.createIndex(IndexNames.WORKSPACES.LAST_MODIFIED, "lastModified", { unique: false })
     }
   })
 }

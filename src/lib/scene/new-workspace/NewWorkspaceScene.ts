@@ -84,6 +84,9 @@ export class NewWorkspaceScene extends Scene {
       const workspaceData = {
         storyId: this._storyEntry$.currentValue.id,
         name: this._name$.currentValue,
+        // TODO: other stuff...
+        
+        lastModified: new Date(),
       }
       const workspaceId = await workspaceStore.add(workspaceData)
       
