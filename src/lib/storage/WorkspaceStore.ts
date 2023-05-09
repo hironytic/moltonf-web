@@ -25,7 +25,7 @@
 import type { IDBPDatabase } from "idb"
 import type { MoltonfDB } from "./MoltonfDB"
 import type { Workspace } from "../workspace/Workspace"
-import { StoreNames } from "./MoltonfDB"
+import { IndexNames, StoreNames } from "./MoltonfDB"
 
 /**
  * Storage for workspaces.
@@ -62,7 +62,8 @@ export class WorkspaceStore {
   async getWorkspaces(): Promise<Workspace[]> {
     const result: Workspace[] = []
     const tx = this._db.transaction(StoreNames.WORKSPACES)
-    let cursor = await tx.store.openCursor()
+    const index = tx.store.index(IndexNames.WORKSPACES.LAST_MODIFIED)
+    let cursor = await index.openCursor(null, "prev")
     while (cursor !== null) {
       result.push(cursor.value)
       cursor = await cursor.continue()

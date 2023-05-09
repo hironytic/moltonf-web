@@ -99,6 +99,7 @@ export class WatchingScene extends Scene {
   readonly workspace: Workspace
 
   async saveWorkspace() {
+    this.workspace.lastModified = new Date()
     const workspaceStore = await this.appContext.getWorkspaceStore()
     await workspaceStore.update(this.workspace)
   }

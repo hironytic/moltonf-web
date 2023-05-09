@@ -27,4 +27,6 @@ export interface Workspace {
   name: string
   storyId: number
   // TODO: other stuff...
+  
+  lastModified: Date
 }
