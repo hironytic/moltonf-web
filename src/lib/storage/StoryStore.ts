@@ -25,7 +25,7 @@
 import type { IDBPDatabase } from "idb"
 import type { MoltonfDB } from "./MoltonfDB"
 import type { Story } from "../story/Story"
-import { StoreNames } from "./MoltonfDB"
+import { IndexNames, StoreNames } from "./MoltonfDB"
 
 /**
  * Storage for stories.
@@ -40,33 +40,25 @@ export class StoryStore {
   }
   
   async add(story: Story): Promise<number> {
-    const tx = this._db.transaction([StoreNames.STORIES, StoreNames.STORY_ENTRIES], "readwrite")
-    const storiesStore = tx.objectStore(StoreNames.STORIES)
-    const storyNamesStore = tx.objectStore(StoreNames.STORY_ENTRIES)
-    const key = await storiesStore.add(story)
-    await storyNamesStore.put({
-      id: key,
-      name: story.villageFullName,
-    })
+    const tx = this._db.transaction(StoreNames.STORIES, "readwrite")
+    const key = await tx.store.add(story)
     await tx.done
     return key
   }
   
   async remove(id: number): Promise<void> {
-    const tx = this._db.transaction([StoreNames.STORIES, StoreNames.STORY_ENTRIES], "readwrite")
-    const storiesStore = tx.objectStore(StoreNames.STORIES)
-    const storyNamesStore = tx.objectStore(StoreNames.STORY_ENTRIES)
-    await storiesStore.delete(id)
-    await storyNamesStore.delete(id)
+    const tx = this._db.transaction(StoreNames.STORIES, "readwrite")
+    await tx.store.delete(id)
     await tx.done
   }
   
   async getEntries(): Promise<StoryEntry[]> {
     const result: StoryEntry[] = []
-    const tx = this._db.transaction(StoreNames.STORY_ENTRIES)
-    let cursor = await tx.store.openCursor()
+    const tx = this._db.transaction(StoreNames.STORIES)
+    const index = tx.store.index(IndexNames.STORIES.NAME)
+    let cursor = await index.openKeyCursor()
     while (cursor !== null) {
-      result.push(cursor.value)
+      result.push({ id: cursor.primaryKey, name: cursor.key })
       cursor = await cursor.continue()
     }
     return result
