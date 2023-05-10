@@ -32,12 +32,27 @@ THE SOFTWARE.
   import { Spinner } from "flowbite-svelte"
   import StoryElementsView from "./StoryElementsView.svelte"
 
+  const unreactives = {
+    lastCurrentDay: -1,
+  }
+
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(WatchingScene)
   $: scene = $scene$
 
   let story$: Readable<Story | undefined>
   $: story$ = scene?.story$ ?? readable(undefined)
+  
+  let scroller: HTMLDivElement
+  let currentDay$: Readable<number>
+  $: currentDay$ = scene?.currentDay$ ?? readable(-1)
+  $: {
+    // If current day has been changed, reset the scroll position to top. 
+    if ($currentDay$ !== unreactives.lastCurrentDay) {
+      unreactives.lastCurrentDay = $currentDay$
+      scroller?.scrollTo(0, 0)
+    }
+  }
 </script>
 
 {#if $story$ === undefined}
@@ -46,7 +61,7 @@ THE SOFTWARE.
   </div>
 {:else}
   <div class="h-full flex flex-col place-items-center">
-    <div class="bg-black text-sm max-w-[600px] p-6 rounded-md overflow-y-auto">
+    <div class="bg-black text-sm max-w-[600px] p-6 rounded-md overflow-y-auto" bind:this={scroller}>
       <StoryElementsView/>
     </div>
   </div>
