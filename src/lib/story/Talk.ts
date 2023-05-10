@@ -44,6 +44,9 @@ export interface Talk extends StoryElementBase {
   /** Time on which this talk is made (in milliseconds) */
   readonly time: number
   
+  /** Sequence number of public talk (only exists in public talk) */
+  readonly talkNo: number | undefined
+  
   /** Lines of messages */
   readonly messageLines: string[]
 }

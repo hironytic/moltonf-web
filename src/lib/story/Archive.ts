@@ -47,6 +47,7 @@ import type {
 import { EventFamilies } from "./EventFamily"
 import { EventNames } from "./StoryEventName"
 import type { Player } from "./Player"
+import { TalkTypes } from "./TalkType"
 
 export async function loadStoryFromArchiveFile(file: File): Promise<Story> {
   const xml = await readFileAsText(file)
@@ -87,6 +88,7 @@ function parseArciveDocument(document: XMLDocument): Story {
   let currentDay = 0
   let currentElementIndex = 0
   let currentElementId = ""
+  let publicTalkCount = 0
 
   function getAttribute(element: Element, name: string): string | undefined {
     return element.getAttribute(name) ?? undefined
@@ -347,7 +349,12 @@ function parseArciveDocument(document: XMLDocument): Story {
     const xname = getAttributeOrError(talkElem, "xname")
     const time = parseTime(getAttributeOrError(talkElem, "time"))
     const messageLines = parseMessageLines(talkElem)
-    
+
+    let talkNo: number | undefined = undefined
+    if (talkType === TalkTypes.PUBLIC) {
+      publicTalkCount++
+      talkNo = publicTalkCount
+    }
     return {
       elementId: currentElementId,
       elementType: StoryElementTypes.TALK,
@@ -355,6 +362,7 @@ function parseArciveDocument(document: XMLDocument): Story {
       avatarId,
       xname,
       time,
+      talkNo,
       messageLines,
     }
   }

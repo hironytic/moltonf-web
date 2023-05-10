@@ -39,6 +39,7 @@ THE SOFTWARE.
     avatarId: "",
     xname: "",
     time: 0,
+    talkNo: undefined,
     messageLines: []
   }
   
@@ -64,6 +65,9 @@ THE SOFTWARE.
 </script>
 
 <div>
+  {#if talk.talkNo !== undefined}
+    <span class="time">{talk.talkNo}.</span>
+  {/if}
   <span class="avatar-name">{avatar?.fullName}</span>
   <span class="time">{timeString(talk.time)}</span>
 </div>
