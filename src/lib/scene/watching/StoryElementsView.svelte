@@ -63,6 +63,7 @@ THE SOFTWARE.
           avatarId: element.byWhom,
           xname: element.xname,
           time: element.time,
+          talkNo: undefined,
           messageLines: element.messageLines,
         }} avatarMap={$avatarMap$} faceIconUrlMap={$faceIconUrlMap$}/>
       {:else}
