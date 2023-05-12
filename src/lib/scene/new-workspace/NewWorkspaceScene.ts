@@ -84,6 +84,8 @@ export class NewWorkspaceScene extends Scene {
       const workspaceData = {
         storyId: this._storyEntry$.currentValue.id,
         name: this._name$.currentValue,
+        currentDay: 0,
+        dayProgress: 0,
         // TODO: other stuff...
         
         lastModified: new Date(),

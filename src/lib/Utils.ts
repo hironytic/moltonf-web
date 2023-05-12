@@ -31,3 +31,33 @@ export function doNothing(..._args: unknown[]) {
 export function unusedParameter(..._args: unknown[]) {
   // do nothing
 }
+
+export async function delay(msec: number, signal?: AbortSignal): Promise<void> {
+  let abortListener: (() => void) | undefined = undefined
+  const promise = new Promise((resolve, reject) => {
+    let timeout: NodeJS.Timeout | undefined = undefined
+    if (signal !== undefined) {
+      abortListener = () => {
+        if (timeout !== undefined) {
+          clearTimeout(timeout)
+        }
+        reject(signal.reason)
+      }
+      signal.addEventListener("abort", abortListener)
+    }
+    timeout = setTimeout(resolve, msec)
+  })
+  try {
+    await promise
+  } finally {
+    if (signal !== undefined && abortListener !== undefined) {
+      signal.removeEventListener("abort", abortListener)
+    }
+  }
+}
+
+export function runDetached<T>(fn: () => Promise<T>): void {
+  fn().catch(e => {
+    console.error(e)
+  })
+}
