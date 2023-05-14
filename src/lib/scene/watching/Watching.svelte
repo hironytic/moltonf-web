@@ -29,9 +29,9 @@ THE SOFTWARE.
   import type { Readable } from "svelte/store"
   import type { Story } from "../../story/Story"
   import { readable } from "svelte/store"
-  import { Spinner } from "flowbite-svelte"
+  import { Button, Spinner } from "flowbite-svelte"
   import StoryElementsView from "./StoryElementsView.svelte"
-
+  
   const unreactives = {
     lastCurrentDay: -1,
   }
@@ -53,6 +53,9 @@ THE SOFTWARE.
       scroller?.scrollTo(0, 0)
     }
   }
+  
+  let canMoveToNextDay$: Readable<boolean>
+  $: canMoveToNextDay$ = scene?.canMoveToNextDay$ ?? readable(false)
 </script>
 
 {#if $story$ === undefined}
@@ -63,6 +66,9 @@ THE SOFTWARE.
   <div class="h-full flex flex-col place-items-center">
     <div class="bg-black text-sm max-w-[600px] p-6 rounded-md overflow-y-auto" bind:this={scroller}>
       <StoryElementsView/>
+      {#if $canMoveToNextDay$}
+        <Button color="red" class="mt-4" on:click={() => scene?.moveToNextDay()}>次の日へ</Button>
+      {/if}
     </div>
   </div>
 {/if}

@@ -25,40 +25,55 @@
 import { type AppContext } from "../../../AppContext"
 import { Scene } from "../../../Scene"
 import type { Workspace } from "../../workspace/Workspace"
-import { derived, type Readable } from "svelte/store"
+import { derived, type Readable, type Writable, writable } from "svelte/store"
 import type { Story } from "../../story/Story"
 import { currentValueWritable } from "../../CurrentValueStore"
 import type { StoryElement } from "../../story/StoryElement"
 import type { Avatar } from "../../story/Avatar"
 import { PeriodTypes } from "../../story/PeriodType"
 import { createFaceIconUrlMap } from "./FaceIconUtils"
+import type { Period } from "../../story/Period"
+import { delay, runDetached } from "../../Utils"
+
+const PROLOGUE_NAME = "プロローグ"
+const EPILOGUE_NAME = "エピローグ"
+
+function getNameOfDay(period: Period, day: number) {
+  if (period.type === PeriodTypes.PROLOGUE) {
+    return PROLOGUE_NAME
+  } else if (period.type === PeriodTypes.EPILOGUE) {
+    return EPILOGUE_NAME
+  } else {
+    return `${day}日目`
+  }
+}
 
 export class WatchingScene extends Scene {
+  private readonly _story$ = currentValueWritable<Story | undefined>(undefined)
+  private readonly _currentDay$: Writable<number>
+  private readonly _dayProgress$: Writable<number | undefined>
+  private _isWorkspaceModified = false
+  readonly workspace: Workspace
+  readonly avatarMap$: Readable<Map<string, Avatar>>
+  readonly faceIconUrlMap$: Readable<Map<string | symbol, string>>
+  
   constructor(appContext: AppContext, workspace: Workspace) {
     super(appContext)
     this.workspace = workspace
-    
-    this.watchableDays$ = derived(this._story$, story => {
+
+    this._currentDay$ = writable<number>(workspace.currentDay)
+    this._dayProgress$ = writable(workspace.dayProgress)
+
+    this.watchableDays$ = derived([this._story$, this._dayProgress$], ([story, dayProgress]) => {
       if (story === undefined) {
-        return [{day: 0, text: "プロローグ"}]
+        return [{ day: 0, text: PROLOGUE_NAME }]
       }
-      
-      const result: WatchableDay[] = []
-      for (let ix = 0; ix < story.periods.length; ix++) {
-        let text = ""
-        if (story.periods[ix]?.type === PeriodTypes.PROLOGUE) {
-          text = "プロローグ"
-        } else if (story.periods[ix]?.type === PeriodTypes.EPILOGUE) {
-          text = "エピローグ"
-        } else {
-          text = `${ix}日目`
-        }
-        result.push({
-          day: ix,
-          text,
-        })
-      }
-      return result
+
+      const periods = (dayProgress === undefined) ? story.periods : story.periods.slice(0, dayProgress + 1)
+      return periods.map((period, day) => ({
+        day: day,
+        text: getNameOfDay(period, day)
+      }))
     })
     
     this.currentStoryElements$ = derived([this._story$, this._currentDay$], ([story, currentDay]) => {
@@ -90,18 +105,32 @@ export class WatchingScene extends Scene {
       return createFaceIconUrlMap(story)
     })
     
+    this.canMoveToNextDay$ = derived([this._story$, this._currentDay$], ([story, currentDay]) => {
+      if (story === undefined) {
+        return false
+      }
+      return (currentDay < story.periods.length - 1)
+    })
+    
     void this.loadStory()
   }
 
-  private readonly _story$ = currentValueWritable<Story | undefined>(undefined)
-  private readonly _currentDay$ = currentValueWritable<number>(0)
+  private updateWorkspace(update: (workspace: Workspace) => void) {
+    update(this.workspace)
+    this.saveWorkspace()
+  }
   
-  readonly workspace: Workspace
-
-  async saveWorkspace() {
-    this.workspace.lastModified = new Date()
-    const workspaceStore = await this.appContext.getWorkspaceStore()
-    await workspaceStore.update(this.workspace)
+  private saveWorkspace() {
+    runDetached(async () => {
+      this._isWorkspaceModified = true
+      this.workspace.lastModified = new Date()
+      await delay(500)
+      if (this._isWorkspaceModified) {
+        const workspaceStore = await this.appContext.getWorkspaceStore()
+        await workspaceStore.update(this.workspace)
+        this._isWorkspaceModified = false
+      }
+    })
   }
   
   get story$(): Readable<Story | undefined> { return this._story$ }
@@ -113,9 +142,6 @@ export class WatchingScene extends Scene {
     this._story$.set(story)
   }
   
-  readonly avatarMap$: Readable<Map<string, Avatar>>
-  readonly faceIconUrlMap$: Readable<Map<string | symbol, string>>
-  
   get currentDay$(): Readable<number> { return this._currentDay$ }
   readonly watchableDays$: Readable<WatchableDay[]>
   
@@ -126,10 +152,34 @@ export class WatchingScene extends Scene {
     }
     
     if (0 <= day && day < story.periods.length) {
+      this.updateWorkspace(it => {
+        it.currentDay = day
+      })
       this._currentDay$.set(day)
     }
   }
   
+  readonly canMoveToNextDay$: Readable<boolean>
+  moveToNextDay() {
+    const story = this._story$.currentValue
+    if (story === undefined) {
+      return
+    }
+    
+    const day = this.workspace.currentDay
+    if (day + 1 < story.periods.length) {
+      const dayProgress = this.workspace.dayProgress
+      if (dayProgress !== undefined && dayProgress < day + 1) {
+        const nextDayProgress = ((day + 1) >= story.periods.length - 1) ? undefined : day + 1
+        this.updateWorkspace(it => {
+          it.dayProgress = nextDayProgress
+        })
+        this._dayProgress$.set(nextDayProgress)
+      }
+      this.changeCurrentDay(day + 1)
+    }
+  }
+
   readonly currentStoryElements$: Readable<StoryElement[]>
 }
 

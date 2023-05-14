@@ -23,10 +23,23 @@
 //
 
 export interface Workspace {
+  /** Workspace ID */
   id: number
+  
+  /** Name of this workspace */
   name: string
+  
+  /** ID of story to which this workspace refers */
   storyId: number
+  
+  /** Current day */
+  currentDay: number
+  
+  /** The day that has been viewed, or `undefined` if the epilogue is reached */ 
+  dayProgress: number | undefined
+  
   // TODO: other stuff...
   
+  /** Last modified date */
   lastModified: Date
 }
