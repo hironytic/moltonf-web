@@ -34,24 +34,14 @@ export interface MessageBoxItemButton {
   color: 
     | 'alternative'
     | 'blue'
-    | 'cyan'
     | 'dark'
-    | 'light'
-    | 'lime'
     | 'green'
-    | 'pink'
+    | 'light'
     | 'primary'
-    | 'red'
-    | 'teal'
-    | 'yellow'
     | 'purple'
-    | 'purpleToBlue'
-    | 'cyanToBlue'
-    | 'greenToBlue'
-    | 'purpleToPink'
-    | 'pinkToOrange'
-    | 'tealToLime'
-    | 'redToYellow'
+    | 'red'
+    | 'yellow'
+    | 'none'
   
   text: string
 }
