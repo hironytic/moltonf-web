@@ -59,9 +59,12 @@ export class WorkspaceStore {
     await tx.done
   }
   
-  async remove(id: number) {
-    const tx = this._db.transaction(StoreNames.WORKSPACES, "readwrite")
-    await tx.store.delete(id)
+  async remove(workspace: Workspace) {
+    const workspaceId = workspace.id
+    const storyId = workspace.storyId
+    const tx = this._db.transaction([StoreNames.STORIES, StoreNames.WORKSPACES], "readwrite")
+    await tx.objectStore(StoreNames.WORKSPACES).delete(workspaceId)
+    await tx.objectStore(StoreNames.STORIES).delete(storyId)
     await tx.done
   }
 

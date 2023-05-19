@@ -51,9 +51,9 @@ export class SelectWorkspaceScene extends Scene {
     this.appContext.changeScene(new NewWorkspaceScene(this.appContext))
   }
   
-  async deleteWorkspace(workspaceId: number) {
+  async deleteWorkspace(workspace: Workspace) {
     const workspaceStore = await this.appContext.getWorkspaceStore()
-    await workspaceStore.remove(workspaceId)
+    await workspaceStore.remove(workspace)
     this._workspaces$.set(await workspaceStore.getWorkspaces())
   }
 }

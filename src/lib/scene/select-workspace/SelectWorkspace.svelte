@@ -58,7 +58,7 @@ THE SOFTWARE.
       ]
     })
     if (result === "delete") {
-      scene?.deleteWorkspace(workspace.id)
+      scene?.deleteWorkspace(workspace)
     }
   }
 </script>
