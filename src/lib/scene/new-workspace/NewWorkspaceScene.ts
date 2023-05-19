@@ -24,11 +24,10 @@
 
 import { type AppContext } from "../../../AppContext"
 import { Scene } from "../../../Scene"
-import { type Readable, writable } from "svelte/store"
+import { type Readable, type Writable, writable } from "svelte/store"
 import { WatchingScene } from "../watching/WatchingScene"
 import type { Story } from "../../story/Story"
 import { SelectWorkspaceScene } from "../select-workspace/SelectWorkspaceScene"
-import type { StoryEntry } from "../../storage/StoryStore"
 import { currentValueWritable } from "../../CurrentValueStore"
 
 export class NewWorkspaceScene extends Scene {
@@ -39,50 +38,39 @@ export class NewWorkspaceScene extends Scene {
   private readonly _step$ = writable<NewWorkspaceStep>(NewWorkspaceSteps.SELECT_STORY)
   get step$(): Readable<NewWorkspaceStep> { return this._step$ }
 
-  private readonly _storyEntry$ = currentValueWritable<StoryEntry | undefined>(undefined)
-  private readonly _name$ = currentValueWritable<string | undefined>(undefined)
+  private readonly _story$ = currentValueWritable<Story | undefined>(undefined)
+  private readonly _name$ = currentValueWritable<string>("")
 
-  get storyEntry$(): Readable<StoryEntry | undefined> { return this._storyEntry$ }  
-
-  selectStory(storyEntry: StoryEntry) {
-    this._storyEntry$.set(storyEntry)
-
-    this._step$.set(NewWorkspaceSteps.INPUT_NAME)
-  }
+  get story$(): Readable<Story | undefined> { return this._story$ }
   
-  async registerNewStory(story: Story): Promise<void> {
-    const storyStore = await this.appContext.getStoryStore()
-    const storyId = await storyStore.add(story)
-    
-    this.selectStory({
-      id: storyId,
-      name: story.villageFullName
-    })
+  setStory(story: Story) {
+    this._story$.set(story)
+    this.forwardToInputNameStep()
   }
   
   backFromSelectStoryStep() {
     this.appContext.changeScene(new SelectWorkspaceScene(this.appContext))
   }
   
-  get name$(): Readable<string | undefined> { return this._name$ }
+  get name$(): Writable<string> { return this._name$ }
   
-  setName(name: string) {
-    this._name$.set(name)
+  forwardToInputNameStep() {
+    this._name$.set(this._story$.currentValue?.villageFullName ?? "")
+    this._step$.set(NewWorkspaceSteps.INPUT_NAME)
   }
   
   backFromInputNameStep() {
-    this._name$.set(undefined)
-    
+    this._name$.set("")
     this._step$.set(NewWorkspaceSteps.SELECT_STORY)
   }
   
   async registerNewWorkspace(): Promise<void> {
-    if (this._storyEntry$.currentValue === undefined || this._name$.currentValue === undefined) {
+    if (this._story$.currentValue === undefined || this._name$.currentValue === undefined) {
       console.error("Story or name is not set!")
     } else {
       const workspaceStore = await this.appContext.getWorkspaceStore()
+      const story = this._story$.currentValue
       const workspaceData = {
-        storyId: this._storyEntry$.currentValue.id,
         name: this._name$.currentValue,
         currentDay: 0,
         dayProgress: 0,
@@ -90,12 +78,9 @@ export class NewWorkspaceScene extends Scene {
         
         lastModified: new Date(),
       }
-      const workspaceId = await workspaceStore.add(workspaceData)
+      const workspace = await workspaceStore.add(story, workspaceData)
       
-      this.appContext.changeScene(new WatchingScene(this.appContext, {
-        id: workspaceId,
-        ...workspaceData
-      }))
+      this.appContext.changeScene(new WatchingScene(this.appContext, workspace))
     }
   }
 }

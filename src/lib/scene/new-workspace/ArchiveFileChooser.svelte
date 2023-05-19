@@ -26,10 +26,12 @@ THE SOFTWARE.
   import { createEventDispatcher } from "svelte"
   import FileOpenIcon from "../../icon/FileOpenIcon.svelte"
   import { Dropzone } from "flowbite-svelte"
-  import ExternalSiteIcon from "../../icon/ExternalSiteIcon.svelte"
+  import StoryIcon from "../../icon/StoryIcon.svelte"
 
   const dispatch = createEventDispatcher()
 
+  export let currentStory: string | undefined = undefined
+  
   let className: string | undefined = undefined
   export { className as class }
   
@@ -61,11 +63,20 @@ THE SOFTWARE.
   bind:files
 >
   <div class="flex items-center space-x-2 mb-4">
-    <FileOpenIcon size="2rem"/>
-    <p class="font-medium">新しい村データを登録</p>
+    {#if currentStory !== undefined}
+      <StoryIcon size="2rem"/>
+      <p class="font-medium">{currentStory}</p>
+    {:else}
+      <FileOpenIcon size="2rem"/>
+      <p class="font-medium">村データを読み込む</p>
+    {/if}
   </div>
   <div class="text-sm">
-    <p>ここをクリックして<a class="text-red-500 underline hover:text-gray-300 inline-flex items-baseline" href="https://wolfbbs.jp/%B6%A6%C4%CC%A5%A2%A1%BC%A5%AB%A5%A4%A5%D6%B4%F0%C8%D7%C0%B0%C8%F7%B7%D7%B2%E8.html" target="_blank" rel="noopener noreferrer">人狼BBSの共通アーカイブ<ExternalSiteIcon size="0.8rem"/></a>形式のXMLファイルを選択</p>
+    {#if currentStory !== undefined}
+      <p>別のデータに変更するには、ここをクリックしてXMLファイルを選択</p>
+    {:else}
+      <p>ここをクリックしてXMLファイルを選択</p>
+    {/if}
     <p>または、ここにXMLファイルをドロップ</p>
   </div>
 </Dropzone>
