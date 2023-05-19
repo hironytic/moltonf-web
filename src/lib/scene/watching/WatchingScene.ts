@@ -136,8 +136,8 @@ export class WatchingScene extends Scene {
   get story$(): Readable<Story | undefined> { return this._story$ }
   
   private async loadStory() {
-    const storyStore = await this.appContext.getStoryStore()
-    const story = await storyStore.getStory(this.workspace.storyId)
+    const workspaceStore = await this.appContext.getWorkspaceStore()
+    const story = await workspaceStore.getStory(this.workspace.storyId)
     //TODO: check errors
     this._story$.set(story)
   }

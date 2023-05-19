@@ -84,4 +84,9 @@ export class WorkspaceStore {
     const tx = this._db.transaction(StoreNames.WORKSPACES)
     return await tx.store.get(id)
   }
+
+  async getStory(id: number): Promise<Story | undefined> {
+    const tx = this._db.transaction(StoreNames.STORIES)
+    return await tx.store.get(id)
+  }
 }

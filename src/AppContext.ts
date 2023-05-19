@@ -25,7 +25,6 @@
 import type { MoltonfDB } from "./lib/storage/MoltonfDB"
 import { openMoltonfDB } from "./lib/storage/MoltonfDB"
 import type { IDBPDatabase } from "idb"
-import { StoryStore } from "./lib/storage/StoryStore"
 import { WorkspaceStore } from "./lib/storage/WorkspaceStore"
 import type { Readable } from "svelte/store"
 import { derived, writable } from "svelte/store"
@@ -99,10 +98,6 @@ export class AppContext {
     const dbPromise = openMoltonfDB()
     this._dbPromise = dbPromise
     return await dbPromise
-  }
-  
-  async getStoryStore(): Promise<StoryStore> {
-    return new StoryStore(await this.readyDB())
   }
   
   async getWorkspaceStore(): Promise<WorkspaceStore> {
