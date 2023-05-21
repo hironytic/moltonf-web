@@ -48,6 +48,7 @@ import { EventFamilies } from "./EventFamily"
 import { EventNames } from "./StoryEventName"
 import type { Player } from "./Player"
 import { TalkTypes } from "./TalkType"
+import type { Role } from "./Role"
 
 export async function loadStoryFromArchiveFile(file: File): Promise<Story> {
   const xml = await readFileAsText(file)
@@ -548,7 +549,7 @@ function parseArciveDocument(document: XMLDocument): Story {
         const playerId = getAttributeOrError(child, "playerId")
         const avatarId = getAttributeOrError(child, "avatarId")
         const survive = parseBoolean(getAttributeOrError(child, "survive"))
-        const role = getAttributeOrError(child, "role")
+        const role = getAttributeOrError(child, "role") as Role
         const uri = getAttribute(child, "uri")
         players.push({
           playerId,

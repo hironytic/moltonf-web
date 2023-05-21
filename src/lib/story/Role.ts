@@ -1,5 +1,5 @@
 //
-// Player.ts
+// Role.ts
 //
 // Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
 //
@@ -22,12 +22,15 @@
 // THE SOFTWARE.
 //
 
-import type { Role } from "./Role"
+export const Roles = {
+  INNOCENT: "innocent",
+  WOLF: "wolf",
+  SEER: "seer",
+  SHAMAN: "shaman",
+  MADMAN: "madman",
+  HUNTER: "hunter",
+  FRATER: "frater",
+  HAMSTER: "hamster",
+} as const
 
-export interface Player {
-  readonly playerId: string
-  readonly avatarId: string
-  readonly survive: boolean
-  readonly role: Role
-  readonly uri?: string
-}
+export type Role = typeof Roles[keyof typeof Roles]

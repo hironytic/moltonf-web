@@ -29,11 +29,11 @@ import { derived, type Readable, type Writable, writable } from "svelte/store"
 import type { Story } from "../../story/Story"
 import { currentValueWritable } from "../../CurrentValueStore"
 import type { StoryElement } from "../../story/StoryElement"
-import type { Avatar } from "../../story/Avatar"
 import { PeriodTypes } from "../../story/PeriodType"
 import { createFaceIconUrlMap } from "./FaceIconUtils"
 import type { Period } from "../../story/Period"
 import { delay, runDetached } from "../../Utils"
+import { type CharacterMap, createCharacterMap } from "../../story/CharacterMap"
 
 const PROLOGUE_NAME = "プロローグ"
 const EPILOGUE_NAME = "エピローグ"
@@ -54,7 +54,7 @@ export class WatchingScene extends Scene {
   private readonly _dayProgress$: Writable<number | undefined>
   private _isWorkspaceModified = false
   readonly workspace: Workspace
-  readonly avatarMap$: Readable<Map<string, Avatar>>
+  readonly characterMap$: Readable<CharacterMap>
   readonly faceIconUrlMap$: Readable<Map<string | symbol, string>>
   
   constructor(appContext: AppContext, workspace: Workspace) {
@@ -90,12 +90,11 @@ export class WatchingScene extends Scene {
       return period.elements
     })
     
-    this.avatarMap$ = derived(this._story$, story => {
+    this.characterMap$ = derived(this._story$, story => {
       if (story === undefined) {
         return new Map()
       }
-      
-      return new Map(story.avatarList.map(it => [it.avatarId, it]))
+      return createCharacterMap(story)
     })
     
     this.faceIconUrlMap$ = derived(this._story$, story => {

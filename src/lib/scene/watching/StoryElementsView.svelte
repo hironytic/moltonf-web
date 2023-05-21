@@ -33,7 +33,7 @@ THE SOFTWARE.
   import TalkView from "./TalkView.svelte"
   import { EventNames } from "../../story/StoryEventName"
   import { TalkTypes } from "../../story/TalkType"
-  import type { Avatar } from "../../story/Avatar"
+  import type { CharacterMap } from "../../story/CharacterMap"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(WatchingScene)
@@ -42,8 +42,8 @@ THE SOFTWARE.
   let currentStoryElements$: Readable<StoryElement[]>
   $: currentStoryElements$ = scene?.currentStoryElements$ ?? readable([])
   
-  let avatarMap$: Readable<Map<string, Avatar>>
-  $: avatarMap$ = scene?.avatarMap$ ?? readable(new Map())
+  let characterMap$: Readable<CharacterMap>
+  $: characterMap$ = scene?.characterMap$ ?? readable(new Map())
   
   let faceIconUrlMap$: Readable<Map<string | symbol, string>>
   $: faceIconUrlMap$ = scene?.faceIconUrlMap$ ?? readable(new Map())
@@ -52,7 +52,7 @@ THE SOFTWARE.
 {#each $currentStoryElements$ as element (element.elementId)}
   <div class="mb-4">
     {#if element.elementType === StoryElementTypes.TALK}
-      <TalkView talk={element} avatarMap={$avatarMap$} faceIconUrlMap={$faceIconUrlMap$}/>
+      <TalkView talk={element} characterMap={$characterMap$} faceIconUrlMap={$faceIconUrlMap$}/>
     {:else if element.elementType === StoryElementTypes.STORY_EVENT}
       {#if element.eventName === EventNames.ASSAULT}
         <!-- Handle special case: ASSAULT is displayed as Wolf's Talk -->
@@ -65,7 +65,7 @@ THE SOFTWARE.
           time: element.time,
           talkNo: undefined,
           messageLines: element.messageLines,
-        }} avatarMap={$avatarMap$} faceIconUrlMap={$faceIconUrlMap$}/>
+        }} characterMap={$characterMap$} faceIconUrlMap={$faceIconUrlMap$}/>
       {:else}
         <StoryEventView storyEvent={element}/>
       {/if}
