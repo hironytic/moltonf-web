@@ -29,28 +29,21 @@ THE SOFTWARE.
   import HeaderTitle from "../../ui-component/HeaderTitle.svelte"
   import { Button, Input } from "flowbite-svelte"
   import ChevronLeftIcon from "../../icon/ChevronLeftIcon.svelte"
-  import { type Readable, readable } from "svelte/store"
-  import type { StoryEntry } from "../../storage/StoryStore"
+  import { writable, type Writable } from "svelte/store"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(NewWorkspaceScene)
   $: scene = $scene$
   
-  let sceneName$: Readable<string | undefined>
-  $: sceneName$ = scene?.name$ ?? readable(undefined)
+  let name$: Writable<string>
+  $: name$ = scene?.name$ ?? writable("")
   
-  let storyEntry$: Readable<StoryEntry | undefined>
-  $: storyEntry$ = scene?.storyEntry$ ?? readable(undefined)
-  
-  let name = ""
   let nameInput: HTMLInputElement | undefined = undefined
   
   async function onOKClick() {
-    scene?.setName(name)
-    
     const result = await appContext.showMessageBox({
       title: "観戦データの登録",
-      message: `観戦データ「${name}」を登録します。`,
+      message: `観戦データ「${$name$}」を登録します。`,
       buttons: [
         {
           key: "ok",
@@ -70,12 +63,6 @@ THE SOFTWARE.
   }
   
   onMount(() => {
-    if ($sceneName$ === undefined) {
-      name = $storyEntry$?.name ?? ""
-    } else {
-      name = $sceneName$
-    }
-    
     nameInput?.focus()
   })
 </script>
@@ -97,7 +84,7 @@ THE SOFTWARE.
     on:submit|preventDefault={() => onOKClick()}
   >
     <Input required let:props>
-      <input type="text" bind:value={name} bind:this={nameInput} {...props}/> 
+      <input type="text" bind:value={$name$} bind:this={nameInput} {...props}/> 
     </Input>
     <Button type="submit" color="red">OK</Button>
   </form>

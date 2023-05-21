@@ -26,6 +26,7 @@ import type { IDBPDatabase } from "idb"
 import type { MoltonfDB } from "./MoltonfDB"
 import type { Workspace } from "../workspace/Workspace"
 import { IndexNames, StoreNames } from "./MoltonfDB"
+import type { Story } from "../story/Story"
 
 /**
  * Storage for workspaces.
@@ -39,12 +40,17 @@ export class WorkspaceStore {
     this._db = db
   }
 
-  async add(workspace: Omit<Workspace, "id">): Promise<number> {
-    const tx = this._db.transaction(StoreNames.WORKSPACES, "readwrite")
-    // It's OK to omit id because it is created by "autoIncrement"
-    const key = await tx.store.add(workspace as Workspace)
+  async add(story: Story, workspace: Omit<Workspace, "id" | "storyId">): Promise<Workspace> {
+    const tx = this._db.transaction([StoreNames.STORIES, StoreNames.WORKSPACES], "readwrite")
+    const storyId = await tx.objectStore(StoreNames.STORIES).add(story)
+    const newWorkspace: Workspace = {
+      ...workspace,
+      storyId,
+    } as Workspace  // It's OK to omit id because it is created by "autoIncrement"
+    const key = await tx.objectStore(StoreNames.WORKSPACES).add(newWorkspace)
     await tx.done
-    return key
+    newWorkspace.id = key
+    return  newWorkspace
   }
   
   async update(workspace: Workspace) {
@@ -53,9 +59,12 @@ export class WorkspaceStore {
     await tx.done
   }
   
-  async remove(id: number) {
-    const tx = this._db.transaction(StoreNames.WORKSPACES, "readwrite")
-    await tx.store.delete(id)
+  async remove(workspace: Workspace) {
+    const workspaceId = workspace.id
+    const storyId = workspace.storyId
+    const tx = this._db.transaction([StoreNames.STORIES, StoreNames.WORKSPACES], "readwrite")
+    await tx.objectStore(StoreNames.WORKSPACES).delete(workspaceId)
+    await tx.objectStore(StoreNames.STORIES).delete(storyId)
     await tx.done
   }
 
@@ -73,6 +82,11 @@ export class WorkspaceStore {
   
   async getWorkspace(id: number): Promise<Workspace | undefined> {
     const tx = this._db.transaction(StoreNames.WORKSPACES)
+    return await tx.store.get(id)
+  }
+
+  async getStory(id: number): Promise<Story | undefined> {
+    const tx = this._db.transaction(StoreNames.STORIES)
     return await tx.store.get(id)
   }
 }

@@ -33,10 +33,6 @@ export const StoreNames = {
 } as const
 
 export const IndexNames = {
-  STORIES: {
-    NAME: "name",
-  } as const,
-  
   WORKSPACES: {
     LAST_MODIFIED: "lastModified",
   }
@@ -46,7 +42,6 @@ export interface MoltonfDB extends DBSchema {
   stories: {
     key: number
     value: Story
-    indexes: { "name": string }
   }
 
   workspaces: {
@@ -59,8 +54,7 @@ export interface MoltonfDB extends DBSchema {
 export async function openMoltonfDB(): Promise<IDBPDatabase<MoltonfDB>> {
   return await openDB<MoltonfDB>("moltonf-db", 1, {
     upgrade(database: IDBPDatabase<MoltonfDB>) {
-      const storiesStore = database.createObjectStore(StoreNames.STORIES, { autoIncrement: true })
-      storiesStore.createIndex(IndexNames.STORIES.NAME, "villageFullName", { unique: false })
+      database.createObjectStore(StoreNames.STORIES, { autoIncrement: true })
       
       const workspacesStore = database.createObjectStore(StoreNames.WORKSPACES, { keyPath: "id", autoIncrement: true })
       workspacesStore.createIndex(IndexNames.WORKSPACES.LAST_MODIFIED, "lastModified", { unique: false })
