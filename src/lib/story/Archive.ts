@@ -582,7 +582,7 @@ function parseArciveDocument(document: XMLDocument): Story {
   }
   
   function parseExecution(executionElem: Element): Execution {
-    const victim = getAttributeOrError(executionElem, "victim")
+    const victim = getAttribute(executionElem, "victim")
     const nominated: Record<string, number> = {}
     const children = executionElem.children
     for (const child of children) {
