@@ -63,12 +63,16 @@ THE SOFTWARE.
     <Spinner />
   </div>
 {:else}
-  <div class="h-full flex flex-col place-items-center">
-    <div class="bg-black text-sm max-w-[600px] p-6 rounded-md overflow-y-auto" bind:this={scroller}>
-      <StoryElementsView/>
-      {#if $canMoveToNextDay$}
-        <Button color="red" class="mt-4" on:click={() => scene?.moveToNextDay()}>次の日へ</Button>
-      {/if}
+  <div class="h-full flex flex-col">
+    <div class="overflow-y-auto" bind:this={scroller}>
+      <div class="flex place-content-center">
+        <div class="bg-black text-sm max-w-[600px] p-6 rounded-md">
+          <StoryElementsView/>
+          {#if $canMoveToNextDay$}
+            <Button color="red" class="mt-4" on:click={() => scene?.moveToNextDay()}>次の日へ</Button>
+          {/if}
+        </div>
+      </div>
     </div>
   </div>
 {/if}

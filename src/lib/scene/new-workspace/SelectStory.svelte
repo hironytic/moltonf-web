@@ -68,7 +68,7 @@ THE SOFTWARE.
   }
 </script>
 
-<div class="bg-black max-w-[600px] p-10 rounded-md overflow-y-auto">
+<div class="bg-black max-w-[600px] p-10 rounded-md">
   <Button color="dark" outline size="xs" on:click={() => scene?.backFromSelectStoryStep()}>
     <ChevronLeftIcon size="1rem"/> 戻る
   </Button>

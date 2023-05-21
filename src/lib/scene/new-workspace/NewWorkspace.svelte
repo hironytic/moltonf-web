@@ -39,10 +39,14 @@ THE SOFTWARE.
   $: step$ = scene?.step$ ?? readable(undefined)
 </script>
 
-<div class="h-full flex flex-col place-items-center place-content-center">
-  {#if $step$ === NewWorkspaceSteps.SELECT_STORY}
-    <SelectStory/>
-  {:else if $step$ === NewWorkspaceSteps.INPUT_NAME}
-    <InputWorkspaceName/>
-  {/if}
+<div class="h-full flex flex-col place-content-center">
+  <div class="overflow-y-auto">
+    <div class="flex place-content-center">
+      {#if $step$ === NewWorkspaceSteps.SELECT_STORY}
+        <SelectStory/>
+      {:else if $step$ === NewWorkspaceSteps.INPUT_NAME}
+        <InputWorkspaceName/>
+      {/if}
+    </div>
+  </div>
 </div>
