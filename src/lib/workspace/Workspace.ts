@@ -37,8 +37,9 @@ export interface Workspace {
   
   /** The day that has been viewed, or `undefined` if the epilogue is reached */ 
   dayProgress: number | undefined
-  
-  // TODO: other stuff...
+
+  /** Avatar ID of the player character */  
+  playerCharacter: string
   
   /** Last modified date */
   lastModified: Date

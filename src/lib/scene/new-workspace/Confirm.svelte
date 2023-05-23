@@ -1,5 +1,5 @@
 <!--
-InputWorkspaceName.svelte
+Confirm.svelte
 
 Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
 
@@ -23,57 +23,46 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
-  import { getContext, onMount } from "svelte"
+  import { getContext } from "svelte"
   import { AppContext } from "../../../AppContext"
   import { NewWorkspaceScene } from "./NewWorkspaceScene"
-  import HeaderTitle from "../../ui-component/HeaderTitle.svelte"
-  import { Button, Input } from "flowbite-svelte"
   import ChevronLeftIcon from "../../icon/ChevronLeftIcon.svelte"
-  import type { Readable, Writable } from "svelte/store"
-  import { readable, writable } from "svelte/store"
+  import { Button } from "flowbite-svelte"
+  import HeaderTitle from "../../ui-component/HeaderTitle.svelte"
+  import type { Readable } from "svelte/store"
+  import { readable } from "svelte/store"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(NewWorkspaceScene)
   $: scene = $scene$
   
-  let name$: Writable<string>
-  $: name$ = scene?.name$ ?? writable("")
-  
-  let nameInput: HTMLInputElement | undefined = undefined
-
-  let canForward$: Readable<boolean>
-  $: canForward$ = scene?.canForwardFromInputNameStep$ ?? readable(false)
-  
-  onMount(() => {
-    nameInput?.focus()
-  })
+  let name$: Readable<string>
+  $: name$ = scene?.name$ ?? readable("")
 </script>
 
 <div class="overflow-y-auto">
   <div class="flex place-content-center">
     <div class="bg-black max-w-[600px] p-10 rounded-md">
-      <Button color="alternative" size="xs" on:click={() => scene?.backFromInputNameStep()}>
+      <Button color="dark" outline size="xs" on:click={() => scene?.backFromConfirmStep()}>
         <ChevronLeftIcon size="1rem"/> 戻る
       </Button>
-      <HeaderTitle class="mt-4">観戦データの名前</HeaderTitle>
+      <HeaderTitle class="mt-4">観戦データの登録</HeaderTitle>
     
       <div class="text-sm mt-4">
+        <p>観戦データ「{$name$}」を登録します。</p>
+      </div>
+
+      <div class="mt-8 text-center">
+        <Button color="red" on:click={() => scene?.registerNewWorkspace()}>登録してプロローグへ</Button>
+      </div>
+      
+      <div class="text-sm mt-8">
         <p>
-          この観戦データに後で自分が見てわかりやすい名前を付けてください。
+          選択した役職に応じてあなたが着目するキャラクターが選ばれます。
+          選ばれたキャラクターは、1日目の先頭で明らかになります。
+          どのキャラクターになるかを楽しみにしながらプロローグをお読みください。
         </p>
       </div>
-    
-      <form
-        class="flex mt-4 space-x-2"
-        on:submit|preventDefault={() => scene?.forwardFromInputNameStep()}
-      >
-        <div class="grow">
-          <Input required let:props>
-            <input type="text" bind:value={$name$} bind:this={nameInput} {...props}/> 
-          </Input>
-        </div>
-        <Button class="shrink-0" type="submit" color="red" disabled={!$canForward$}>次へ</Button>
-      </form>
     </div>
   </div>
 </div>
