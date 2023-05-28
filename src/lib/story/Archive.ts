@@ -170,6 +170,7 @@ function parseArciveDocument(document: XMLDocument): Story {
   function parseVillage(villageElem: Element): Story {
     const villageFullName = getAttributeOrError(villageElem, "fullName")
     const baseURI = getAttributeOrError(villageElem, "xml:base")
+    const landId = getAttributeOrError(villageElem, "landId")
     const graveIconURI = getAttributeOrError(villageElem, "graveIconURI")
   
     const avatarListElem = getFirstChildElementOrError(villageElem, "avatarList")
@@ -182,6 +183,7 @@ function parseArciveDocument(document: XMLDocument): Story {
       version: 1,
       villageFullName,
       baseURI,
+      landId,
       graveIconURI,
       periods,
       avatarList,

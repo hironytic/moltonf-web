@@ -34,6 +34,7 @@ import { createFaceIconUrlMap } from "./FaceIconUtils"
 import type { Period } from "../../story/Period"
 import { delay, runDetached } from "../../Utils"
 import { type CharacterMap, createCharacterMap } from "../../story/CharacterMap"
+import { currentStoryElements } from "./CurrentStoryElements"
 
 const PROLOGUE_NAME = "プロローグ"
 const EPILOGUE_NAME = "エピローグ"
@@ -76,20 +77,6 @@ export class WatchingScene extends Scene {
       }))
     })
     
-    this.currentStoryElements$ = derived([this._story$, this._currentDay$], ([story, currentDay]) => {
-      if (story === undefined) {
-        return []
-      }
-      
-      const period = story.periods[currentDay]
-      if (period === undefined) {
-        return []
-      }
-      
-      // TODO: filter it
-      return period.elements
-    })
-    
     this.characterMap$ = derived(this._story$, story => {
       if (story === undefined) {
         return new Map()
@@ -110,7 +97,12 @@ export class WatchingScene extends Scene {
       }
       return (currentDay < story.periods.length - 1)
     })
-    
+
+    this.currentStoryElements$ = derived([this._story$, this.characterMap$, this._dayProgress$, this._currentDay$],
+      ([story, characterMap, dayProgress, currentDay,]) => {
+      return currentStoryElements(story, characterMap, workspace.playerCharacter, dayProgress, currentDay)
+    })
+
     void this.loadStory()
   }
 
@@ -179,10 +171,19 @@ export class WatchingScene extends Scene {
     }
   }
 
-  readonly currentStoryElements$: Readable<StoryElement[]>
+  readonly currentStoryElements$: Readable<WatchingElement[]>
 }
 
 export interface WatchableDay {
   day: number
   text: string
 }
+
+export const MoltonfMessageType = "moltonf"
+export interface MoltonfMessage {
+  readonly elementType: typeof MoltonfMessageType
+  readonly elementId: string
+  readonly messageLines: string[]
+}
+
+export type WatchingElement = StoryElement | MoltonfMessage

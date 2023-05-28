@@ -30,7 +30,7 @@ THE SOFTWARE.
   import type { Story } from "../../story/Story"
   import { readable } from "svelte/store"
   import { Button, Spinner } from "flowbite-svelte"
-  import StoryElementsView from "./StoryElementsView.svelte"
+  import StoryElementsView from "./WatchingElementsView.svelte"
   
   const unreactives = {
     lastCurrentDay: -1,

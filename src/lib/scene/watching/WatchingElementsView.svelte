@@ -1,5 +1,5 @@
 <!--
-StoryElementsView.svelte
+WatchingElementsView.svelte
 
 Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
 
@@ -25,21 +25,22 @@ THE SOFTWARE.
 <script lang="ts">
   import { getContext } from "svelte"
   import { AppContext } from "../../../AppContext"
-  import { WatchingScene } from "./WatchingScene"
+  import { MoltonfMessageType, WatchingScene } from "./WatchingScene"
   import { readable, type Readable } from "svelte/store"
-  import type { StoryElement } from "../../story/StoryElement"
   import { StoryElementTypes } from "../../story/StoryElement"
   import StoryEventView from "./StoryEventView.svelte"
   import TalkView from "./TalkView.svelte"
   import { EventNames } from "../../story/StoryEventName"
   import { TalkTypes } from "../../story/TalkType"
   import type { CharacterMap } from "../../story/CharacterMap"
+  import type { WatchingElement } from "./WatchingScene.js"
+  import MoltonfMessageView from "./MoltonfMessageView.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(WatchingScene)
   $: scene = $scene$
 
-  let currentStoryElements$: Readable<StoryElement[]>
+  let currentStoryElements$: Readable<WatchingElement[]>
   $: currentStoryElements$ = scene?.currentStoryElements$ ?? readable([])
   
   let characterMap$: Readable<CharacterMap>
@@ -64,11 +65,13 @@ THE SOFTWARE.
           xname: element.xname,
           time: element.time,
           talkNo: undefined,
-          messageLines: element.messageLines,
+          messageLines: element.messageLines
         }} characterMap={$characterMap$} faceIconUrlMap={$faceIconUrlMap$}/>
       {:else}
         <StoryEventView storyEvent={element}/>
       {/if}
+    {:else if element.elementType === MoltonfMessageType}
+      <MoltonfMessageView message={element}/>
     {/if}
   </div>
 {/each}
