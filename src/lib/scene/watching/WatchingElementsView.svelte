@@ -40,8 +40,8 @@ THE SOFTWARE.
   const scene$ = appContext.sceneAs$(WatchingScene)
   $: scene = $scene$
 
-  let currentStoryElements$: Readable<WatchingElement[]>
-  $: currentStoryElements$ = scene?.currentStoryElements$ ?? readable([])
+  let currentElements$: Readable<WatchingElement[]>
+  $: currentElements$ = scene?.currentElements$ ?? readable([])
   
   let characterMap$: Readable<CharacterMap>
   $: characterMap$ = scene?.characterMap$ ?? readable(new Map())
@@ -50,7 +50,7 @@ THE SOFTWARE.
   $: faceIconUrlMap$ = scene?.faceIconUrlMap$ ?? readable(new Map())
 </script>
 
-{#each $currentStoryElements$ as element (element.elementId)}
+{#each $currentElements$ as element (element.elementId)}
   <div class="mb-4">
     {#if element.elementType === StoryElementTypes.TALK}
       <TalkView talk={element} characterMap={$characterMap$} faceIconUrlMap={$faceIconUrlMap$}/>

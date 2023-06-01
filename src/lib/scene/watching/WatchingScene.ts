@@ -34,7 +34,7 @@ import { createFaceIconUrlMap } from "./FaceIconUtils"
 import type { Period } from "../../story/Period"
 import { delay, runDetached } from "../../Utils"
 import { type CharacterMap, createCharacterMap } from "../../story/CharacterMap"
-import { currentStoryElements } from "./CurrentStoryElements"
+import { currentElements } from "./CurrentElements"
 
 const PROLOGUE_NAME = "プロローグ"
 const EPILOGUE_NAME = "エピローグ"
@@ -98,9 +98,9 @@ export class WatchingScene extends Scene {
       return (currentDay < story.periods.length - 1)
     })
 
-    this.currentStoryElements$ = derived([this._story$, this.characterMap$, this._dayProgress$, this._currentDay$],
+    this.currentElements$ = derived([this._story$, this.characterMap$, this._dayProgress$, this._currentDay$],
       ([story, characterMap, dayProgress, currentDay,]) => {
-      return currentStoryElements(story, characterMap, workspace.playerCharacter, dayProgress, currentDay)
+      return currentElements(story, characterMap, workspace.playerCharacter, dayProgress, currentDay)
     })
 
     void this.loadStory()
@@ -171,7 +171,7 @@ export class WatchingScene extends Scene {
     }
   }
 
-  readonly currentStoryElements$: Readable<WatchingElement[]>
+  readonly currentElements$: Readable<WatchingElement[]>
 }
 
 export interface WatchableDay {

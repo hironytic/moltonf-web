@@ -1,5 +1,5 @@
 //
-// CurrentStoryElements.ts
+// CurrentElements.ts
 //
 // Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
 //
@@ -34,7 +34,7 @@ import type { MoltonfMessage, WatchingElement } from "./WatchingScene"
 import { MoltonfMessageType } from "./WatchingScene"
 import type { Guard } from "../../story/StoryEvent"
 
-export function currentStoryElements(
+export function currentElements(
   story: Story | undefined,
   characterMap: CharacterMap,
   playerCharacter: string,
@@ -123,7 +123,6 @@ function filterStoryElement(story: Story, characterMap: CharacterMap, dayProgres
         default:
           return [element]
       }
-      break
 
     default:
       return [element]
