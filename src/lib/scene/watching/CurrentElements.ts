@@ -32,7 +32,7 @@ import { Roles } from "../../story/Role"
 import type { Talk } from "../../story/Talk"
 import type { MoltonfMessage, WatchingElement } from "./WatchingScene"
 import { MoltonfMessageType } from "./WatchingScene"
-import type { Guard } from "../../story/StoryEvent"
+import type { Assault } from "../../story/StoryEvent"
 
 export function currentElements(
   story: Story | undefined,
@@ -110,14 +110,16 @@ function filterStoryElement(story: Story, characterMap: CharacterMap, dayProgres
             createJudgeMessage(element.elementId, story, currentDay, characterMap, character, element.target)
           )
         case EventNames.GUARD:
-          return filter(isGuardVisible(character))
+          return filter(
+            isGuardVisible(character),
+            createGuardedMessage(element.elementId, story, currentDay, characterMap, character, element.target)
+          )
         case EventNames.COUNTING2:
           return filter(isCounting2Visible())
         case EventNames.ASSAULT:
         {
           return filter(
             isAssaultVisible(character),
-            createGuardedMessage(element.elementId, story, currentDay, characterMap, character, element.target)
           )
         }
         default:
@@ -251,17 +253,17 @@ function createGuardedMessage(idBase: string, story: Story, currentDay: number, 
     return undefined
   }
   
-  const guard = period.elements.find((it): it is Guard => {
+  const assault = period.elements.find((it): it is Assault => {
     return it.elementType === StoryElementTypes.STORY_EVENT
-      && it.eventName === EventNames.GUARD
-      && it.byWhom === character.avatar.avatarId
+      && it.eventName === EventNames.ASSAULT
   })
-  if (guard === undefined) {
+  
+  if (assault === undefined) {
     return undefined
   }
   
-  if (guard.target === targetId) {
-    const guarded = characterMap.get(guard.target)
+  if (assault.target === targetId) {
+    const guarded = characterMap.get(targetId)
     if (guarded !== undefined) {
       const messageLines = [
         `${guarded.avatar.fullName} を人狼の襲撃から守った。`,
