@@ -59,7 +59,7 @@ THE SOFTWARE.
         <p>人狼側の役職を選んでください。人狼側の勝利条件は残る村人の数が人狼と同数以下になることです。</p>
       </div>
 
-      <OptionChooser class="mt-4" options={$roleOptions$} bind:value={$role$} let:option>
+      <OptionChooser class="mt-4" options={$roleOptions$} bind:value={$role$} on:choose={() => scene?.forwardFromSelectRoleOfWolfStep()} let:option>
         {#if option === WolfRoleOptions.WOLF}
           <p class="text-lg font-bold">人狼</p>
           <p class="mt-2 text-sm">正体を悟られないようにしつつ村人を襲撃する視点で観戦します。</p>

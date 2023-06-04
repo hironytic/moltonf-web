@@ -59,7 +59,7 @@ THE SOFTWARE.
         <p>村人側の役職を選んでください。村人側の勝利条件は全ての人狼を処刑することです。</p>
       </div>
       
-      <OptionChooser class="mt-4" options={$roleOptions$} bind:value={$role$} let:option>
+      <OptionChooser class="mt-4" options={$roleOptions$} bind:value={$role$} on:choose={() => scene?.forwardFromSelectRoleOfVillagerStep()} let:option>
         {#if option === VillagerRoleOptions.INNOCENT}
           <p class="text-lg font-bold">ただの村人</p>
           <p class="mt-2 text-sm">特別な能力を持たない村人の視点で観戦します。</p>

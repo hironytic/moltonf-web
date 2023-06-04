@@ -24,7 +24,10 @@ THE SOFTWARE.
 
 <script lang="ts">
   import classNames from "classnames"
+  import { createEventDispatcher } from "svelte"
 
+  const dispatch = createEventDispatcher()
+  
   export let options: string[] = []
   export let value: string | undefined = undefined
 
@@ -36,6 +39,11 @@ THE SOFTWARE.
     "w-full flex flex-col space-y-2",
     className ?? ""
   )
+  
+  function onItemClicked(option: string) {
+    value = option
+    dispatch("choose", option)
+  }
 </script>
 
 <div class={clsNames}>
@@ -47,7 +55,7 @@ THE SOFTWARE.
       {"text-gray-400 border-gray-700 hover:text-gray-400": option !== value},
       {"text-red-500 border-red-600": option === value},
     )}
-    <button class={buttonClass} on:click={() => { value = option }}>
+    <button class={buttonClass} on:click={() => void onItemClicked(option)}>
       <slot {option}/>
     </button>
   {/each}

@@ -56,11 +56,11 @@ THE SOFTWARE.
       <HeaderTitle class="mt-4">どの視点で観戦しますか？</HeaderTitle>
     
       <div class="text-sm mt-4">
-        <p>1日目以降はエピローグになるまで、選んだ視点に合わせて表示されるものが変わります。例えば、人狼以外の視点では人狼たちのささやきは表示されません。</p>
-        <p>村人、人狼を選択した場合は、次の画面で続けて詳細を選択できます。</p>
+        <p>エピローグになるまでは、選んだ視点に合わせて表示されるものが変わります。例えば、村人の視点では人狼たちのささやきは表示されません。</p>
+        <p>村人、人狼を選択した場合は、続けて次の画面で詳細を選択できます。</p>
       </div>
       
-      <OptionChooser class="mt-4" options={$teamOptions$} bind:value={$team$} let:option>
+      <OptionChooser class="mt-4" options={$teamOptions$} bind:value={$team$} on:choose={() => scene?.forwardFromSelectTeamStep()} let:option>
         {#if option === TeamOptions.VILLAGER}
           <p class="text-lg font-bold">村人</p>
           <p class="mt-2 text-sm">村人側の視点で観戦します。</p>
