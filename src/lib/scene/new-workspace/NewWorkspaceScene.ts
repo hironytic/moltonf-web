@@ -358,14 +358,17 @@ export class NewWorkspaceScene extends Scene {
   }
   
   private shuffleCharacters(characterMap: CharacterMap): Character[] {
-    const characters = Array.from(characterMap.values())
-    const shuffledCharacters: Character[] = []
-    while (characters.length > 0) {
-      const index = Math.floor(Math.random() * characters.length)
-      shuffledCharacters.push(characters[index] as Character)
-      characters.splice(index, 1)
+    const characters = Array.from(characterMap.values()).filter(it => it.avatar.avatarId !== "gerd")
+    for (let i = characters.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      const chi = characters[i]
+      const chj = characters[j]
+      if (chi !== undefined && chj !== undefined) {
+        characters[i] = chj
+        characters[j] = chi
+      }
     }
-    return shuffledCharacters
+    return characters
   }
   
   //#endregion
