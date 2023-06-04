@@ -37,6 +37,9 @@ export interface Story {
   /** Base URI of this story */
   readonly baseURI: string
 
+  /** Land identifier */
+  readonly landId: string
+  
   /** URI string which specifies a grave icon image */
   readonly graveIconURI: string
 

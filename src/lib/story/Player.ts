@@ -22,10 +22,12 @@
 // THE SOFTWARE.
 //
 
+import type { Role } from "./Role"
+
 export interface Player {
   readonly playerId: string
   readonly avatarId: string
   readonly survive: boolean
-  readonly role: string
+  readonly role: Role
   readonly uri?: string
 }

@@ -1,5 +1,5 @@
 //
-// Workspace.ts
+// Role.ts
 //
 // Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
 //
@@ -22,25 +22,15 @@
 // THE SOFTWARE.
 //
 
-export interface Workspace {
-  /** Workspace ID */
-  id: number
-  
-  /** Name of this workspace */
-  name: string
-  
-  /** ID of story to which this workspace refers */
-  storyId: number
-  
-  /** Current day */
-  currentDay: number
-  
-  /** The day that has been viewed, or `undefined` if the epilogue is reached */ 
-  dayProgress: number | undefined
+export const Roles = {
+  INNOCENT: "innocent",
+  WOLF: "wolf",
+  SEER: "seer",
+  SHAMAN: "shaman",
+  MADMAN: "madman",
+  HUNTER: "hunter",
+  FRATER: "frater",
+  HAMSTER: "hamster",
+} as const
 
-  /** Avatar ID of the player character */  
-  playerCharacter: string
-  
-  /** Last modified date */
-  lastModified: Date
-}
+export type Role = typeof Roles[keyof typeof Roles]

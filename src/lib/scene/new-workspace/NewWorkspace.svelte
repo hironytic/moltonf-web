@@ -30,6 +30,10 @@ THE SOFTWARE.
   import { readable } from "svelte/store"
   import SelectStory from "./SelectStory.svelte"
   import InputWorkspaceName from "./InputWorkspaceName.svelte"
+  import SelectTeam from "./SelectTeam.svelte"
+  import SelectRoleOfVillager from "./SelectRoleOfVillager.svelte"
+  import SelectRoleOfWolf from "./SelectRoleOfWolf.svelte"
+  import Confirm from "./Confirm.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(NewWorkspaceScene)
@@ -39,10 +43,18 @@ THE SOFTWARE.
   $: step$ = scene?.step$ ?? readable(undefined)
 </script>
 
-<div class="h-full flex flex-col place-items-center place-content-center">
+<div class="h-full flex flex-col place-content-center">
   {#if $step$ === NewWorkspaceSteps.SELECT_STORY}
     <SelectStory/>
+  {:else if $step$ === NewWorkspaceSteps.SELECT_TEAM}
+    <SelectTeam/>
+  {:else if $step$ === NewWorkspaceSteps.SELECT_ROLE_OF_VILLAGER}
+    <SelectRoleOfVillager/>
+  {:else if $step$ === NewWorkspaceSteps.SELECT_ROLE_OF_WOLF}
+    <SelectRoleOfWolf/>
   {:else if $step$ === NewWorkspaceSteps.INPUT_NAME}
     <InputWorkspaceName/>
+  {:else if $step$ === NewWorkspaceSteps.CONFIRM}
+    <Confirm/>
   {/if}
 </div>

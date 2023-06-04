@@ -30,7 +30,7 @@ THE SOFTWARE.
   import type { Story } from "../../story/Story"
   import { readable } from "svelte/store"
   import { Button, Spinner } from "flowbite-svelte"
-  import StoryElementsView from "./StoryElementsView.svelte"
+  import WatchingElementsView from "./WatchingElementsView.svelte"
   
   const unreactives = {
     lastCurrentDay: -1,
@@ -63,12 +63,16 @@ THE SOFTWARE.
     <Spinner />
   </div>
 {:else}
-  <div class="h-full flex flex-col place-items-center">
-    <div class="bg-black text-sm max-w-[600px] p-6 rounded-md overflow-y-auto" bind:this={scroller}>
-      <StoryElementsView/>
-      {#if $canMoveToNextDay$}
-        <Button color="red" class="mt-4" on:click={() => scene?.moveToNextDay()}>次の日へ</Button>
-      {/if}
+  <div class="h-full flex flex-col">
+    <div class="overflow-y-auto" bind:this={scroller}>
+      <div class="flex place-content-center">
+        <div class="bg-black text-sm max-w-[600px] p-6 rounded-md">
+          <WatchingElementsView/>
+          {#if $canMoveToNextDay$}
+            <Button color="red" class="mt-4" on:click={() => scene?.moveToNextDay()}>次の日へ</Button>
+          {/if}
+        </div>
+      </div>
     </div>
   </div>
 {/if}

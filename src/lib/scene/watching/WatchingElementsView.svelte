@@ -1,5 +1,5 @@
 <!--
-StoryElementsView.svelte
+WatchingElementsView.svelte
 
 Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
 
@@ -25,34 +25,35 @@ THE SOFTWARE.
 <script lang="ts">
   import { getContext } from "svelte"
   import { AppContext } from "../../../AppContext"
-  import { WatchingScene } from "./WatchingScene"
+  import { MoltonfMessageType, WatchingScene } from "./WatchingScene"
   import { readable, type Readable } from "svelte/store"
-  import type { StoryElement } from "../../story/StoryElement"
   import { StoryElementTypes } from "../../story/StoryElement"
   import StoryEventView from "./StoryEventView.svelte"
   import TalkView from "./TalkView.svelte"
   import { EventNames } from "../../story/StoryEventName"
   import { TalkTypes } from "../../story/TalkType"
-  import type { Avatar } from "../../story/Avatar"
+  import type { CharacterMap } from "../../story/CharacterMap"
+  import type { WatchingElement } from "./WatchingScene.js"
+  import MoltonfMessageView from "./MoltonfMessageView.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(WatchingScene)
   $: scene = $scene$
 
-  let currentStoryElements$: Readable<StoryElement[]>
-  $: currentStoryElements$ = scene?.currentStoryElements$ ?? readable([])
+  let currentElements$: Readable<WatchingElement[]>
+  $: currentElements$ = scene?.currentElements$ ?? readable([])
   
-  let avatarMap$: Readable<Map<string, Avatar>>
-  $: avatarMap$ = scene?.avatarMap$ ?? readable(new Map())
+  let characterMap$: Readable<CharacterMap>
+  $: characterMap$ = scene?.characterMap$ ?? readable(new Map())
   
   let faceIconUrlMap$: Readable<Map<string | symbol, string>>
   $: faceIconUrlMap$ = scene?.faceIconUrlMap$ ?? readable(new Map())
 </script>
 
-{#each $currentStoryElements$ as element (element.elementId)}
+{#each $currentElements$ as element (element.elementId)}
   <div class="mb-4">
     {#if element.elementType === StoryElementTypes.TALK}
-      <TalkView talk={element} avatarMap={$avatarMap$} faceIconUrlMap={$faceIconUrlMap$}/>
+      <TalkView talk={element} characterMap={$characterMap$} faceIconUrlMap={$faceIconUrlMap$}/>
     {:else if element.elementType === StoryElementTypes.STORY_EVENT}
       {#if element.eventName === EventNames.ASSAULT}
         <!-- Handle special case: ASSAULT is displayed as Wolf's Talk -->
@@ -64,11 +65,13 @@ THE SOFTWARE.
           xname: element.xname,
           time: element.time,
           talkNo: undefined,
-          messageLines: element.messageLines,
-        }} avatarMap={$avatarMap$} faceIconUrlMap={$faceIconUrlMap$}/>
+          messageLines: element.messageLines
+        }} characterMap={$characterMap$} faceIconUrlMap={$faceIconUrlMap$}/>
       {:else}
         <StoryEventView storyEvent={element}/>
       {/if}
+    {:else if element.elementType === MoltonfMessageType}
+      <MoltonfMessageView message={element}/>
     {/if}
   </div>
 {/each}

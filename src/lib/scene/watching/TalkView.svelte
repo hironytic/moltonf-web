@@ -31,6 +31,7 @@ THE SOFTWARE.
   import SpeechTail from "./SpeechTail.svelte"
   import ThoughtTail from "./ThoughtTail.svelte"
   import { graveIcon } from "./FaceIconUtils"
+  import type { CharacterMap } from "../../story/CharacterMap.js"
 
   export let talk: Talk = {
     elementId: "",
@@ -43,11 +44,11 @@ THE SOFTWARE.
     messageLines: []
   }
   
-  export let avatarMap: Map<string, Avatar> = new Map()
+  export let characterMap: CharacterMap = new Map()
   export let faceIconUrlMap: Map<string | symbol, string> = new Map()
   
   let avatar: Avatar | undefined
-  $: avatar = avatarMap.get(talk.avatarId)
+  $: avatar = characterMap.get(talk.avatarId)?.avatar
   
   let faceIconUrl: string | undefined
   $: {
