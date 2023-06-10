@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 <script lang="ts">
   import { AppContext } from "./AppContext"
-  import { setContext } from "svelte"
+  import { onDestroy, setContext } from "svelte"
   import SelectWorkspace from "./lib/scene/select-workspace/SelectWorkspace.svelte"
   import NewWorkspace from "./lib/scene/new-workspace/NewWorkspace.svelte"
   import Watching from "./lib/scene/watching/Watching.svelte"
@@ -33,9 +33,16 @@ THE SOFTWARE.
   import { WatchingScene } from "./lib/scene/watching/WatchingScene"
   import MessageBox from "./lib/MessageBox.svelte"
   import NavBar from "./lib/NavBar.svelte"
+  import { HashHistory } from "./History"
+  import { InvalidScene } from "./lib/scene/invalid/InvalidScene"
+  import Invalid from "./lib/scene/invalid/Invalid.svelte"
 
-  const appContext = new AppContext()
+  const appContext = new AppContext(new HashHistory())
   setContext(AppContext.Key, appContext)
+
+  onDestroy(() => {
+    appContext.destroy()
+  })
 
   const scene$ = appContext.scene$
 </script>
@@ -50,6 +57,8 @@ THE SOFTWARE.
         <NewWorkspace/>
       {:else if $scene$ instanceof WatchingScene}
         <Watching/>
+      {:else if $scene$ instanceof InvalidScene}
+        <Invalid/>
       {/if}
     </div>
   </div>

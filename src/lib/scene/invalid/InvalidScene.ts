@@ -1,5 +1,5 @@
 //
-// SelectWorkspaceScene.ts
+// InvalidScene.ts
 //
 // Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
 //
@@ -22,33 +22,13 @@
 // THE SOFTWARE.
 //
 
-import type { AppContext } from "../../../AppContext"
 import { Scene } from "../../../Scene"
-import { type Readable, writable } from "svelte/store"
-import type { Workspace } from "../../workspace/Workspace"
-import { HistoryLocation } from "../../../History"
+import { AppContext } from "../../../AppContext"
 
-export class SelectWorkspaceScene extends Scene {
-  constructor(appContext: AppContext) {
+export class InvalidScene extends Scene {
+  readonly message: string
+  constructor(appContext: AppContext, message: string) {
     super(appContext)
-    void this.reloadWorkspaces()
-  }
-  
-  private _workspaces$ = writable<Workspace[] | undefined>(undefined)
-  get workspaces$(): Readable<Workspace[] | undefined> { return this._workspaces$ }
-  
-  private async reloadWorkspaces(): Promise<void> {
-    const workspaceStore = await this.appContext.getWorkspaceStore()
-    this._workspaces$.set(await workspaceStore.getWorkspaces())
-  }
-  
-  createNewWorkspace() {
-    this.appContext.history.navigate(HistoryLocation.fromPath("/new"), false)
-  }
-  
-  async deleteWorkspace(workspace: Workspace) {
-    const workspaceStore = await this.appContext.getWorkspaceStore()
-    await workspaceStore.remove(workspace)
-    this._workspaces$.set(await workspaceStore.getWorkspaces())
+    this.message = message
   }
 }

@@ -1,5 +1,5 @@
 <!--
-NavBar.svelte
+Invalid.svelte
 
 Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
 
@@ -23,29 +23,17 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
-  import { AppContext } from "../AppContext"
   import { getContext } from "svelte"
-  import { WatchingScene } from "./scene/watching/WatchingScene"
-  import DayChanger from "./scene/watching/DayChanger.svelte"
-  import HistoryLink from "./ui-component/HistoryLink.svelte"
+  import { AppContext } from "../../../AppContext"
+  import { InvalidScene } from "./InvalidScene"
 
   const appContext = getContext<AppContext>(AppContext.Key)
-  const watchingScene$ = appContext.sceneAs$(WatchingScene)
+  const scene$ = appContext.sceneAs$(InvalidScene)
+  $: scene = $scene$
   
-  let title: string | undefined
-  $: title = $watchingScene$?.workspace.name
+  let message: string
+  $: message = scene?.message ?? ""
 </script>
 
-<div class="px-4 bg-black border-b-2 border-b-gray-900 flex items-center h-[6rem] shrink-0">
-  <div class="flex flex-col space-y-1">
-    <HistoryLink to="/" let:href let:onClick>
-      <a href={href} on:click={onClick}><p class="text-lg font-medium">Moltonf</p></a>
-    </HistoryLink>
-  </div>
-  <div class="ml-4 grow flex flex-col items-start space-y-1">
-  {#if $watchingScene$ !== undefined}
-      <p class="text-lg font-medium">{title ?? ""}</p>
-      <DayChanger/>
-  {/if}
-  </div>
-</div>
+<!-- TODO: ちゃんとしたデザインにする -->
+<span>{message}</span>

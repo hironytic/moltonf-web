@@ -1,5 +1,5 @@
 <!--
-NavBar.svelte
+HistoryLink.svelte
 
 Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
 
@@ -23,29 +23,36 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
-  import { AppContext } from "../AppContext"
+  import { HashHistory, HistoryLocation } from "../../History"
   import { getContext } from "svelte"
-  import { WatchingScene } from "./scene/watching/WatchingScene"
-  import DayChanger from "./scene/watching/DayChanger.svelte"
-  import HistoryLink from "./ui-component/HistoryLink.svelte"
+  import { AppContext } from "../../AppContext"
 
   const appContext = getContext<AppContext>(AppContext.Key)
-  const watchingScene$ = appContext.sceneAs$(WatchingScene)
+  const history = appContext.history
+  const isBrowserHistory = (history instanceof HashHistory)
   
-  let title: string | undefined
-  $: title = $watchingScene$?.workspace.name
+  export let to = "/" as string | HistoryLocation
+  export let replace = false
+  
+  let location: HistoryLocation
+  $: location = (to instanceof HistoryLocation) ? to : HistoryLocation.fromPath(to)
+  
+  let href: string
+  $: href = (isBrowserHistory) ? history.getHref(location) : ""
+
+  function onClick(ev: MouseEvent) {
+    if (isBrowserHistory) {
+      // When clicked with modifier keys, leave it to the browser (because user may want to open in a separate tab or window)
+      // When clicked with non-main mouse button, leave it to the browser, too.
+      if (!(ev.metaKey || ev.altKey || ev.ctrlKey || ev.shiftKey) && ev.button === 0) {
+        ev.preventDefault()
+        history.navigate(location, replace)
+      }
+    } else {
+      ev.preventDefault()
+      history.navigate(location, replace)
+    }
+  }
 </script>
 
-<div class="px-4 bg-black border-b-2 border-b-gray-900 flex items-center h-[6rem] shrink-0">
-  <div class="flex flex-col space-y-1">
-    <HistoryLink to="/" let:href let:onClick>
-      <a href={href} on:click={onClick}><p class="text-lg font-medium">Moltonf</p></a>
-    </HistoryLink>
-  </div>
-  <div class="ml-4 grow flex flex-col items-start space-y-1">
-  {#if $watchingScene$ !== undefined}
-      <p class="text-lg font-medium">{title ?? ""}</p>
-      <DayChanger/>
-  {/if}
-  </div>
-</div>
+<slot {href} {onClick}/>
