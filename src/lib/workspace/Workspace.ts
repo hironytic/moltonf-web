@@ -24,7 +24,7 @@
 
 export interface Workspace {
   /** Workspace ID */
-  id: number
+  id: string
   
   /** Name of this workspace */
   name: string
