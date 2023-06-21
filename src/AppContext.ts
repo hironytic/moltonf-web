@@ -31,12 +31,13 @@ import { derived, writable } from "svelte/store"
 import type { Scene } from "./Scene"
 import { SelectWorkspaceScene } from "./lib/scene/select-workspace/SelectWorkspaceScene"
 import type { ExtendedMessageBoxItem, MessageBoxItem } from "./lib/MessageBoxItem"
-import type { History, HistoryLocation } from "./History"
+import type { History } from "./History"
+import { HistoryLocation } from "./History"
 import { currentValueWritable } from "./lib/CurrentValueStore"
 import { NewWorkspaceScene } from "./lib/scene/new-workspace/NewWorkspaceScene"
 import { WatchingScene } from "./lib/scene/watching/WatchingScene"
 import { InvalidScene } from "./lib/scene/invalid/InvalidScene"
-import { runDetached, unusedParameter } from "./lib/Utils"
+import { runDetached } from "./lib/Utils"
 
 export class AppContext {
   static readonly Key = Symbol()
@@ -70,7 +71,7 @@ export class AppContext {
   
   private changeSceneByLocation(location: HistoryLocation) {
     const currentScene = this._scene$.currentValue
-    const [first, second, ...remaining] = location.components
+    const [first, second] = location.components
     if (first !== "/") {
       // Invalid
       this._scene$.set(new InvalidScene(this, "Not Found"))
@@ -89,8 +90,7 @@ export class AppContext {
         // Watching
         const workspaceId = second
         if (currentScene instanceof WatchingScene && currentScene.workspace.id === workspaceId) {
-          // TODO: currentScene.updateLocation(remaining)
-          unusedParameter(remaining)
+          currentScene.updateLocation(location)
         } else {
           runDetached(async () => {
             const workspaceStore = await this.getWorkspaceStore()
@@ -98,7 +98,7 @@ export class AppContext {
             if (workspace === undefined) {
               this._scene$.set(new InvalidScene(this, "観戦データが見つかりません。"))
             } else {
-              this._scene$.set(new WatchingScene(this, workspace))
+              this._scene$.set(new WatchingScene(this, workspace, location))
             }
           })
         }

@@ -28,6 +28,7 @@ THE SOFTWARE.
   import { AppContext } from "../../../AppContext"
   import { type WatchableDay, WatchingScene } from "./WatchingScene"
   import { type Readable, readable } from "svelte/store"
+  import HistoryLink from "../../ui-component/HistoryLink.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(WatchingScene)
@@ -40,10 +41,14 @@ THE SOFTWARE.
   $: currentDay$ = scene?.currentDay$ ?? readable(0)
 </script>
 
-<ButtonGroup class="overflow-x-auto">
-  {#each $watchableDays$ as wday}
-    <Button size="xs" color="red" class="shrink-0" on:click={() => scene?.changeCurrentDay(wday.day)} outline={wday.day !== $currentDay$}>
-      {wday.text}
-    </Button>
-  {/each}
-</ButtonGroup>
+{#if scene !== undefined}
+  <ButtonGroup class="overflow-x-auto">
+    {#each $watchableDays$ as wday}
+      <HistoryLink to={scene.getLocation(wday.day)} let:href let:onClick>
+        <Button size="xs" color="red" class="shrink-0" href={href} on:click={onClick} outline={wday.day !== $currentDay$}>
+          {wday.text}
+        </Button>
+      </HistoryLink>
+    {/each}
+  </ButtonGroup>
+{/if}

@@ -25,16 +25,11 @@ THE SOFTWARE.
 <script lang="ts">
   import { getContext } from "svelte"
   import { AppContext } from "../../../AppContext"
-  import { MoltonfMessageType, WatchingScene } from "./WatchingScene"
+  import { WatchingScene } from "./WatchingScene"
   import { readable, type Readable } from "svelte/store"
-  import { StoryElementTypes } from "../../story/StoryElement"
-  import StoryEventView from "./StoryEventView.svelte"
-  import TalkView from "./TalkView.svelte"
-  import { EventNames } from "../../story/StoryEventName"
-  import { TalkTypes } from "../../story/TalkType"
   import type { CharacterMap } from "../../story/CharacterMap"
   import type { WatchingElement } from "./WatchingScene.js"
-  import MoltonfMessageView from "./MoltonfMessageView.svelte"
+  import WatchingElementView from "./WatchingElementView.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(WatchingScene)
@@ -51,27 +46,5 @@ THE SOFTWARE.
 </script>
 
 {#each $currentElements$ as element (element.elementId)}
-  <div class="mb-4">
-    {#if element.elementType === StoryElementTypes.TALK}
-      <TalkView talk={element} characterMap={$characterMap$} faceIconUrlMap={$faceIconUrlMap$}/>
-    {:else if element.elementType === StoryElementTypes.STORY_EVENT}
-      {#if element.eventName === EventNames.ASSAULT}
-        <!-- Handle special case: ASSAULT is displayed as Wolf's Talk -->
-        <TalkView talk={{
-          elementId: element.elementId,
-          elementType: StoryElementTypes.TALK,
-          talkType: TalkTypes.WOLF,
-          avatarId: element.byWhom,
-          xname: element.xname,
-          time: element.time,
-          talkNo: undefined,
-          messageLines: element.messageLines
-        }} characterMap={$characterMap$} faceIconUrlMap={$faceIconUrlMap$}/>
-      {:else}
-        <StoryEventView storyEvent={element}/>
-      {/if}
-    {:else if element.elementType === MoltonfMessageType}
-      <MoltonfMessageView message={element}/>
-    {/if}
-  </div>
+  <WatchingElementView element={element} characterMap={$characterMap$} faceIconUrlMap={$faceIconUrlMap$}/>
 {/each}
