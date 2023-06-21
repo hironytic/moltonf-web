@@ -50,14 +50,6 @@ THE SOFTWARE.
   
   let scroller = undefined as HTMLDivElement | undefined
   
-  function getElementIdByScrollPosition(): string | undefined {
-    if (scroller === undefined) {
-      return undefined
-    }
-    const yPosition = scroller.getBoundingClientRect().top
-    return watchingContext.getElementIdByYPosition(yPosition)
-  }
-  
   let currentDay$: Readable<number>
   $: currentDay$ = scene?.currentDay$ ?? readable(-1)
   let currentDay: number

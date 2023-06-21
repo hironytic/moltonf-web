@@ -35,23 +35,6 @@ export class WatchingContext {
     this._elementMap.delete(id)
   }
 
-  getElementIdByYPosition(yPosition: number): string | undefined {
-    let result: string | undefined = undefined
-    let maxTop = Number.NEGATIVE_INFINITY
-    
-    for (const [id, element] of this._elementMap.entries()) {
-      const rect = element.getBoundingClientRect()
-      if (rect.top <= yPosition) {
-        const top = rect.top
-        if (top > maxTop) {
-          result = id
-          maxTop = top
-        }
-      }
-    }
-    return result
-  }
-  
   scrollToElement(id: string) {
     const elem = this._elementMap.get(id)
     if (elem !== undefined) {
