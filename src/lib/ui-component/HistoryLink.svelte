@@ -1,5 +1,5 @@
 <!--
-DayChanger.svelte
+HistoryLink.svelte
 
 Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
 
@@ -23,32 +23,36 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
-  import { Button, ButtonGroup } from "flowbite-svelte"
+  import { HashHistory, HistoryLocation } from "../../History"
   import { getContext } from "svelte"
-  import { AppContext } from "../../../AppContext"
-  import { type WatchableDay, WatchingScene } from "./WatchingScene"
-  import { type Readable, readable } from "svelte/store"
-  import HistoryLink from "../../ui-component/HistoryLink.svelte"
+  import { AppContext } from "../../AppContext"
 
   const appContext = getContext<AppContext>(AppContext.Key)
-  const scene$ = appContext.sceneAs$(WatchingScene)
-  $: scene = $scene$
+  const history = appContext.history
+  const isBrowserHistory = (history instanceof HashHistory)
   
-  let watchableDays$: Readable<WatchableDay[]>
-  $: watchableDays$ = scene?.watchableDays$ ?? readable([])
+  export let to = "/" as string | HistoryLocation
+  export let replace = false
   
-  let currentDay$: Readable<number>
-  $: currentDay$ = scene?.currentDay$ ?? readable(0)
+  let location: HistoryLocation
+  $: location = (to instanceof HistoryLocation) ? to : HistoryLocation.fromPath(to)
+  
+  let href: string
+  $: href = (isBrowserHistory) ? history.getHref(location) : ""
+
+  function onClick(ev: MouseEvent) {
+    if (isBrowserHistory) {
+      // When clicked with modifier keys, leave it to the browser (because user may want to open in a separate tab or window)
+      // When clicked with non-main mouse button, leave it to the browser, too.
+      if (!(ev.metaKey || ev.altKey || ev.ctrlKey || ev.shiftKey) && ev.button === 0) {
+        ev.preventDefault()
+        history.navigate(location, replace)
+      }
+    } else {
+      ev.preventDefault()
+      history.navigate(location, replace)
+    }
+  }
 </script>
 
-{#if scene !== undefined}
-  <ButtonGroup class="overflow-x-auto">
-    {#each $watchableDays$ as wday}
-      <HistoryLink to={scene.getLocation(wday.day)} let:href let:onClick>
-        <Button size="xs" color="red" class="shrink-0" href={href} on:click={onClick} outline={wday.day !== $currentDay$}>
-          {wday.text}
-        </Button>
-      </HistoryLink>
-    {/each}
-  </ButtonGroup>
-{/if}
+<slot {href} {onClick}/>

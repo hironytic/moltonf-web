@@ -1,5 +1,5 @@
 <!--
-DayChanger.svelte
+Invalid.svelte
 
 Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
 
@@ -23,32 +23,17 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
-  import { Button, ButtonGroup } from "flowbite-svelte"
   import { getContext } from "svelte"
   import { AppContext } from "../../../AppContext"
-  import { type WatchableDay, WatchingScene } from "./WatchingScene"
-  import { type Readable, readable } from "svelte/store"
-  import HistoryLink from "../../ui-component/HistoryLink.svelte"
+  import { InvalidScene } from "./InvalidScene"
 
   const appContext = getContext<AppContext>(AppContext.Key)
-  const scene$ = appContext.sceneAs$(WatchingScene)
+  const scene$ = appContext.sceneAs$(InvalidScene)
   $: scene = $scene$
   
-  let watchableDays$: Readable<WatchableDay[]>
-  $: watchableDays$ = scene?.watchableDays$ ?? readable([])
-  
-  let currentDay$: Readable<number>
-  $: currentDay$ = scene?.currentDay$ ?? readable(0)
+  let message: string
+  $: message = scene?.message ?? ""
 </script>
 
-{#if scene !== undefined}
-  <ButtonGroup class="overflow-x-auto">
-    {#each $watchableDays$ as wday}
-      <HistoryLink to={scene.getLocation(wday.day)} let:href let:onClick>
-        <Button size="xs" color="red" class="shrink-0" href={href} on:click={onClick} outline={wday.day !== $currentDay$}>
-          {wday.text}
-        </Button>
-      </HistoryLink>
-    {/each}
-  </ButtonGroup>
-{/if}
+<!-- TODO: ちゃんとしたデザインにする -->
+<span>{message}</span>

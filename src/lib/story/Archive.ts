@@ -49,12 +49,13 @@ import { EventNames } from "./StoryEventName"
 import type { Player } from "./Player"
 import { TalkTypes } from "./TalkType"
 import type { Role } from "./Role"
+import { v4 as uuid } from 'uuid'
 
 export async function loadStoryFromArchiveFile(file: File): Promise<Story> {
   const xml = await readFileAsText(file)
   const parser = new DOMParser()
   const document = parser.parseFromString(xml, "text/xml")
-  return parseArciveDocument(document)
+  return parseArchiveDocument(document)
 }
 
 export class InvalidArchiveError extends Error {
@@ -85,9 +86,7 @@ async function readFileAsText(file: File): Promise<string> {
   })
 }
 
-function parseArciveDocument(document: XMLDocument): Story {
-  let currentDay = 0
-  let currentElementIndex = 0
+function parseArchiveDocument(document: XMLDocument): Story {
   let currentElementId = ""
   let publicTalkCount = 0
 
@@ -209,16 +208,12 @@ function parseArciveDocument(document: XMLDocument): Story {
     const type = getAttributeOrError(periodElem, "type")
     const day = parseInt(getAttributeOrError(periodElem, "day"), 10)
     
-    currentDay = day
-    currentElementIndex = 0
-    
     const elements: StoryElement[] = []
     const children = periodElem.children
     for (const child of children) {
       const storyElement = parseStoryElement(child)
       if (storyElement !== undefined) {
         elements.push(storyElement)
-        currentElementIndex++
       }
     }
     
@@ -230,7 +225,7 @@ function parseArciveDocument(document: XMLDocument): Story {
   }
   
   function parseStoryElement(elementElem: Element): StoryElement | undefined {
-    currentElementId = `${currentDay}/${currentElementIndex}`
+    currentElementId = uuid()
     
     const name = elementElem.tagName
     switch (name) {

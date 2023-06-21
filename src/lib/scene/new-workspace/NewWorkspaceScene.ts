@@ -25,13 +25,12 @@
 import { type AppContext } from "../../../AppContext"
 import { Scene } from "../../../Scene"
 import { derived, type Readable, type Writable, writable } from "svelte/store"
-import { WatchingScene } from "../watching/WatchingScene"
 import type { Story } from "../../story/Story"
-import { SelectWorkspaceScene } from "../select-workspace/SelectWorkspaceScene"
 import { currentValueWritable } from "../../CurrentValueStore"
 import type { Character, CharacterMap } from "../../story/CharacterMap"
 import { createCharacterMap } from "../../story/CharacterMap"
 import { type Role, Roles } from "../../story/Role"
+import { HistoryLocation } from "../../../History"
 
 export class NewWorkspaceScene extends Scene {
   constructor(appContext: AppContext) {
@@ -51,7 +50,7 @@ export class NewWorkspaceScene extends Scene {
   //#region Select Story
 
   backFromSelectStoryStep() {
-    this.appContext.changeScene(new SelectWorkspaceScene(this.appContext))
+    this.appContext.history.navigate(HistoryLocation.fromPath("/"), false)
   }
 
   get story$(): Readable<Story | undefined> { return this._story$ }
@@ -301,8 +300,7 @@ export class NewWorkspaceScene extends Scene {
       lastModified: new Date(),
     }
     const workspace = await workspaceStore.add(story, workspaceData)
-
-    this.appContext.changeScene(new WatchingScene(this.appContext, workspace))
+    this.appContext.history.navigate(HistoryLocation.fromComponents(["/", workspace.id]), true)
   }
 
   private pickCharacter(): Character | undefined {

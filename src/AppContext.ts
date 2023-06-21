@@ -31,18 +31,35 @@ import { derived, writable } from "svelte/store"
 import type { Scene } from "./Scene"
 import { SelectWorkspaceScene } from "./lib/scene/select-workspace/SelectWorkspaceScene"
 import type { ExtendedMessageBoxItem, MessageBoxItem } from "./lib/MessageBoxItem"
+import type { History } from "./History"
+import { HistoryLocation } from "./History"
+import { currentValueWritable } from "./lib/CurrentValueStore"
+import { NewWorkspaceScene } from "./lib/scene/new-workspace/NewWorkspaceScene"
+import { WatchingScene } from "./lib/scene/watching/WatchingScene"
+import { InvalidScene } from "./lib/scene/invalid/InvalidScene"
+import { runDetached } from "./lib/Utils"
 
 export class AppContext {
   static readonly Key = Symbol()
   
+  readonly history: History
+  private _unsubscribeHistoryLocation: () => void
   private _dbPromise: Promise<IDBPDatabase<MoltonfDB> | undefined>
-  private readonly _scene$ = writable<Scene>(new SelectWorkspaceScene(this))
+  private readonly _scene$ = currentValueWritable<Scene>(new SelectWorkspaceScene(this))
   private readonly _messageBoxItems$ = writable<ExtendedMessageBoxItem[]>([])
   
-  constructor() {
+  constructor(history: History) {
+    this.history = history
     this._dbPromise = Promise.resolve(undefined)
+    this._unsubscribeHistoryLocation = history.location$.subscribe(it => {
+      this.changeSceneByLocation(it.location)
+    })
   }
 
+  destroy() {
+    this._unsubscribeHistoryLocation()
+  }
+  
   //#region Scene
   
   get scene$(): Readable<Scene> { return this._scene$ }
@@ -51,11 +68,44 @@ export class AppContext {
   sceneAs$<T>(sceneClass: new (...args: any[]) => T): Readable<T | undefined> {
     return derived(this._scene$, it => (it instanceof sceneClass) ? it : undefined)
   }
-
-  changeScene(scene: Scene) {
-    this._scene$.set(scene)
-  }
   
+  private changeSceneByLocation(location: HistoryLocation) {
+    const currentScene = this._scene$.currentValue
+    const [first, second] = location.components
+    if (first !== "/") {
+      // Invalid
+      this._scene$.set(new InvalidScene(this, "Not Found"))
+    } else {
+      if (second === undefined) {
+        // Select Workspace
+        if (!(currentScene instanceof SelectWorkspaceScene)) {
+          this._scene$.set(new SelectWorkspaceScene(this))
+        }
+      } else if (second === "new") {
+        // New Workspace
+        if (!(currentScene instanceof NewWorkspaceScene)) {
+          this._scene$.set(new NewWorkspaceScene(this))
+        }
+      } else {
+        // Watching
+        const workspaceId = second
+        if (currentScene instanceof WatchingScene && currentScene.workspace.id === workspaceId) {
+          currentScene.updateLocation(location)
+        } else {
+          runDetached(async () => {
+            const workspaceStore = await this.getWorkspaceStore()
+            const workspace = await workspaceStore.getWorkspace(workspaceId)
+            if (workspace === undefined) {
+              this._scene$.set(new InvalidScene(this, "観戦データが見つかりません。"))
+            } else {
+              this._scene$.set(new WatchingScene(this, workspace, location))
+            }
+          })
+        }
+      }
+    }
+  }
+
   //#endregion
 
   //#region Message box

@@ -45,7 +45,7 @@ export interface MoltonfDB extends DBSchema {
   }
 
   workspaces: {
-    key: number
+    key: string
     value: Workspace
     indexes: { "lastModified": Date }
   }
@@ -56,7 +56,7 @@ export async function openMoltonfDB(): Promise<IDBPDatabase<MoltonfDB>> {
     upgrade(database: IDBPDatabase<MoltonfDB>) {
       database.createObjectStore(StoreNames.STORIES, { autoIncrement: true })
       
-      const workspacesStore = database.createObjectStore(StoreNames.WORKSPACES, { keyPath: "id", autoIncrement: true })
+      const workspacesStore = database.createObjectStore(StoreNames.WORKSPACES, { keyPath: "id" })
       workspacesStore.createIndex(IndexNames.WORKSPACES.LAST_MODIFIED, "lastModified", { unique: false })
     }
   })

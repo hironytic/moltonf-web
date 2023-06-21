@@ -32,6 +32,8 @@ THE SOFTWARE.
   import DeleteIcon from "../../icon/DeleteIcon.svelte"
   import { readable, type Readable } from "svelte/store"
   import type { Workspace } from "../../workspace/Workspace"
+  import { HistoryLocation } from "../../../History"
+  import HistoryLink from "../../ui-component/HistoryLink.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(SelectWorkspaceScene)
@@ -102,16 +104,19 @@ THE SOFTWARE.
           
           <Listgroup class="mt-4" active>
             {#each $workspaces$ as item (item.id)}
-              <ListgroupItem on:click={() => scene?.selectWorkspace(item)}> 
-                <div class="flex items-center justify-between w-full">
-                  <div class="inline-flex">
-                    <WorkspaceIcon size="1.25rem" class="mr-2"/>{item.name}
+              {@const location = HistoryLocation.fromComponents(["/", item.id])}
+              <HistoryLink to={location} let:href let:onClick>
+                <ListgroupItem href={href} on:click={onClick}> 
+                  <div class="flex items-center justify-between w-full">
+                    <div class="inline-flex">
+                      <WorkspaceIcon size="1.25rem" class="mr-2"/>{item.name}
+                    </div>
+                    <button class="hover:text-red-500" on:click|preventDefault|stopPropagation={() => void deleteWorkspace(item)}>
+                      <DeleteIcon size="1.25rem"/>
+                    </button>
                   </div>
-                  <button class="hover:text-red-500" on:click|stopPropagation={() => void deleteWorkspace(item)}>
-                    <DeleteIcon size="1.25rem"/>
-                  </button>
-                </div>
-              </ListgroupItem>
+                </ListgroupItem>
+              </HistoryLink>
             {/each}
           </Listgroup>
           <div class="flex justify-end">

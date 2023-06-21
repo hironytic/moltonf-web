@@ -27,6 +27,7 @@ import type { MoltonfDB } from "./MoltonfDB"
 import type { Workspace } from "../workspace/Workspace"
 import { IndexNames, StoreNames } from "./MoltonfDB"
 import type { Story } from "../story/Story"
+import { v4 as uuid } from 'uuid'
 
 /**
  * Storage for workspaces.
@@ -42,30 +43,45 @@ export class WorkspaceStore {
 
   async add(story: Story, workspace: Omit<Workspace, "id" | "storyId">): Promise<Workspace> {
     const tx = this._db.transaction([StoreNames.STORIES, StoreNames.WORKSPACES], "readwrite")
-    const storyId = await tx.objectStore(StoreNames.STORIES).add(story)
-    const newWorkspace: Workspace = {
-      ...workspace,
-      storyId,
-    } as Workspace  // It's OK to omit id because it is created by "autoIncrement"
-    const key = await tx.objectStore(StoreNames.WORKSPACES).add(newWorkspace)
-    await tx.done
-    newWorkspace.id = key
-    return  newWorkspace
+    try {
+      const storyId = await tx.objectStore(StoreNames.STORIES).add(story)
+      const newWorkspace: Workspace = {
+        ...workspace,
+        storyId,
+        id: uuid(),
+      } as Workspace  // It's OK to omit id because it is created by "autoIncrement"
+      await tx.objectStore(StoreNames.WORKSPACES).add(newWorkspace)
+      await tx.done
+      return newWorkspace
+    } catch (e) {
+      tx.abort()
+      throw e
+    }
   }
   
   async update(workspace: Workspace) {
     const tx = this._db.transaction(StoreNames.WORKSPACES, "readwrite")
-    await tx.store.put(workspace)
-    await tx.done
+    try {
+      await tx.store.put(workspace)
+      await tx.done
+    } catch (e) {
+      tx.abort()
+      throw e
+    }
   }
   
   async remove(workspace: Workspace) {
     const workspaceId = workspace.id
     const storyId = workspace.storyId
     const tx = this._db.transaction([StoreNames.STORIES, StoreNames.WORKSPACES], "readwrite")
-    await tx.objectStore(StoreNames.WORKSPACES).delete(workspaceId)
-    await tx.objectStore(StoreNames.STORIES).delete(storyId)
-    await tx.done
+    try {
+      await tx.objectStore(StoreNames.WORKSPACES).delete(workspaceId)
+      await tx.objectStore(StoreNames.STORIES).delete(storyId)
+      await tx.done
+    } catch (e) {
+      tx.abort()
+      throw e
+    }
   }
 
   async getWorkspaces(): Promise<Workspace[]> {
@@ -80,7 +96,7 @@ export class WorkspaceStore {
     return result
   }
   
-  async getWorkspace(id: number): Promise<Workspace | undefined> {
+  async getWorkspace(id: string): Promise<Workspace | undefined> {
     const tx = this._db.transaction(StoreNames.WORKSPACES)
     return await tx.store.get(id)
   }

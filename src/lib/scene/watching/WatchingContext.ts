@@ -1,5 +1,5 @@
 //
-// SelectWorkspaceScene.ts
+// WatchingContext.ts
 //
 // Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
 //
@@ -22,33 +22,23 @@
 // THE SOFTWARE.
 //
 
-import type { AppContext } from "../../../AppContext"
-import { Scene } from "../../../Scene"
-import { type Readable, writable } from "svelte/store"
-import type { Workspace } from "../../workspace/Workspace"
-import { HistoryLocation } from "../../../History"
+export class WatchingContext {
+  static readonly Key = Symbol()
 
-export class SelectWorkspaceScene extends Scene {
-  constructor(appContext: AppContext) {
-    super(appContext)
-    void this.reloadWorkspaces()
+  private _elementMap = new Map<string, HTMLElement>()
+
+  addElement(id: string, elem: HTMLElement) {
+    this._elementMap.set(id, elem)
   }
-  
-  private _workspaces$ = writable<Workspace[] | undefined>(undefined)
-  get workspaces$(): Readable<Workspace[] | undefined> { return this._workspaces$ }
-  
-  private async reloadWorkspaces(): Promise<void> {
-    const workspaceStore = await this.appContext.getWorkspaceStore()
-    this._workspaces$.set(await workspaceStore.getWorkspaces())
+
+  removeElement(id: string) {
+    this._elementMap.delete(id)
   }
-  
-  createNewWorkspace() {
-    this.appContext.history.navigate(HistoryLocation.fromPath("/new"), false)
-  }
-  
-  async deleteWorkspace(workspace: Workspace) {
-    const workspaceStore = await this.appContext.getWorkspaceStore()
-    await workspaceStore.remove(workspace)
-    this._workspaces$.set(await workspaceStore.getWorkspaces())
+
+  scrollToElement(id: string) {
+    const elem = this._elementMap.get(id)
+    if (elem !== undefined) {
+      elem.scrollIntoView()
+    }
   }
 }
