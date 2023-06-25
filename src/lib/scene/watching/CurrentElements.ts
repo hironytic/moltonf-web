@@ -131,6 +131,29 @@ function filterStoryElement(story: Story, characterMap: CharacterMap, dayProgres
   }
 }
 
+export function isTalkVisible(story: Story, day: number, talk: Talk, character: Character, dayProgress: number | undefined): boolean {
+  if (dayProgress === undefined) {
+    return true
+  }
+  
+  if (day > dayProgress) {
+    return false
+  }
+  
+  switch (talk.talkType) {
+    case TalkTypes.PUBLIC:
+      return isPublicTalkVisible()
+    case TalkTypes.PRIVATE:
+      return isPrivateTalkVisible(talk, character)
+    case TalkTypes.WOLF:
+      return isWolfTalkVisible(story, character)
+    case TalkTypes.GRAVE:
+      return isGraveTalkVisible(character, day)
+    default:
+      return false
+  }
+}
+
 function isPublicTalkVisible(): boolean {
   return true
 }

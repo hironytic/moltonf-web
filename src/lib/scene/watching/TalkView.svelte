@@ -32,6 +32,11 @@ THE SOFTWARE.
   import ThoughtTail from "./ThoughtTail.svelte"
   import { graveIcon } from "./FaceIconUtils"
   import type { CharacterMap } from "../../story/CharacterMap.js"
+  import type { MessageSegment } from "./MessageSegment"
+  import { parseMessageSegments } from "./MessageSegment"
+  import type { TalkMap, TalkWithDay } from "../../story/TalkMap"
+  import { nullTalkMap } from "../../story/TalkMap"
+  import MessageLine from "./MessageLine.svelte"
 
   export let talk: Talk = {
     elementId: "",
@@ -46,6 +51,9 @@ THE SOFTWARE.
   
   export let characterMap: CharacterMap = new Map()
   export let faceIconUrlMap: Map<string | symbol, string> = new Map()
+  export let talkMap: TalkMap = nullTalkMap()
+  export let isTalkVisible: (day: number, talk: Talk) => boolean = (() => true)
+  export let currentDay = -1
   
   let avatar: Avatar | undefined
   $: avatar = characterMap.get(talk.avatarId)?.avatar
@@ -63,6 +71,13 @@ THE SOFTWARE.
       }
     }
   }
+  
+  let segmentsLines: MessageSegment[][]
+  $: segmentsLines = talk.messageLines.map(line => parseMessageSegments(line, {
+    currentDay,
+    talkMap,
+    isTalkVisible: (talk: TalkWithDay) => isTalkVisible(talk.day, talk.talk), 
+  }))
 </script>
 
 <div>
@@ -91,11 +106,11 @@ THE SOFTWARE.
   </div>
   <div class="grow p-2 rounded tt-{talk.talkType}">
     <p class="message">
-      {#each talk.messageLines as line, index}
+      {#each segmentsLines as line, index}
         {#if index !== 0}
           <br/>
         {/if}
-        {line}
+        <MessageLine segments={line} talkType={talk.talkType}/>
       {/each}
     </p>
   </div>
@@ -119,34 +134,18 @@ THE SOFTWARE.
     color: #000;
   }
   
-  /*.tt-public a {*/
-  /*  color: #f00;*/
-  /*}*/
-  
   .tt-wolf {
     background-color: #f77;
     color: #000;
   }
-
-  /*.tt-wolf a {*/
-  /*  color: #fff;*/
-  /*}*/
 
   .tt-private {
     background-color: #939393;
     color: #000;
   }
 
-  /*.tt-private a {*/
-  /*  color: #fff;*/
-  /*}*/
-
   .tt-grave {
     background-color: #9fb7cf;
     color: #000;
   }
-
-  /*.tt-grave a {*/
-  /*  color: #00f;*/
-  /*}*/
 </style>
