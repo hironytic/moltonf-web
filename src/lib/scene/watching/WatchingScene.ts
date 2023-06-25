@@ -33,8 +33,11 @@ import { createFaceIconUrlMap } from "./FaceIconUtils"
 import type { Period } from "../../story/Period"
 import { delay, runDetached } from "../../Utils"
 import { type CharacterMap, createCharacterMap } from "../../story/CharacterMap"
-import { currentElements } from "./CurrentElements"
+import { currentElements, isTalkVisible } from "./CurrentElements"
 import { HistoryLocation } from "../../../History"
+import type { TalkMap } from "../../story/TalkMap"
+import { createTalkMap, nullTalkMap } from "../../story/TalkMap"
+import type { Talk } from "../../story/Talk"
 
 const PROLOGUE_NAME = "プロローグ"
 const EPILOGUE_NAME = "エピローグ"
@@ -58,6 +61,7 @@ export class WatchingScene extends Scene {
   readonly workspace: Workspace
   readonly characterMap$: Readable<CharacterMap>
   readonly faceIconUrlMap$: Readable<Map<string | symbol, string>>
+  readonly talkMap$: Readable<TalkMap>
   
   constructor(appContext: AppContext, workspace: Workspace, location: HistoryLocation) {
     super(appContext)
@@ -124,6 +128,13 @@ export class WatchingScene extends Scene {
       return createFaceIconUrlMap(story)
     })
     
+    this.talkMap$ = derived(this._story$, story => {
+      if (story === undefined) {
+        return nullTalkMap()
+      }
+      return createTalkMap(story)
+    })
+    
     this.canMoveToNextDay$ = derived([this._story$, this._currentDay$], ([story, currentDay]) => {
       if (story === undefined) {
         return false
@@ -139,7 +150,20 @@ export class WatchingScene extends Scene {
       ([story, characterMap, dayProgress, currentDay,]) => {
       return currentElements(story, characterMap, workspace.playerCharacter, dayProgress, currentDay)
     })
-
+    
+    this.isTalkVisible$ = derived([this._story$, this.characterMap$, this._dayProgress$], ([story, characterMap, dayProgress]) => {
+      return (day: number, talk: Talk) => {
+        if (story === undefined) {
+          return false
+        }
+        const character = characterMap.get(workspace.playerCharacter)
+        if (character === undefined) {
+          return false
+        }
+        return isTalkVisible(story, day, talk, character, dayProgress)
+      }
+    })
+    
     void this.loadStory()
   }
 
@@ -208,6 +232,7 @@ export class WatchingScene extends Scene {
 
   readonly currentElements$: Readable<WatchingElement[]>
   readonly focusedElementId$: Readable<string | undefined>
+  readonly isTalkVisible$: Readable<(day: number, talk: Talk) => boolean>
 }
 
 export interface WatchableDay {

@@ -30,11 +30,17 @@ THE SOFTWARE.
   import type { CharacterMap } from "../../story/CharacterMap"
   import type { WatchingElement } from "./WatchingScene.js"
   import WatchingElementView from "./WatchingElementView.svelte"
+  import type { TalkMap } from "../../story/TalkMap"
+  import { nullTalkMap } from "../../story/TalkMap"
+  import type { Talk } from "../../story/Talk"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(WatchingScene)
   $: scene = $scene$
 
+  let currentDay$: Readable<number>
+  $: currentDay$ = scene?.currentDay$ ?? readable(-1)
+  
   let currentElements$: Readable<WatchingElement[]>
   $: currentElements$ = scene?.currentElements$ ?? readable([])
   
@@ -43,8 +49,21 @@ THE SOFTWARE.
   
   let faceIconUrlMap$: Readable<Map<string | symbol, string>>
   $: faceIconUrlMap$ = scene?.faceIconUrlMap$ ?? readable(new Map())
+  
+  let talkMap$: Readable<TalkMap>
+  $: talkMap$ = scene?.talkMap$ ?? readable(nullTalkMap())
+
+  let isTalkVisible$: Readable<(day: number, talk: Talk) => boolean>
+  $: isTalkVisible$ = scene?.isTalkVisible$ ?? readable(() => false)
 </script>
 
 {#each $currentElements$ as element (element.elementId)}
-  <WatchingElementView element={element} characterMap={$characterMap$} faceIconUrlMap={$faceIconUrlMap$}/>
+  <WatchingElementView
+    element={element}
+    characterMap={$characterMap$}
+    faceIconUrlMap={$faceIconUrlMap$}
+    talkMap={$talkMap$}
+    currentDay={$currentDay$}
+    isTalkVisible={$isTalkVisible$}
+  />
 {/each}

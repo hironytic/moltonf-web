@@ -34,18 +34,24 @@ THE SOFTWARE.
   import MoltonfMessageView from "./MoltonfMessageView.svelte"
   import { getContext, onMount } from "svelte"
   import { WatchingContext } from "./WatchingContext"
+  import type { TalkMap } from "../../story/TalkMap"
+  import { nullTalkMap } from "../../story/TalkMap"
+  import type { Talk } from "../../story/Talk"
 
   const watchingContext = getContext<WatchingContext>(WatchingContext.Key)
   
   export let characterMap: CharacterMap = new Map()
   export let faceIconUrlMap: Map<string | symbol, string> = new Map()
-  export let element = {
+  export let talkMap: TalkMap = nullTalkMap()
+  export let isTalkVisible: (day: number, talk: Talk) => boolean = (() => true)  
+  export let currentDay = -1
+  export let element: WatchingElement = ({
     elementId: "",
     elementType: MoltonfMessageType,
     messageLines: [],
-  } as WatchingElement
+  })
   
-  let elementDiv = undefined as HTMLDivElement | undefined
+  let elementDiv: HTMLDivElement | undefined = (undefined)
   
   function registerElement(elementId: string) {
     if (elementDiv !== undefined) {
@@ -77,7 +83,7 @@ THE SOFTWARE.
 
 <div class="mb-4" bind:this={elementDiv}>
   {#if element.elementType === StoryElementTypes.TALK}
-    <TalkView talk={element} {characterMap} {faceIconUrlMap}/>
+    <TalkView talk={element} {characterMap} {faceIconUrlMap} {talkMap} {currentDay} {isTalkVisible}/>
   {:else if element.elementType === StoryElementTypes.STORY_EVENT}
     {#if element.eventName === EventNames.ASSAULT}
       <!-- Handle special case: ASSAULT is displayed as Wolf's Talk -->
@@ -90,7 +96,7 @@ THE SOFTWARE.
             time: element.time,
             talkNo: undefined,
             messageLines: element.messageLines
-          }} {characterMap} {faceIconUrlMap}/>
+          }} {characterMap} {faceIconUrlMap} {talkMap} {currentDay} {isTalkVisible}/>
     {:else}
       <StoryEventView storyEvent={element}/>
     {/if}

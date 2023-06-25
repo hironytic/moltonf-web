@@ -31,8 +31,12 @@ THE SOFTWARE.
   const history = appContext.history
   const isBrowserHistory = (history instanceof HashHistory)
   
+  export let from = undefined as string | HistoryLocation | undefined
   export let to = "/" as string | HistoryLocation
   export let replace = false
+  
+  let fromLocation: HistoryLocation | undefined
+  $: fromLocation = (from !== undefined) ? ((from instanceof HistoryLocation) ? from : HistoryLocation.fromPath(from)) : undefined
   
   let location: HistoryLocation
   $: location = (to instanceof HistoryLocation) ? to : HistoryLocation.fromPath(to)
@@ -41,16 +45,22 @@ THE SOFTWARE.
   $: href = (isBrowserHistory) ? history.getHref(location) : ""
 
   function onClick(ev: MouseEvent) {
+    function navigate() {
+      ev.preventDefault()
+      if (!replace && fromLocation !== undefined) {
+        history.navigate(fromLocation, true, true)
+      }
+      history.navigate(location, replace)
+    }
+    
     if (isBrowserHistory) {
       // When clicked with modifier keys, leave it to the browser (because user may want to open in a separate tab or window)
       // When clicked with non-main mouse button, leave it to the browser, too.
       if (!(ev.metaKey || ev.altKey || ev.ctrlKey || ev.shiftKey) && ev.button === 0) {
-        ev.preventDefault()
-        history.navigate(location, replace)
+        navigate()
       }
     } else {
-      ev.preventDefault()
-      history.navigate(location, replace)
+      navigate()
     }
   }
 </script>
