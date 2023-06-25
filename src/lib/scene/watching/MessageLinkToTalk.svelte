@@ -34,6 +34,7 @@ THE SOFTWARE.
 
   export let segment = undefined as LinkToTalkSegment | undefined
   export let talkType: TalkType = TalkTypes.PUBLIC
+  export let location = undefined as HistoryLocation | undefined
   
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(WatchingScene)
@@ -52,7 +53,7 @@ THE SOFTWARE.
 </script>
 
 {#if segment !== undefined && linkTo !== undefined}
-  <HistoryLink to={linkTo} let:href let:onClick>
+  <HistoryLink from={location} to={linkTo} let:href let:onClick>
     <a class="tt-{talkType}" {href} on:click={onClick}>{segment.text}</a>
   </HistoryLink>
 {/if}

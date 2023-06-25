@@ -37,6 +37,10 @@ THE SOFTWARE.
   import type { TalkMap, TalkWithDay } from "../../story/TalkMap"
   import { nullTalkMap } from "../../story/TalkMap"
   import MessageLine from "./MessageLine.svelte"
+  import type { HistoryLocation } from "../../../History"
+  import { getContext } from "svelte"
+  import { AppContext } from "../../../AppContext"
+  import { WatchingScene } from "./WatchingScene"
 
   export let talk: Talk = {
     elementId: "",
@@ -54,6 +58,10 @@ THE SOFTWARE.
   export let talkMap: TalkMap = nullTalkMap()
   export let isTalkVisible: (day: number, talk: Talk) => boolean = (() => true)
   export let currentDay = -1
+
+  const appContext = getContext<AppContext>(AppContext.Key)
+  const scene$ = appContext.sceneAs$(WatchingScene)
+  $: scene = $scene$
   
   let avatar: Avatar | undefined
   $: avatar = characterMap.get(talk.avatarId)?.avatar
@@ -78,6 +86,9 @@ THE SOFTWARE.
     talkMap,
     isTalkVisible: (talk: TalkWithDay) => isTalkVisible(talk.day, talk.talk), 
   }))
+  
+  let location: HistoryLocation | undefined
+  $: location = scene?.getLocation(currentDay, talk.elementId)
 </script>
 
 <div>
@@ -110,7 +121,7 @@ THE SOFTWARE.
         {#if index !== 0}
           <br/>
         {/if}
-        <MessageLine segments={line} talkType={talk.talkType}/>
+        <MessageLine segments={line} talkType={talk.talkType} {location}/>
       {/each}
     </p>
   </div>

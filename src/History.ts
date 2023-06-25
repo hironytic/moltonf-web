@@ -61,7 +61,7 @@ export interface HistoryLocationWithId {
 
 export interface History {
   readonly location$: Readable<HistoryLocationWithId>
-  navigate(location: HistoryLocation, replace: boolean): void
+  navigate(location: HistoryLocation, replace: boolean, noStore?: boolean): void
   getHref(location: HistoryLocation): string
 }
 
@@ -90,7 +90,7 @@ export class HashHistory implements History {
     this.location$.set(this.getLocationFromWindow())
   }
   
-  navigate(location: HistoryLocation, replace: boolean) {
+  navigate(location: HistoryLocation, replace: boolean, noStore = false) {
     const path = this.getHref(location)
     const state = {
       id: uuidv4(),
@@ -109,7 +109,9 @@ export class HashHistory implements History {
       }
     }
     
-    this.location$.set(this.getLocationFromWindow())
+    if (!noStore) {
+      this.location$.set(this.getLocationFromWindow())
+    }
   }
   
   getHref(location: HistoryLocation): string {

@@ -27,15 +27,17 @@ THE SOFTWARE.
   import { MessageSegmentTypes } from "./MessageSegment"
   import MessageLinkToTalk from "./MessageLinkToTalk.svelte"
   import { type TalkType, TalkTypes } from "../../story/TalkType"
+  import type { HistoryLocation } from "../../../History"
 
   export let segments: MessageSegment[] = []
   export let talkType: TalkType = TalkTypes.PUBLIC
+  export let location = undefined as HistoryLocation | undefined
 </script>
 
 {#each segments as segment}
   {#if segment.type === MessageSegmentTypes.general}
     {segment.text}
   {:else if segment.type === MessageSegmentTypes.linkToTalk}
-    <MessageLinkToTalk {segment} {talkType}/>
+    <MessageLinkToTalk {segment} {talkType} {location}/>
   {/if}
 {/each}
