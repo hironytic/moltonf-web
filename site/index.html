@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="index.css" />
+    <title>Moltonf</title>
+  </head>
+  <body class="bg-gray-900 text-gray-400">
+    <main class="h-screen">
+      <div class="flex flex-col h-full">
+        <div class="h-full flex flex-col place-content-center">
+          <div class="overflow-y-auto">
+            <div class="flex place-content-center">
+              <div class="bg-black max-w-[600px] p-10 rounded-md">
+                
+                <div class="flex items-center space-x-2 text-3xl font-bold text-gray-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="1.875rem" viewBox="0 0 24 24" fill="currentColor"><g><path d="M0,0h24v24H0V0z" fill="none"/></g><g><g><g><path d="M14,2c1.82,0,3.53,0.5,5,1.35C16.01,5.08,14,8.3,14,12s2.01,6.92,5,8.65C17.53,21.5,15.82,22,14,22C8.48,22,4,17.52,4,12 S8.48,2,14,2z"/></g></g></g></svg>                  
+                  <h1>Moltonf</h1>
+                </div>
+                <div class="text-base ml-4 mt-4">
+                  <p>Moltonfは<a class="text-red-500 underline hover:text-gray-300 inline-flex items-baseline" href="http://ninjinix.com/" target="_blank" rel="noopener noreferrer">人狼BBS <svg xmlns="http://www.w3.org/2000/svg" height="0.8rem" viewBox="0 0 24 24" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg></a>の過去ログ観戦ビューアです。</p>
+                </div>
+
+                <div class="mt-8 text-center">
+                  <a href="app/"><button class="px-5 py-3 text-base text-center bg-red-600 hover:bg-red-700 text-white rounded-lg">Moltonfで観戦を始める</button></a>
+                </div>
+                
+                <!-- 特徴 -->
+                <div class="flex items-center space-x-2 text-3xl font-bold text-gray-300 mt-8">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="1.875rem" viewBox="0 0 24 24" fill="currentColor"><g><path d="M0,0h24v24H0V0z" fill="none"/></g><g><g><g><path d="M14,2c1.82,0,3.53,0.5,5,1.35C16.01,5.08,14,8.3,14,12s2.01,6.92,5,8.65C17.53,21.5,15.82,22,14,22C8.48,22,4,17.52,4,12 S8.48,2,14,2z"/></g></g></g></svg>
+                  <h1>特徴</h1>
+                </div>
+
+                <div class="flex items-center space-x-2 text-xl font-bold text-gray-300 mt-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="1.5rem" viewBox="0 0 24 24" fill="currentColor"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                  <h2>参加者の視点で観戦</h2>
+                </div>
+
+                <div class="text-base ml-4 mt-4">
+                  <p>次の日へ移動するボタンを押すまで、それより先の日は表示されません。特に終盤、これで終わるのかそれとも続くのかわからないので、リアルタイムに参加しているようなワクワク感を味わえます。</p>
+                  <p class="mt-2">あらかじめ選択した役職（ただの村人・占い師・霊能者・人狼など）に応じてキャラクターが決定され、そのキャラクターの視点で見える情報だけが表示されます。例えば、キャラクターが人狼であれば仲間たちのささやき（赤ログ）が表示されますが、村人なら表示されません。同じように能力者であれば、占い師なら占い結果といったその能力に応じた情報を知ることができます。ネタバレを避けるかたちで実際にそのキャラクターで参加しているような気分で観戦できます。</p>
+                </div>
+                
+                <div class="flex items-center space-x-2 text-xl font-bold text-gray-300 mt-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="1.5rem" viewBox="0 0 24 24" fill="currentColor"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                  <h2>ブラウザ内で動作</h2>
+                </div>
+
+                <div class="text-base ml-4 mt-4">
+                  <p>お使いのブラウザ内のJavaScriptで動作します。選んだ過去ログや観戦状況はブラウザが管理するローカルコンピューター上のストレージに記憶されます。データはサーバーにはアップロードされません。利用に当たってのユーザー登録なども不要です。</p>
+                </div>
+
+                <div class="flex items-center space-x-2 text-xl font-bold text-gray-300 mt-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="1.5rem" viewBox="0 0 24 24" fill="currentColor"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                  <h2>過去ログはXMLファイル</h2>
+                </div>
+
+                <div class="text-base ml-4 mt-4">
+                  <p>過去ログとして<a class="text-red-500 underline hover:text-gray-300 inline-flex items-baseline" href="https://wolfbbs.jp/%B6%A6%C4%CC%A5%A2%A1%BC%A5%AB%A5%A4%A5%D6%B4%F0%C8%D7%C0%B0%C8%F7%B7%D7%B2%E8.html" target="_blank" rel="noopener noreferrer">共通アーカイブ <svg xmlns="http://www.w3.org/2000/svg" height="0.8rem" viewBox="0 0 24 24" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg></a>（※2023/06/28時点ではサイトに接続できません）形式のXMLファイルを使います。あらかじめ観戦したい過去ログを入手しておいていただく必要があります。</p>
+                </div>
+
+                <div class="flex items-center space-x-2 text-xl font-bold text-gray-300 mt-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="1.5rem" viewBox="0 0 24 24" fill="currentColor"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                  <h2>無料・無保証</h2>
+                </div>
+
+                <div class="text-base ml-4 mt-4">
+                  <p>Moltonfはオープンソースで開発されていて、無料で利用できます。ただし、開発者はMoltonfに関していかなる責任も負いません。</p>
+                  <p class="mt-2">GitHubリポジトリ： <a class="text-red-500 underline hover:text-gray-300" href="https://github.com/hironytic/moltonf-web" target="_blank" rel="noopener noreferrer">hironytic/moltonf-web</a></p>
+                  <p>ライセンス： <a class="text-red-500 underline hover:text-gray-300" href="https://github.com/hironytic/moltonf-web/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MITライセンス</a></p>
+                </div>
+
+                <!-- 過去ログデータの入手方法 -->
+                <div class="flex items-center space-x-2 text-3xl font-bold text-gray-300 mt-8">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="1.875rem" viewBox="0 0 24 24" fill="currentColor"><g><path d="M0,0h24v24H0V0z" fill="none"/></g><g><g><g><path d="M14,2c1.82,0,3.53,0.5,5,1.35C16.01,5.08,14,8.3,14,12s2.01,6.92,5,8.65C17.53,21.5,15.82,22,14,22C8.48,22,4,17.52,4,12 S8.48,2,14,2z"/></g></g></g></svg>
+                  <h1>過去ログデータの入手方法</h1>
+                </div>
+
+                <div class="text-base ml-4 mt-4">
+                  <p>観戦には共通アーカイブ形式のXMLファイルが必要になります。あらかじめ誰かからデータをもらうなり、自分で作成するなりして入手しておいてください。</p>
+                  <p class="mt-2">人狼BBS用の専用クライアント「<a class="text-red-500 underline hover:text-gray-300 inline-flex items-baseline" href="http://jindolf.osdn.jp/" target="_blank" rel="noopener noreferrer">Jindolf <svg xmlns="http://www.w3.org/2000/svg" height="0.8rem" viewBox="0 0 24 24" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg></a>」の作者であり、共通アーカイブ形式の提唱者でもある olyutorskii さんが開発された「JinArchiver」を使うと、人狼BBSから指定した村データをダウンロードして共通アーカイブ形式で保存できます。</p>
+                  <ul class="ml-8 mt-6 list-disc list-outside">
+                    <li><a class="text-red-500 underline hover:text-gray-300 inline-flex items-baseline" href="https://osdn.net/projects/jindolf/releases/p10174" target="_blank" rel="noopener noreferrer">JinArchiver <svg xmlns="http://www.w3.org/2000/svg" height="0.8rem" viewBox="0 0 24 24" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg></a></li>
+                  </ul>
+                  <p class="mt-6">上記のサイトから jinarchiver-X.X.X.jar（X.X.Xはバージョン番号）をダウンロードして、Javaランタイムが存在するコマンドプロンプトで実行します。</p>
+                </div>
+
+                <div class="text-sm font-bold ml-4 mt-4">
+                  <h3>G国500番の過去ログXMLファイルをdataディレクトリに保存する実行例</h3>
+                </div>
+                
+                <div class="text-sm ml-4 mt-4 p-4 rounded-md bg-gray-800">
+                  <code>java -jar jinarchiver-X.X.X.jar -land wolfg -vid 500 -outdir data</code>
+                </div>
+
+                <div class="text-base ml-4 mt-4">
+                  <p>※olyutorskii さんはMoltonfの製作に関わっていません。Moltonfに関する問い合わせを olyutorskii さんに行うのはやめてください。</p>
+                </div>
+
+                <!-- 観戦を始めましょう -->
+                <div class="flex items-center space-x-2 text-3xl font-bold text-gray-300 mt-8">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="1.875rem" viewBox="0 0 24 24" fill="currentColor"><g><path d="M0,0h24v24H0V0z" fill="none"/></g><g><g><g><path d="M14,2c1.82,0,3.53,0.5,5,1.35C16.01,5.08,14,8.3,14,12s2.01,6.92,5,8.65C17.53,21.5,15.82,22,14,22C8.48,22,4,17.52,4,12 S8.48,2,14,2z"/></g></g></g></svg>
+                  <h1>観戦を始めましょう</h1>
+                </div>
+
+                <div class="text-base ml-4 mt-4">
+                  <p>下のボタンを押して観戦を始めましょう。</p>
+                </div>
+                
+                <div class="mt-4 text-center">
+                  <a href="app/"><button class="px-5 py-3 text-base text-center bg-red-600 hover:bg-red-700 text-white rounded-lg">Moltonfで観戦を始める</button></a>
+                </div>
+
+                <!-- 開発者 -->
+                <div class="flex items-center space-x-2 text-3xl font-bold text-gray-300 mt-8">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="1.875rem" viewBox="0 0 24 24" fill="currentColor"><g><path d="M0,0h24v24H0V0z" fill="none"/></g><g><g><g><path d="M14,2c1.82,0,3.53,0.5,5,1.35C16.01,5.08,14,8.3,14,12s2.01,6.92,5,8.65C17.53,21.5,15.82,22,14,22C8.48,22,4,17.52,4,12 S8.48,2,14,2z"/></g></g></g></svg>
+                  <h1>開発者</h1>
+                </div>
+
+                <div class="text-base ml-4 mt-4">
+                  <div class="flex items-center space-x-8">
+                    <img class="ml-4 w-24 h-24 rounded-full" src="https://avatars.githubusercontent.com/u/1498691?v=4" alt="hironytic">
+                    <div>
+                      <p class="font-bold">ひろん（hironytic）</p>
+                      <p>GitHub: <a class="text-red-500 underline hover:text-gray-300" href="https://github.com/hironytic" target="_blank" rel="noopener noreferrer">hironytic</a></p>
+                      <p>Twitter: <a class="text-red-500 underline hover:text-gray-300" href="https://twitter.com/hironytic" target="_blank" rel="noopener noreferrer">@hironytic</a></p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="mt-8 text-center text-gray-600 text-xs">
+                  <p>Copyright &copy; 2023 Hironori Ichimiya</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

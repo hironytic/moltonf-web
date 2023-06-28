@@ -10,7 +10,8 @@
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "lint": "eslint --ext .svelte,.ts src/",
     "test": "vitest run --passWithNoTests",
-    "coverage": "vitest run --coverage --passWithNoTests"
+    "coverage": "vitest run --coverage --passWithNoTests",
+    "sitecss": "cd site && tailwindcss -i index.src.css -o index.css"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^2.4.2",
