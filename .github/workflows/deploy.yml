@@ -1,0 +1,59 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - "release"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write      # to deploy to Pages
+  id-token: write   # to verify the deployment originates from an appropriate source
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build_for_release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          cache: 'npm'
+      
+      - name: npm ci
+        run: npm ci
+
+      - name: Build app
+        run: npm run build
+      
+      - name: Build site css
+        run: npm run sitecss
+      
+      - name: Copy site html and css
+        run: |
+          cp site/index.html dist/
+          cp site/index.css dist/
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build_for_release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
