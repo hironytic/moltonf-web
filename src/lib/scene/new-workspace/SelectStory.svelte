@@ -78,7 +78,7 @@ THE SOFTWARE.
     
       <div class="text-sm mt-4">
         <p>
-          <a class="text-red-500 underline hover:text-gray-300 inline-flex items-baseline" href="https://wolfbbs.jp/%B6%A6%C4%CC%A5%A2%A1%BC%A5%AB%A5%A4%A5%D6%B4%F0%C8%D7%C0%B0%C8%F7%B7%D7%B2%E8.html" target="_blank" rel="noopener noreferrer">人狼BBSの共通アーカイブ<ExternalSiteIcon size="0.8rem"/></a>形式のXMLファイルを用意してください。
+          <a class="text-red-500 underline hover:text-gray-300 inline-flex items-baseline" href="https://osdn.net/projects/jindolf/scm/git/XmlScheme" target="_blank" rel="noopener noreferrer">Jindolf XML Scheme <ExternalSiteIcon size="0.8rem"/></a>形式のXMLファイルを用意してください。
           そのXMLファイルの村データを読み込みます。
           読み込んだデータはブラウザが管理するローカルコンピューター上のストレージに保存されます
           （観戦データが作成された後は、ここで選択したXMLファイルはもう参照しません）。
