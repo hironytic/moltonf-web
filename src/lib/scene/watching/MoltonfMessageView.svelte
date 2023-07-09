@@ -48,6 +48,7 @@ THE SOFTWARE.
 <style>
   .message {
     font-family: "sans-serif";
+    overflow-wrap: anywhere;
   }
   
   .ef-moltonf {
