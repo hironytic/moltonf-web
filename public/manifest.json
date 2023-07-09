@@ -7,5 +7,5 @@
   "background_color": "#111827",
   "scope": "/moltonf-web/",
   "display": "standalone",
-  "start_url": "https://hironytic.github.io/moltonf-web/"
+  "start_url": "/moltonf-web/app/"
 }
