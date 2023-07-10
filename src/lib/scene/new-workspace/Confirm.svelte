@@ -31,6 +31,7 @@ THE SOFTWARE.
   import HeaderTitle from "../../ui-component/HeaderTitle.svelte"
   import type { Readable } from "svelte/store"
   import { readable } from "svelte/store"
+  import Footer from "../../ui-component/Footer.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(NewWorkspaceScene)
@@ -65,4 +66,5 @@ THE SOFTWARE.
       </div>
     </div>
   </div>
+  <Footer/>
 </div>

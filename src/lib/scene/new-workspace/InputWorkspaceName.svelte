@@ -31,6 +31,7 @@ THE SOFTWARE.
   import ChevronLeftIcon from "../../icon/ChevronLeftIcon.svelte"
   import type { Readable, Writable } from "svelte/store"
   import { readable, writable } from "svelte/store"
+  import Footer from "../../ui-component/Footer.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(NewWorkspaceScene)
@@ -76,4 +77,5 @@ THE SOFTWARE.
       </form>
     </div>
   </div>
+  <Footer/>
 </div>

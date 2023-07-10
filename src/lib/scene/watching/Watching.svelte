@@ -32,6 +32,7 @@ THE SOFTWARE.
   import { Button, Spinner } from "flowbite-svelte"
   import WatchingElementsView from "./WatchingElementsView.svelte"
   import { WatchingContext } from "./WatchingContext"
+  import Footer from "../../ui-component/Footer.svelte"
 
   const unreactives = {
     lastCurrentDay: -1,
@@ -115,6 +116,7 @@ THE SOFTWARE.
           {/if}
         </div>
       </div>
+      <Footer/>
     </div>
   </div>
 {/if}

@@ -32,6 +32,7 @@ THE SOFTWARE.
   import ChevronLeftIcon from "../../icon/ChevronLeftIcon.svelte"
   import HeaderTitle from "../../ui-component/HeaderTitle.svelte"
   import OptionChooser from "./OptionChooser.svelte"
+  import Footer from "../../ui-component/Footer.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(NewWorkspaceScene)
@@ -80,4 +81,5 @@ THE SOFTWARE.
       </div>
     </div>
   </div>
+  <Footer/>
 </div>
