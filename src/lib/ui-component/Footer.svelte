@@ -1,5 +1,5 @@
 <!--
-Invalid.svelte
+Footer.svelte
 
 Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
 
@@ -23,28 +23,20 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
-  import { getContext } from "svelte"
-  import { AppContext } from "../../../AppContext"
-  import { InvalidScene } from "./InvalidScene"
-  import Footer from "../../ui-component/Footer.svelte"
-  import HeaderTitle from "../../ui-component/HeaderTitle.svelte"
-
-  const appContext = getContext<AppContext>(AppContext.Key)
-  const scene$ = appContext.sceneAs$(InvalidScene)
-  $: scene = $scene$
-  
-  let message: string
-  $: message = scene?.message ?? ""
+  import { commitHash, version } from "../../Version"
+  import { Popover, Tooltip } from "flowbite-svelte"
 </script>
 
-<div class="h-full flex flex-col place-content-center">
-  <div class="overflow-y-auto">
-    <div class="flex place-content-center">
-      <div class="bg-black max-w-[600px] p-10 rounded-md">
-        <HeaderTitle class="mb-4">Error</HeaderTitle>        
-        <div class="text-sm">{message}</div>
-      </div>
-    </div>
-    <Footer/>
-  </div>
+<div class="mt-8 mb-4 text-center text-gray-600 text-xs">
+  <p>Moltonf <span id="version">Release {version}</span> / Copyright &copy; 2023 Hironori Ichimiya</p>
+  <Popover triggeredBy="#version" trigger="click" class="text-xs">{commitHash}</Popover>
 </div>
+
+<style lang="scss">
+  #version {
+    cursor: pointer;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+</style>

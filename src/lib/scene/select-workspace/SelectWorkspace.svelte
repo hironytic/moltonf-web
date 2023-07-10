@@ -34,6 +34,7 @@ THE SOFTWARE.
   import type { Workspace } from "../../workspace/Workspace"
   import { HistoryLocation } from "../../../History"
   import HistoryLink from "../../ui-component/HistoryLink.svelte"
+  import Footer from "../../ui-component/Footer.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(SelectWorkspaceScene)
@@ -128,5 +129,6 @@ THE SOFTWARE.
         </div>
       {/if}
     </div>
+    <Footer/>
   </div>
 </div>

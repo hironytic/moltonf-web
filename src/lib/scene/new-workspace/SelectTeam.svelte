@@ -32,6 +32,7 @@ THE SOFTWARE.
   import type { Readable, Writable } from "svelte/store"
   import { readable, writable } from "svelte/store"
   import OptionChooser from "./OptionChooser.svelte"
+  import Footer from "../../ui-component/Footer.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(NewWorkspaceScene)
@@ -81,4 +82,5 @@ THE SOFTWARE.
       </div>    
     </div>
   </div>
+  <Footer/>
 </div>
