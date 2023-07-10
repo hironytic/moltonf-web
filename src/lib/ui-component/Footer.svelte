@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 <script lang="ts">
   import { commitHash, version } from "../../Version"
-  import { Popover, Tooltip } from "flowbite-svelte"
+  import { Popover } from "flowbite-svelte"
 </script>
 
 <div class="mt-8 mb-4 text-center text-gray-600 text-xs">
