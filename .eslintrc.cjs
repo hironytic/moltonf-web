@@ -42,10 +42,4 @@ module.exports = {
       "destructuredArrayIgnorePattern": "^_",
     }],
   },
-  settings: {
-    'svelte3/typescript': require('typescript'), // pass the TypeScript package to the Svelte plugin
-    "svelte3/ignore-warnings": (/** @type {{ code: string; }} */ warning) => {
-      return warning.code === "a11y-click-events-have-key-events"
-    }
-  },
 }
