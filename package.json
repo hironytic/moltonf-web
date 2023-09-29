@@ -17,21 +17,21 @@
     "@sveltejs/vite-plugin-svelte": "^2.4.6",
     "@tsconfig/svelte": "^5.0.2",
     "@types/uuid": "^9.0.4",
-    "@typescript-eslint/eslint-plugin": "^6.7.0",
-    "@typescript-eslint/parser": "^6.7.0",
-    "autoprefixer": "^10.4.15",
+    "@typescript-eslint/eslint-plugin": "^6.7.3",
+    "@typescript-eslint/parser": "^6.7.3",
+    "autoprefixer": "^10.4.16",
     "eslint": "8.49.0",
-    "eslint-plugin-svelte": "^2.32.4",
-    "postcss": "^8.4.25",
+    "eslint-plugin-svelte": "^2.33.2",
+    "postcss": "^8.4.31",
     "postcss-load-config": "^4.0.1",
-    "svelte": "^4.0.0",
-    "svelte-check": "^3.5.1",
+    "svelte": "^4.2.1",
+    "svelte-check": "^3.5.2",
     "svelte-preprocess": "^5.0.4",
     "tailwindcss": "^3.3.3",
     "tslib": "^2.6.2",
     "typescript": "^5.2.2",
     "vite": "^4.4.9",
-    "vitest": "^0.34.4"
+    "vitest": "^0.34.6"
   },
   "volta": {
     "node": "20.1.0",
@@ -43,7 +43,7 @@
     "@steeze-ui/svelte-icon": "^1.5.0",
     "classnames": "^2.3.2",
     "flowbite": "^1.7.0",
-    "flowbite-svelte": "^0.44.15",
+    "flowbite-svelte": "^0.44.17",
     "idb": "^7.1.1",
     "uuid": "^9.0.1"
   }
