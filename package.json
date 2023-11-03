@@ -43,7 +43,7 @@
     "@steeze-ui/svelte-icon": "^1.5.0",
     "classnames": "^2.3.2",
     "flowbite": "^1.7.0",
-    "flowbite-svelte": "^0.44.18",
+    "flowbite-svelte": "^0.44.19",
     "idb": "^7.1.1",
     "uuid": "^9.0.1"
   }
