@@ -14,7 +14,7 @@
     "sitecss": "cd site && tailwindcss -i index.src.css -o index.css"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^2.4.6",
+    "@sveltejs/vite-plugin-svelte": "^2.5.1",
     "@tsconfig/svelte": "^5.0.2",
     "@types/uuid": "^9.0.5",
     "@typescript-eslint/eslint-plugin": "^6.7.5",
