@@ -79,7 +79,7 @@ THE SOFTWARE.
     
       <div class="text-sm mt-4">
         <p>
-          <a class="text-red-500 underline hover:text-gray-300 inline-flex items-baseline" href="https://osdn.net/projects/jindolf/scm/git/XmlScheme" target="_blank" rel="noopener noreferrer">Jindolf XML Scheme <ExternalSiteIcon size="0.8rem"/></a>形式のXMLファイルを用意してください。
+          <a class="text-red-500 underline hover:text-gray-300 inline-flex items-baseline" href="https://github.com/olyutorskii/XmlScheme" target="_blank" rel="noopener noreferrer">Jindolf XmlScheme <ExternalSiteIcon size="0.8rem"/></a>形式のXMLファイルを用意してください。
           そのXMLファイルの村データを読み込みます。
           読み込んだデータはブラウザが管理するローカルコンピューター上のストレージに保存されます
           （観戦データが作成された後は、ここで選択したXMLファイルはもう参照しません）。
