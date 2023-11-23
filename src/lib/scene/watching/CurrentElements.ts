@@ -77,7 +77,7 @@ function filterStoryElement(story: Story, characterMap: CharacterMap, dayProgres
         case TalkTypes.WOLF:
           return filter(isWolfTalkVisible(story, character, currentDay))
         case TalkTypes.GRAVE:
-          return filter(isGraveTalkVisible(character, currentDay))
+          return filter(isGraveTalkVisible(character, dayProgress))
         default:
           return [element]
       }
@@ -148,7 +148,7 @@ export function isTalkVisible(story: Story, day: number, talk: Talk, character: 
     case TalkTypes.WOLF:
       return isWolfTalkVisible(story, character, day)
     case TalkTypes.GRAVE:
-      return isGraveTalkVisible(character, day)
+      return isGraveTalkVisible(character, dayProgress)
     default:
       return false
   }
@@ -167,8 +167,8 @@ function isWolfTalkVisible(story: Story, character: Character, currentDay: numbe
     || (story.landId === "wolfc" && character.role === Roles.MADMAN)
 }
 
-function isGraveTalkVisible(character: Character, currentDay: number): boolean {
-  return character.aliveUntil < currentDay
+function isGraveTalkVisible(character: Character, dayProgress: number | undefined): boolean {
+  return dayProgress === undefined || character.aliveUntil < dayProgress
 }
 
 function isJudgeVisible(character: Character): boolean {

@@ -65,8 +65,13 @@ describe("CurrentElements", () => {
         expect(elements.find(it => it.elementId === "924463B2-A292-4724-8B8C-74F32BC8B89F")).toBeUndefined()
       })
 
-      it("should show a talk in graveyard if player character is dead", () => {
+      it("should show a talk in graveyard if player character is dead 1", () => {
         const elements = currentElements(story, createCharacterMap(story), "regina", 3, 3)
+        expect(elements.find(it => it.elementId === "924463B2-A292-4724-8B8C-74F32BC8B89F")).toBeDefined()
+      })
+
+      it("should show a talk in graveyard if player character is dead 2", () => {
+        const elements = currentElements(story, createCharacterMap(story), "pamela", 4, 3)
         expect(elements.find(it => it.elementId === "924463B2-A292-4724-8B8C-74F32BC8B89F")).toBeDefined()
       })
       
