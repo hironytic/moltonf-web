@@ -20,7 +20,7 @@ Works with JavaScript within your browser. The logs you select and watching stat
 
 ### The logs are XML files
 
-The logs are XML files that structures are defined as "[Jindolf XML Scheme](https://osdn.net/projects/jindolf/scm/git/XmlScheme)". You need to obtain the log that you wish to watch in advance.
+The logs are XML files that structures are defined as "[Jindolf XmlScheme](https://github.com/olyutorskii/XmlScheme)". You need to obtain the log that you wish to watch in advance.
 
 ## How to run
 
