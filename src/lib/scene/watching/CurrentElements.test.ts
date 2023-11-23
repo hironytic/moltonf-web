@@ -571,9 +571,14 @@ describe("CurrentElements", () => {
         expect(elements.find(it => it.elementId === "BB770850-7822-498D-B528-32CE1949DA08")).toBeUndefined()
       })
 
-      it("should show a wolf's talk", () => {
+      it("should show a wolf's talk if player character is alive", () => {
         const elements = currentElements(story, createCharacterMap(story), "liesa", 3, 3)
         expect(elements.find(it => it.elementId === "F720D764-05CC-4CBD-8ECC-69185C59EAE8")).toBeDefined()
+      })
+
+      it("should hide a wolf's talk if player character is dead", () => {
+        const elements = currentElements(story, createCharacterMap(story), "simson", 3, 3)
+        expect(elements.find(it => it.elementId === "F720D764-05CC-4CBD-8ECC-69185C59EAE8")).toBeUndefined()
       })
     })
 
