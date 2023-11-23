@@ -75,7 +75,7 @@ function filterStoryElement(story: Story, characterMap: CharacterMap, dayProgres
         case TalkTypes.PRIVATE:
           return filter(isPrivateTalkVisible(element, character))
         case TalkTypes.WOLF:
-          return filter(isWolfTalkVisible(story, character))
+          return filter(isWolfTalkVisible(story, character, currentDay))
         case TalkTypes.GRAVE:
           return filter(isGraveTalkVisible(character, currentDay))
         default:
@@ -119,7 +119,7 @@ function filterStoryElement(story: Story, characterMap: CharacterMap, dayProgres
         case EventNames.ASSAULT:
         {
           return filter(
-            isAssaultVisible(character),
+            isAssaultVisible(story, character, currentDay),
           )
         }
         default:
@@ -146,7 +146,7 @@ export function isTalkVisible(story: Story, day: number, talk: Talk, character: 
     case TalkTypes.PRIVATE:
       return isPrivateTalkVisible(talk, character)
     case TalkTypes.WOLF:
-      return isWolfTalkVisible(story, character)
+      return isWolfTalkVisible(story, character, day)
     case TalkTypes.GRAVE:
       return isGraveTalkVisible(character, day)
     default:
@@ -162,8 +162,8 @@ function isPrivateTalkVisible(talk: Talk, character: Character): boolean {
   return talk.avatarId === character.avatar.avatarId
 }
 
-function isWolfTalkVisible(story: Story, character: Character): boolean {
-  return character.role === Roles.WOLF
+function isWolfTalkVisible(story: Story, character: Character, currentDay: number): boolean {
+  return (character.role === Roles.WOLF && character.aliveUntil >= currentDay)
     || (story.landId === "wolfc" && character.role === Roles.MADMAN)
 }
 
@@ -183,8 +183,8 @@ function isCounting2Visible(): boolean {
   return false
 }
 
-function isAssaultVisible(character: Character): boolean {
-  return character.role === Roles.WOLF
+function isAssaultVisible(story: Story, character: Character, currentDay: number): boolean {
+  return isWolfTalkVisible(story, character, currentDay)
 }
 
 function createPlayerCharacterMessage(idBase: string, character: Character, characterMap: CharacterMap): MoltonfMessage {
