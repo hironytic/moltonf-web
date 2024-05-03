@@ -35,7 +35,7 @@ export function unusedParameter(..._args: unknown[]) {
 export async function delay(msec: number, signal?: AbortSignal): Promise<void> {
   let abortListener: (() => void) | undefined = undefined
   const promise = new Promise((resolve, reject) => {
-    let timeout: NodeJS.Timeout | undefined = undefined
+    let timeout: number | undefined = undefined
     if (signal !== undefined) {
       abortListener = () => {
         if (timeout !== undefined) {
