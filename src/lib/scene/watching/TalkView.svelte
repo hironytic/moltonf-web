@@ -117,7 +117,7 @@ THE SOFTWARE.
   </div>
   <div class="grow p-2 rounded tt-{talk.talkType}">
     <p class="message">
-      {#each segmentsLines as line, index}
+      {#each segmentsLines as line, index (index)}
         {#if index !== 0}
           <br/>
         {/if}

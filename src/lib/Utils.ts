@@ -22,12 +22,10 @@
 // THE SOFTWARE.
 //
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function doNothing(..._args: unknown[]) {
   // do nothing
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function unusedParameter(..._args: unknown[]) {
   // do nothing
 }

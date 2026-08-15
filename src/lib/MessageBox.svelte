@@ -62,7 +62,7 @@ THE SOFTWARE.
     <div class="text-center">
       <h2 class="mb-4 text-xl font-medium text-gray-300">{messageBoxItem.title}</h2>
       <div class="mb-4">
-        {#each messageLines as line}
+        {#each messageLines as line, index (index)}
           {#if line === ""}
             <p><br></p>
           {:else}

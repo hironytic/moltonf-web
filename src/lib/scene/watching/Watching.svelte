@@ -66,22 +66,26 @@ THE SOFTWARE.
     }
   }
 
+  function scheduleScrollToElement(focusedElementId: string) {
+    if (unreactives.scrollTimer !== undefined) {
+      window.clearTimeout(unreactives.scrollTimer)
+    }
+    unreactives.scrollTimer = window.setTimeout(() => {
+      unreactives.scrollTimer = undefined
+      watchingContext.scrollToElement(focusedElementId)
+      const location = scene?.getLocation(currentDay)
+      if (location !== undefined) {
+        appContext.history.navigate(location, true)
+      }
+    }, 200)
+  }
+
   let focusedElementId$: Readable<string | undefined>
   $: focusedElementId$ = scene?.focusedElementId$ ?? readable(undefined)
   $: {
     const focusedElementId = $focusedElementId$
     if (focusedElementId !== undefined) {
-      if (unreactives.scrollTimer !== undefined) {
-        window.clearTimeout(unreactives.scrollTimer)
-      }
-      unreactives.scrollTimer = window.setTimeout(() => {
-        unreactives.scrollTimer = undefined
-        watchingContext.scrollToElement(focusedElementId)
-        const location = scene?.getLocation(currentDay)
-        if (location !== undefined) {
-          appContext.history.navigate(location, true)
-        }
-      }, 200)
+      scheduleScrollToElement(focusedElementId)
     }
   }
   

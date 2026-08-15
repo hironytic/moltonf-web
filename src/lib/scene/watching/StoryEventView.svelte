@@ -40,7 +40,7 @@ THE SOFTWARE.
 
 <div class="p-2 ef-{storyEvent.eventFamily}">
   <p class="message">
-  {#each storyEvent.messageLines as line, index}
+  {#each storyEvent.messageLines as line, index (index)}
     {#if index !== 0}
       <br/>
     {/if}
