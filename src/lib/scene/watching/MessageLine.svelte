@@ -34,7 +34,7 @@ THE SOFTWARE.
   export let location = undefined as HistoryLocation | undefined
 </script>
 
-{#each segments as segment}
+{#each segments as segment, index (index)}
   {#if segment.type === MessageSegmentTypes.general}
     {segment.text}
   {:else if segment.type === MessageSegmentTypes.linkToTalk}

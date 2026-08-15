@@ -101,7 +101,7 @@ export class HashHistory implements History {
       } else {
         window.history.pushState(state, "", path)
       }
-    } catch (e) {
+    } catch {
       if (replace) {
         window.location.replace(path)
       } else {

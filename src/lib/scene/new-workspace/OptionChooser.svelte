@@ -47,7 +47,7 @@ THE SOFTWARE.
 </script>
 
 <div class={clsNames}>
-  {#each options as option}
+  {#each options as option (option)}
     {@const buttonClass = classNames(
       "w-full p-5 text-left rounded-lg cursor-pointer",
       "bg-gray-800 hover:bg-gray-700",

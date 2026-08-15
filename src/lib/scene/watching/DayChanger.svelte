@@ -43,9 +43,9 @@ THE SOFTWARE.
 
 {#if scene !== undefined}
   <ButtonGroup class="overflow-x-auto">
-    {#each $watchableDays$ as wday}
+    {#each $watchableDays$ as wday (wday.day)}
       <HistoryLink to={scene.getLocation(wday.day)} let:href let:onClick>
-        <Button size="xs" color="red" class="shrink-0" href={href} on:click={onClick} outline={wday.day !== $currentDay$}>
+        <Button size="xs" color="red" class="shrink-0" href={href} onclick={onClick} outline={wday.day !== $currentDay$}>
           {wday.text}
         </Button>
       </HistoryLink>

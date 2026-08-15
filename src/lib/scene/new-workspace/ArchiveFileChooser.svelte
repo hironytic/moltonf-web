@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 <script lang="ts">
   import { createEventDispatcher } from "svelte"
+  import classNames from "classnames"
   import FileOpenIcon from "../../icon/FileOpenIcon.svelte"
   import { Dropzone } from "flowbite-svelte"
   import StoryIcon from "../../icon/StoryIcon.svelte"
@@ -42,24 +43,16 @@ THE SOFTWARE.
   }
   
   function onDragOver(ev: DragEvent) {
-    ev.preventDefault()
     const dataTransfer = ev.dataTransfer ?? undefined
     if (dataTransfer !== undefined) {
       dataTransfer.dropEffect = "copy"
     }
   }
-
-  function onDrop(ev: DragEvent) {
-    ev.preventDefault()
-    files = ev.dataTransfer?.files
-  }
 </script>
 
 <Dropzone
-  defaultClass="flex flex-col justify-center items-center w-full h-32 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
-  class={className}
-  on:dragover={onDragOver}
-  on:drop={onDrop}
+  class={classNames("h-32", className)}
+  onDragOver={onDragOver}
   bind:files
 >
   <div class="flex items-center space-x-2 mb-4">

@@ -36,7 +36,7 @@ THE SOFTWARE.
 
 <div class="p-2 ef-moltonf">
   <p class="message">
-  {#each message.messageLines as line, index}
+  {#each message.messageLines as line, index (index)}
     {#if index !== 0}
       <br/>
     {/if}

@@ -66,22 +66,26 @@ THE SOFTWARE.
     }
   }
 
+  function scheduleScrollToElement(focusedElementId: string) {
+    if (unreactives.scrollTimer !== undefined) {
+      window.clearTimeout(unreactives.scrollTimer)
+    }
+    unreactives.scrollTimer = window.setTimeout(() => {
+      unreactives.scrollTimer = undefined
+      watchingContext.scrollToElement(focusedElementId)
+      const location = scene?.getLocation(currentDay)
+      if (location !== undefined) {
+        appContext.history.navigate(location, true)
+      }
+    }, 200)
+  }
+
   let focusedElementId$: Readable<string | undefined>
   $: focusedElementId$ = scene?.focusedElementId$ ?? readable(undefined)
   $: {
     const focusedElementId = $focusedElementId$
     if (focusedElementId !== undefined) {
-      if (unreactives.scrollTimer !== undefined) {
-        window.clearTimeout(unreactives.scrollTimer)
-      }
-      unreactives.scrollTimer = window.setTimeout(() => {
-        unreactives.scrollTimer = undefined
-        watchingContext.scrollToElement(focusedElementId)
-        const location = scene?.getLocation(currentDay)
-        if (location !== undefined) {
-          appContext.history.navigate(location, true)
-        }
-      }, 200)
+      scheduleScrollToElement(focusedElementId)
     }
   }
   
@@ -112,7 +116,7 @@ THE SOFTWARE.
         <div class="bg-black text-sm max-w-[600px] p-6 rounded-md">
           <WatchingElementsView/>
           {#if $canMoveToNextDay$}
-            <Button color="red" class="mt-4" on:click={() => moveToNextDay()}>次の日へ</Button>
+            <Button color="red" class="mt-4" onclick={() => moveToNextDay()}>次の日へ</Button>
           {/if}
         </div>
       </div>

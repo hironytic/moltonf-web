@@ -51,7 +51,7 @@ THE SOFTWARE.
 <div class="overflow-y-auto">
   <div class="flex place-content-center">
     <div class="bg-black max-w-[600px] p-10 rounded-md">
-      <Button color="dark" outline size="xs" on:click={() => scene?.backFromSelectRoleOfWolfStep()}>
+      <Button color="dark" outline size="xs" onclick={() => scene?.backFromSelectRoleOfWolfStep()}>
         <ChevronLeftIcon size="1rem"/> 戻る
       </Button>
       <HeaderTitle class="mt-4">人狼側の役職は？</HeaderTitle>
@@ -77,7 +77,7 @@ THE SOFTWARE.
       </OptionChooser>
     
       <div class="mt-4 flex place-content-end">
-        <Button color="red" disabled={!$canForward$} on:click={() => scene?.forwardFromSelectRoleOfWolfStep()}>次へ</Button>
+        <Button color="red" disabled={!$canForward$} onclick={() => scene?.forwardFromSelectRoleOfWolfStep()}>次へ</Button>
       </div>
     </div>
   </div>

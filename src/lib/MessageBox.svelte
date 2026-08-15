@@ -62,7 +62,7 @@ THE SOFTWARE.
     <div class="text-center">
       <h2 class="mb-4 text-xl font-medium text-gray-300">{messageBoxItem.title}</h2>
       <div class="mb-4">
-        {#each messageLines as line}
+        {#each messageLines as line, index (index)}
           {#if line === ""}
             <p><br></p>
           {:else}
@@ -71,7 +71,7 @@ THE SOFTWARE.
         {/each}
       </div>
       {#each messageBoxItem.buttons as button (button.key)}
-        <Button color={button.color} class="first:ml-0 ml-2" on:click={() => onButtonClicked(button)}>{button.text}</Button>
+        <Button color={button.color} class="first:ml-0 ml-2" onclick={() => onButtonClicked(button)}>{button.text}</Button>
       {/each}
     </div>
   {/if}

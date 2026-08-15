@@ -9,6 +9,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "friday"
+    cooldown:
+      default-days: 7
     open-pull-requests-limit: 10
     labels:
       - "dependencies"
@@ -19,6 +21,7 @@ updates:
       typescript-eslint:
         patterns:
           - "@typescript-eslint/*"
+          - "typescript-eslint"
   
   # GitHub Actions
   - package-ecosystem: "github-actions"
@@ -26,5 +29,7 @@ updates:
     schedule:
       interval: "weekly"
       day: "friday"
+    cooldown:
+      default-days: 7
     labels:
       - "dependencies"

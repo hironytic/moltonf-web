@@ -51,7 +51,7 @@ THE SOFTWARE.
 <div class="overflow-y-auto">
   <div class="flex place-content-center">
     <div class="bg-black max-w-[600px] p-10 rounded-md">
-      <Button color="dark" outline size="xs" on:click={() => scene?.backFromSelectTeamStep()}>
+      <Button color="dark" outline size="xs" onclick={() => scene?.backFromSelectTeamStep()}>
         <ChevronLeftIcon size="1rem"/> 戻る
       </Button>
       <HeaderTitle class="mt-4">どの視点で観戦しますか？</HeaderTitle>
@@ -78,7 +78,7 @@ THE SOFTWARE.
       </OptionChooser>
       
       <div class="mt-4 flex place-content-end">
-        <Button color="red" disabled={!$canForward$} on:click={() => scene?.forwardFromSelectTeamStep()}>次へ</Button>
+        <Button color="red" disabled={!$canForward$} onclick={() => scene?.forwardFromSelectTeamStep()}>次へ</Button>
       </div>    
     </div>
   </div>
