@@ -76,7 +76,7 @@ THE SOFTWARE.
           <HeaderTitle class="mb-4">観戦を始めましょう！</HeaderTitle>
           
           <div class="my-12 flex justify-center">
-            <Button color="red" on:click={() => scene?.createNewWorkspace()}>観戦データを作成して始める</Button>
+            <Button color="red" onclick={() => scene?.createNewWorkspace()}>観戦データを作成して始める</Button>
           </div>
     
           <div class="text-sm">
@@ -107,7 +107,7 @@ THE SOFTWARE.
             {#each $workspaces$ as item (item.id)}
               {@const location = HistoryLocation.fromComponents(["/", item.id])}
               <HistoryLink to={location} let:href let:onClick>
-                <ListgroupItem href={href} on:click={onClick}> 
+                <ListgroupItem href={href} onclick={onClick}>
                   <div class="flex items-center justify-between w-full">
                     <div class="inline-flex">
                       <WorkspaceIcon size="1.25rem" class="mr-2"/>{item.name}
@@ -121,7 +121,7 @@ THE SOFTWARE.
             {/each}
           </Listgroup>
           <div class="flex justify-end">
-            <Button color="red" class="mt-2" on:click={() => scene?.createNewWorkspace()}>
+            <Button color="red" class="mt-2" onclick={() => scene?.createNewWorkspace()}>
               <WorkspaceIcon size="1.25rem" class="mr-2"/>
               新しい観戦データで始める
             </Button>

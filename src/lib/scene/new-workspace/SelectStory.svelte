@@ -72,7 +72,7 @@ THE SOFTWARE.
 <div class="overflow-y-auto">
   <div class="flex place-content-center">
     <div class="bg-black max-w-[600px] p-10 rounded-md">
-      <Button color="dark" outline size="xs" on:click={() => scene?.backFromSelectStoryStep()}>
+      <Button color="dark" outline size="xs" onclick={() => scene?.backFromSelectStoryStep()}>
         <ChevronLeftIcon size="1rem"/> 戻る
       </Button>
       <HeaderTitle class="mt-4">村データの読み込み</HeaderTitle>
@@ -90,7 +90,7 @@ THE SOFTWARE.
     
       {#if currentStoryName !== undefined}
         <div class="my-4 text-end">
-          <Button color="red" on:click={() => scene?.forwardFromSelectStoryStep()}>次へ</Button>
+          <Button color="red" onclick={() => scene?.forwardFromSelectStoryStep()}>次へ</Button>
         </div>
       {/if}
       

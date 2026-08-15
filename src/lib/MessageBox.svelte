@@ -71,7 +71,7 @@ THE SOFTWARE.
         {/each}
       </div>
       {#each messageBoxItem.buttons as button (button.key)}
-        <Button color={button.color} class="first:ml-0 ml-2" on:click={() => onButtonClicked(button)}>{button.text}</Button>
+        <Button color={button.color} class="first:ml-0 ml-2" onclick={() => onButtonClicked(button)}>{button.text}</Button>
       {/each}
     </div>
   {/if}

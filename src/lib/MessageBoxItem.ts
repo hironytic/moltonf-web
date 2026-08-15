@@ -31,7 +31,7 @@ export interface MessageBoxItem {
 export interface MessageBoxItemButton {
   key: string
   
-  color: 
+  color:
     | 'alternative'
     | 'blue'
     | 'dark'
@@ -41,8 +41,7 @@ export interface MessageBoxItemButton {
     | 'purple'
     | 'red'
     | 'yellow'
-    | 'none'
-  
+
   text: string
 }
 

@@ -44,7 +44,7 @@ THE SOFTWARE.
 <div class="overflow-y-auto">
   <div class="flex place-content-center">
     <div class="bg-black max-w-[600px] p-10 rounded-md">
-      <Button color="dark" outline size="xs" on:click={() => scene?.backFromConfirmStep()}>
+      <Button color="dark" outline size="xs" onclick={() => scene?.backFromConfirmStep()}>
         <ChevronLeftIcon size="1rem"/> 戻る
       </Button>
       <HeaderTitle class="mt-4">観戦データの登録</HeaderTitle>
@@ -54,7 +54,7 @@ THE SOFTWARE.
       </div>
 
       <div class="mt-8 text-center">
-        <Button color="red" on:click={() => scene?.registerNewWorkspace()}>登録してプロローグへ</Button>
+        <Button color="red" onclick={() => scene?.registerNewWorkspace()}>登録してプロローグへ</Button>
       </div>
       
       <div class="text-sm mt-8">

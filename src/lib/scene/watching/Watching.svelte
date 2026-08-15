@@ -116,7 +116,7 @@ THE SOFTWARE.
         <div class="bg-black text-sm max-w-[600px] p-6 rounded-md">
           <WatchingElementsView/>
           {#if $canMoveToNextDay$}
-            <Button color="red" class="mt-4" on:click={() => moveToNextDay()}>次の日へ</Button>
+            <Button color="red" class="mt-4" onclick={() => moveToNextDay()}>次の日へ</Button>
           {/if}
         </div>
       </div>

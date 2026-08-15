@@ -53,7 +53,7 @@ THE SOFTWARE.
 <div class="overflow-y-auto">
   <div class="flex place-content-center">
     <div class="bg-black max-w-[600px] p-10 rounded-md">
-      <Button color="alternative" size="xs" on:click={() => scene?.backFromInputNameStep()}>
+      <Button color="alternative" size="xs" onclick={() => scene?.backFromInputNameStep()}>
         <ChevronLeftIcon size="1rem"/> 戻る
       </Button>
       <HeaderTitle class="mt-4">観戦データの名前</HeaderTitle>
@@ -69,8 +69,10 @@ THE SOFTWARE.
         on:submit|preventDefault={() => scene?.forwardFromInputNameStep()}
       >
         <div class="grow">
-          <Input required let:props>
-            <input type="text" bind:value={$name$} bind:this={nameInput} {...props}/> 
+          <Input required>
+            {#snippet children(props)}
+              <input type="text" bind:value={$name$} bind:this={nameInput} {...props}/>
+            {/snippet}
           </Input>
         </div>
         <Button class="shrink-0" type="submit" color="red" disabled={!$canForward$}>次へ</Button>
