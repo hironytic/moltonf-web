@@ -22,10 +22,11 @@
 // THE SOFTWARE.
 //
 
+import { mount } from "svelte"
 import "./app.postcss"
 import App from "./App.svelte"
 
-const app = new App({
+const app = mount(App, {
   target: document.getElementById("app") ?? document.body,
 })
 
