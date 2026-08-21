@@ -59,26 +59,22 @@ THE SOFTWARE.
     }
   })
 
-  function scheduleScrollToElement(focusedElementId: string) {
-    if (unreactives.scrollTimer !== undefined) {
-      window.clearTimeout(unreactives.scrollTimer)
-    }
-    unreactives.scrollTimer = window.setTimeout(() => {
-      unreactives.scrollTimer = undefined
-      watchingContext.scrollToElement(focusedElementId)
-      const location = scene?.getLocation(currentDay)
-      if (location !== undefined) {
-        appContext.history.navigate(location, true)
-      }
-    }, 200)
-  }
-
   let focusedElementId$ = $derived(scene?.focusedElementId$ ?? readable(undefined))
   
   $effect(() => {
     const focusedElementId = $focusedElementId$
     if (focusedElementId !== undefined) {
-      scheduleScrollToElement(focusedElementId)
+      if (unreactives.scrollTimer !== undefined) {
+        window.clearTimeout(unreactives.scrollTimer)
+      }
+      unreactives.scrollTimer = window.setTimeout(() => {
+        unreactives.scrollTimer = undefined
+        watchingContext.scrollToElement(focusedElementId)
+        const location = scene?.getLocation(currentDay)
+        if (location !== undefined) {
+          appContext.history.navigate(location, true)
+        }
+      }, 200)
     }
   })
   
