@@ -24,8 +24,8 @@ THE SOFTWARE.
 
 <script lang="ts">
   import type { CharacterMap } from "../../story/CharacterMap"
-  import type { WatchingElement } from "./WatchingScene"
-  import { MoltonfMessageType } from "./WatchingScene"
+  import type { WatchingElement } from "./WatchingScene.svelte"
+  import { MoltonfMessageType } from "./WatchingScene.svelte"
   import { StoryElementTypes } from "../../story/StoryElement"
   import { EventNames } from "../../story/StoryEventName"
   import TalkView from "./TalkView.svelte"

@@ -43,6 +43,9 @@ export default defineConfig(
         "caughtErrorsIgnorePattern": "^_",
         "destructuredArrayIgnorePattern": "^_",
       }],
+
+      // See Also: https://github.com/sveltejs/eslint-plugin-svelte/issues/1271
+      "svelte/prefer-svelte-reactivity": "off",
     },
   },
 )

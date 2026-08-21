@@ -26,24 +26,23 @@ THE SOFTWARE.
   import { Button, ButtonGroup } from "flowbite-svelte"
   import { getContext } from "svelte"
   import { AppContext } from "../../../AppContext"
-  import { WatchingScene } from "./WatchingScene"
-  import { readable } from "svelte/store"
+  import { WatchingScene } from "./WatchingScene.svelte"
   import HistoryLink from "../../ui-component/HistoryLink.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(WatchingScene)
   let scene = $derived($scene$)
   
-  let watchableDays$ = $derived(scene?.watchableDays$ ?? readable([]))
-  let currentDay$ = $derived(scene?.currentDay$ ?? readable(0))
+  let watchableDays = $derived(scene?.watchableDays ?? [])
+  let currentDay = $derived(scene?.currentDay ?? 0)
 </script>
 
 {#if scene !== undefined}
   <ButtonGroup class="overflow-x-auto">
-    {#each $watchableDays$ as wday (wday.day)}
+    {#each watchableDays as wday (wday.day)}
       <HistoryLink to={scene.getLocation(wday.day)}  >
         {#snippet children({ href, onClick })}
-          <Button size="xs" color="red" class="shrink-0" href={href} onclick={onClick} outline={wday.day !== $currentDay$}>
+          <Button size="xs" color="red" class="shrink-0" href={href} onclick={onClick} outline={wday.day !== currentDay}>
             {wday.text}
           </Button>
         {/snippet}

@@ -38,7 +38,7 @@ THE SOFTWARE.
   import MessageLine from "./MessageLine.svelte"
   import { getContext } from "svelte"
   import { AppContext } from "../../../AppContext"
-  import { WatchingScene } from "./WatchingScene"
+  import { WatchingScene } from "./WatchingScene.svelte"
 
   
   interface Props {
@@ -92,7 +92,6 @@ THE SOFTWARE.
     talkMap,
     isTalkVisible: (talk: TalkWithDay) => isTalkVisible(talk.day, talk.talk), 
   })))
-  
   
   let location = $derived(scene?.getLocation(currentDay, talk.elementId))
 </script>

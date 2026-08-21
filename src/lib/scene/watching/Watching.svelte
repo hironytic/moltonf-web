@@ -25,8 +25,7 @@ THE SOFTWARE.
 <script lang="ts">
   import { getContext, onDestroy, setContext } from "svelte"
   import { AppContext } from "../../../AppContext"
-  import { WatchingScene } from "./WatchingScene"
-  import { readable } from "svelte/store"
+  import { WatchingScene } from "./WatchingScene.svelte"
   import { Button, Spinner } from "flowbite-svelte"
   import WatchingElementsView from "./WatchingElementsView.svelte"
   import { WatchingContext } from "./WatchingContext"
@@ -44,11 +43,9 @@ THE SOFTWARE.
   const watchingContext = new WatchingContext()
   setContext(WatchingContext.Key, watchingContext)
   
-  let story$ = $derived(scene?.story$ ?? readable(undefined))
   let scroller = $state(undefined as HTMLDivElement | undefined)
-  let currentDay$ = $derived(scene?.currentDay$ ?? readable(-1))
+  let currentDay = $derived(scene?.currentDay ?? -1)
   
-  let currentDay = $derived($currentDay$)
   $effect(() => {
     // If current day has been changed, reset the scroll position to top. 
     if (currentDay !== unreactives.lastCurrentDay) {
@@ -59,10 +56,9 @@ THE SOFTWARE.
     }
   })
 
-  let focusedElementId$ = $derived(scene?.focusedElementId$ ?? readable(undefined))
+  let focusedElementId = $derived(scene?.focusedElementId ?? undefined)
   
   $effect(() => {
-    const focusedElementId = $focusedElementId$
     if (focusedElementId !== undefined) {
       if (unreactives.scrollTimer !== undefined) {
         window.clearTimeout(unreactives.scrollTimer)
@@ -78,12 +74,12 @@ THE SOFTWARE.
     }
   })
   
-  let canMoveToNextDay$ = $derived(scene?.canMoveToNextDay$ ?? readable(false))
-  
-  let moveToNextDay$ = $derived(scene?.moveToNextDay$ ?? readable(() => { /* do nothing */ }))
+  function canMoveToNextDay(): boolean {
+    return scene?.canMoveToNextDay ?? false
+  }
   
   function moveToNextDay() {
-    ($moveToNextDay$)()
+    scene?.moveToNextDay()
   }
 
   onDestroy(() => {
@@ -93,22 +89,24 @@ THE SOFTWARE.
   })
 </script>
 
-{#if $story$ === undefined}
-  <div class="h-full flex flex-col place-items-center place-content-center">
-    <Spinner />
-  </div>
-{:else}
-  <div class="h-full flex flex-col">
-    <div class="overflow-y-auto" bind:this={scroller}>
-      <div class="flex place-content-center">
-        <div class="bg-black text-sm max-w-[600px] p-6 rounded-md">
-          <WatchingElementsView/>
-          {#if $canMoveToNextDay$}
-            <Button color="red" class="mt-4" onclick={() => moveToNextDay()}>次の日へ</Button>
-          {/if}
-        </div>
-      </div>
-      <Footer/>
+{#if scene !== undefined}
+  {#if scene.story === undefined}
+    <div class="h-full flex flex-col place-items-center place-content-center">
+      <Spinner />
     </div>
-  </div>
+  {:else}
+    <div class="h-full flex flex-col">
+      <div class="overflow-y-auto" bind:this={scroller}>
+        <div class="flex place-content-center">
+          <div class="bg-black text-sm max-w-[600px] p-6 rounded-md">
+            <WatchingElementsView/>
+            {#if canMoveToNextDay()}
+              <Button color="red" class="mt-4" onclick={() => moveToNextDay()}>次の日へ</Button>
+            {/if}
+          </div>
+        </div>
+        <Footer/>
+      </div>
+    </div>
+  {/if}
 {/if}

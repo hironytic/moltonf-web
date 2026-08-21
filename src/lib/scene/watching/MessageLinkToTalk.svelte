@@ -25,7 +25,7 @@ THE SOFTWARE.
 <script lang="ts">
   import { getContext } from "svelte"
   import { AppContext } from "../../../AppContext"
-  import { WatchingScene } from "./WatchingScene"
+  import { WatchingScene } from "./WatchingScene.svelte"
   import type { LinkToTalkSegment } from "./MessageSegment"
   import HistoryLink from "../../ui-component/HistoryLink.svelte"
   import type { TalkType } from "../../story/TalkType"

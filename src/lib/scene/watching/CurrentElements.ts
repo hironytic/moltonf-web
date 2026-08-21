@@ -30,8 +30,8 @@ import { EventNames } from "../../story/StoryEventName"
 import { TalkTypes } from "../../story/TalkType"
 import { Roles } from "../../story/Role"
 import type { Talk } from "../../story/Talk"
-import type { MoltonfMessage, WatchingElement } from "./WatchingScene"
-import { MoltonfMessageType } from "./WatchingScene"
+import type { MoltonfMessage, WatchingElement } from "./WatchingScene.svelte"
+import { MoltonfMessageType } from "./WatchingScene.svelte"
 import type { Assault } from "../../story/StoryEvent"
 
 export function currentElements(

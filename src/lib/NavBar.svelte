@@ -25,7 +25,7 @@ THE SOFTWARE.
 <script lang="ts">
   import { AppContext } from "../AppContext"
   import { getContext } from "svelte"
-  import { WatchingScene } from "./scene/watching/WatchingScene"
+  import { WatchingScene } from "./scene/watching/WatchingScene.svelte"
   import DayChanger from "./scene/watching/DayChanger.svelte"
   import HistoryLink from "./ui-component/HistoryLink.svelte"
 

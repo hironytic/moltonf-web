@@ -23,8 +23,8 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
-  import type { MoltonfMessage } from "./WatchingScene"
-  import { MoltonfMessageType } from "./WatchingScene"
+  import type { MoltonfMessage } from "./WatchingScene.svelte"
+  import { MoltonfMessageType } from "./WatchingScene.svelte"
 
   interface Props {
     message?: MoltonfMessage

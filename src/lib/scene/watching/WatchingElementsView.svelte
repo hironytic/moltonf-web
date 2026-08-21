@@ -25,30 +25,28 @@ THE SOFTWARE.
 <script lang="ts">
   import { getContext } from "svelte"
   import { AppContext } from "../../../AppContext"
-  import { WatchingScene } from "./WatchingScene"
-  import { readable } from "svelte/store"
+  import { WatchingScene } from "./WatchingScene.svelte"
   import WatchingElementView from "./WatchingElementView.svelte"
-  import { nullTalkMap } from "../../story/TalkMap"
+  import type { Talk } from "../../story/Talk"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(WatchingScene)
   let scene = $derived($scene$)
-
-  let currentDay$ = $derived(scene?.currentDay$ ?? readable(-1))
-  let currentElements$ = $derived(scene?.currentElements$ ?? readable([]))
-  let characterMap$ = $derived(scene?.characterMap$ ?? readable(new Map()))
-  let faceIconUrlMap$ = $derived(scene?.faceIconUrlMap$ ?? readable(new Map()))
-  let talkMap$ = $derived(scene?.talkMap$ ?? readable(nullTalkMap()))
-  let isTalkVisible$ = $derived(scene?.isTalkVisible$ ?? readable(() => false))
+  
+  function isTalkVisible(day: number, talk: Talk): boolean {
+    return scene?.isTalkVisible(day, talk) ?? false
+  }
 </script>
 
-{#each $currentElements$ as element (element.elementId)}
-  <WatchingElementView
-    element={element}
-    characterMap={$characterMap$}
-    faceIconUrlMap={$faceIconUrlMap$}
-    talkMap={$talkMap$}
-    currentDay={$currentDay$}
-    isTalkVisible={$isTalkVisible$}
-  />
-{/each}
+{#if scene !== undefined}
+  {#each scene.currentElements as element (element.elementId)}
+    <WatchingElementView
+      element={element}
+      characterMap={scene.characterMap}
+      faceIconUrlMap={scene.faceIconUrlMap}
+      talkMap={scene.talkMap}
+      currentDay={scene.currentDay}
+      isTalkVisible={isTalkVisible}
+    />
+  {/each}
+{/if}
