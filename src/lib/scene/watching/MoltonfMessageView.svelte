@@ -26,12 +26,17 @@ THE SOFTWARE.
   import type { MoltonfMessage } from "./WatchingScene"
   import { MoltonfMessageType } from "./WatchingScene"
 
-  export let message: MoltonfMessage = {
-    elementId: "",
-    elementType: MoltonfMessageType,
-    messageLines: [],
-  } as MoltonfMessage
-  
+  interface Props {
+    message?: MoltonfMessage
+  }
+
+  let {
+    message = {
+      elementId: "",
+      elementType: MoltonfMessageType,
+      messageLines: [],
+    }
+  }: Props = $props()
 </script>
 
 <div class="p-2 ef-moltonf">

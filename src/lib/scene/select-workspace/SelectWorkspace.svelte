@@ -23,6 +23,8 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
+  import { preventDefault, stopPropagation } from 'svelte/legacy'
+
   import { getContext } from "svelte"
   import { AppContext } from "../../../AppContext"
   import { SelectWorkspaceScene } from "./SelectWorkspaceScene"
@@ -38,10 +40,10 @@ THE SOFTWARE.
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(SelectWorkspaceScene)
-  $: scene = $scene$
+  let scene = $derived($scene$)
   
-  let workspaces$: Readable<Workspace[] | undefined>
-  $: workspaces$ = scene?.workspaces$ ?? readable(undefined)
+  let workspaces$: Readable<Workspace[] | undefined> = $derived(scene?.workspaces$ ?? readable(undefined))
+  
   
   async function deleteWorkspace(workspace: Workspace) {
     const result = await appContext.showMessageBox({
@@ -106,17 +108,19 @@ THE SOFTWARE.
           <Listgroup class="mt-4" active>
             {#each $workspaces$ as item (item.id)}
               {@const location = HistoryLocation.fromComponents(["/", item.id])}
-              <HistoryLink to={location} let:href let:onClick>
-                <ListgroupItem href={href} onclick={onClick}>
-                  <div class="flex items-center justify-between w-full">
-                    <div class="inline-flex">
-                      <WorkspaceIcon size="1.25rem" class="mr-2"/>{item.name}
+              <HistoryLink to={location}  >
+                {#snippet children({ href, onClick })}
+                  <ListgroupItem href={href} onclick={onClick}>
+                    <div class="flex items-center justify-between w-full">
+                      <div class="inline-flex">
+                        <WorkspaceIcon size="1.25rem" class="mr-2"/>{item.name}
+                      </div>
+                      <button class="hover:text-red-500" onclick={stopPropagation(preventDefault(() => void deleteWorkspace(item)))}>
+                        <DeleteIcon size="1.25rem"/>
+                      </button>
                     </div>
-                    <button class="hover:text-red-500" on:click|preventDefault|stopPropagation={() => void deleteWorkspace(item)}>
-                      <DeleteIcon size="1.25rem"/>
-                    </button>
-                  </div>
-                </ListgroupItem>
+                  </ListgroupItem>
+                {/snippet}
               </HistoryLink>
             {/each}
           </Listgroup>

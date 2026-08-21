@@ -40,18 +40,29 @@ THE SOFTWARE.
 
   const watchingContext = getContext<WatchingContext>(WatchingContext.Key)
   
-  export let characterMap: CharacterMap = new Map()
-  export let faceIconUrlMap: Map<string | symbol, string> = new Map()
-  export let talkMap: TalkMap = nullTalkMap()
-  export let isTalkVisible: (day: number, talk: Talk) => boolean = (() => true)  
-  export let currentDay = -1
-  export let element: WatchingElement = ({
-    elementId: "",
-    elementType: MoltonfMessageType,
-    messageLines: [],
-  })
+  interface Props {
+    characterMap?: CharacterMap
+    faceIconUrlMap?: Map<string | symbol, string>
+    talkMap?: TalkMap
+    isTalkVisible?: (day: number, talk: Talk) => boolean
+    currentDay?: number;
+    element?: WatchingElement;
+  }
+
+  let {
+    characterMap = new Map(),
+    faceIconUrlMap = new Map(),
+    talkMap = nullTalkMap(),
+    isTalkVisible = () => true,
+    currentDay = -1,
+    element = {
+      elementId: "",
+      elementType: MoltonfMessageType,
+      messageLines: [],
+    }
+  }: Props = $props()
   
-  let elementDiv: HTMLDivElement | undefined = (undefined)
+  let elementDiv: HTMLDivElement | undefined = $state(undefined)
   
   function registerElement(elementId: string) {
     if (elementDiv !== undefined) {
@@ -69,7 +80,9 @@ THE SOFTWARE.
     lastElementId: undefined as string | undefined,
   }
   
-  $: registerElement(element.elementId)
+  $effect(() => {
+    registerElement(element.elementId)
+  })
   
   onMount(() => {
     registerElement(element.elementId)

@@ -25,18 +25,21 @@ THE SOFTWARE.
 <script lang="ts">
   import HeaderIcon from "../icon/HeaderIcon.svelte"
   import classNames from "classnames"
+  import type { Snippet } from "svelte"
 
-  let className: string | undefined = undefined
-  export { className as class }
-  
-  let clsNames: string
-  $: clsNames = classNames(
+  interface Props {
+    class?: string
+    children?: Snippet
+  }
+
+  let { class: className, children }: Props = $props()
+  let clsNames = $derived(classNames(
     "flex items-center space-x-2 text-3xl font-bold text-gray-300",
     className ?? ""
-  )
+  ))
 </script>
 
 <div class={clsNames}>
   <HeaderIcon size="1.875rem"/>
-  <h1><slot/></h1>
+  <h1>{@render children?.()}</h1>
 </div>

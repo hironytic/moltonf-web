@@ -26,9 +26,7 @@ THE SOFTWARE.
   import { getContext, onDestroy, setContext } from "svelte"
   import { AppContext } from "../../../AppContext"
   import { WatchingScene } from "./WatchingScene"
-  import type { Readable } from "svelte/store"
   import { readable } from "svelte/store"
-  import type { Story } from "../../story/Story"
   import { Button, Spinner } from "flowbite-svelte"
   import WatchingElementsView from "./WatchingElementsView.svelte"
   import { WatchingContext } from "./WatchingContext"
@@ -41,22 +39,17 @@ THE SOFTWARE.
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(WatchingScene)
-  $: scene = $scene$
+  let scene = $derived($scene$)
 
   const watchingContext = new WatchingContext()
   setContext(WatchingContext.Key, watchingContext)
   
-  let story$: Readable<Story | undefined>
-  $: story$ = scene?.story$ ?? readable(undefined)
+  let story$ = $derived(scene?.story$ ?? readable(undefined))
+  let scroller = $state(undefined as HTMLDivElement | undefined)
+  let currentDay$ = $derived(scene?.currentDay$ ?? readable(-1))
   
-  let scroller = undefined as HTMLDivElement | undefined
-  
-  let currentDay$: Readable<number>
-  $: currentDay$ = scene?.currentDay$ ?? readable(-1)
-  let currentDay: number
-  $: {
-    currentDay = $currentDay$
-    
+  let currentDay = $derived($currentDay$)
+  $effect(() => {
     // If current day has been changed, reset the scroll position to top. 
     if (currentDay !== unreactives.lastCurrentDay) {
       unreactives.lastCurrentDay = currentDay
@@ -64,7 +57,7 @@ THE SOFTWARE.
         scroller.scrollTo(0, 0)
       }
     }
-  }
+  })
 
   function scheduleScrollToElement(focusedElementId: string) {
     if (unreactives.scrollTimer !== undefined) {
@@ -80,20 +73,19 @@ THE SOFTWARE.
     }, 200)
   }
 
-  let focusedElementId$: Readable<string | undefined>
-  $: focusedElementId$ = scene?.focusedElementId$ ?? readable(undefined)
-  $: {
+  let focusedElementId$ = $derived(scene?.focusedElementId$ ?? readable(undefined))
+  
+  $effect(() => {
     const focusedElementId = $focusedElementId$
     if (focusedElementId !== undefined) {
       scheduleScrollToElement(focusedElementId)
     }
-  }
+  })
   
-  let canMoveToNextDay$: Readable<boolean>
-  $: canMoveToNextDay$ = scene?.canMoveToNextDay$ ?? readable(false)
+  let canMoveToNextDay$ = $derived(scene?.canMoveToNextDay$ ?? readable(false))
   
-  let moveToNextDay$: Readable<() => void>
-  $: moveToNextDay$ = scene?.moveToNextDay$ ?? readable(() => { /* do nothing */ })
+  let moveToNextDay$ = $derived(scene?.moveToNextDay$ ?? readable(() => { /* do nothing */ }))
+  
   function moveToNextDay() {
     ($moveToNextDay$)()
   }

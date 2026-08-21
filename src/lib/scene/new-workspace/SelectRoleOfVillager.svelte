@@ -25,8 +25,7 @@ THE SOFTWARE.
 <script lang="ts">
   import { getContext } from "svelte"
   import { AppContext } from "../../../AppContext"
-  import { NewWorkspaceScene, type VillagerRoleOption, VillagerRoleOptions } from "./NewWorkspaceScene"
-  import type { Readable, Writable } from "svelte/store"
+  import { NewWorkspaceScene, VillagerRoleOptions } from "./NewWorkspaceScene"
   import { readable, writable } from "svelte/store"
   import { Button } from "flowbite-svelte"
   import ChevronLeftIcon from "../../icon/ChevronLeftIcon.svelte"
@@ -36,16 +35,10 @@ THE SOFTWARE.
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(NewWorkspaceScene)
-  $: scene = $scene$
-
-  let roleOptions$: Readable<VillagerRoleOption[]>
-  $: roleOptions$ = scene?.villagerRoleOptions$ ?? readable([])
-
-  let role$: Writable<VillagerRoleOption | undefined>
-  $: role$ = scene?.villagerRole$ ?? writable(undefined)
-
-  let canForward$: Readable<boolean>
-  $: canForward$ = scene?.canForwardFromSelectRoleOfVillagerStep$ ?? readable(false)
+  let scene = $derived($scene$)
+  let roleOptions$ = $derived(scene?.villagerRoleOptions$ ?? readable([]))
+  let role$ = $derived(scene?.villagerRole$ ?? writable(undefined))
+  let canForward$ = $derived(scene?.canForwardFromSelectRoleOfVillagerStep$ ?? readable(false))
 </script>
 
 <div class="overflow-y-auto">
@@ -60,29 +53,31 @@ THE SOFTWARE.
         <p>村人側の役職を選んでください。村人側の勝利条件は全ての人狼を処刑することです。</p>
       </div>
       
-      <OptionChooser class="mt-4" options={$roleOptions$} bind:value={$role$} on:choose={() => scene?.forwardFromSelectRoleOfVillagerStep()} let:option>
-        {#if option === VillagerRoleOptions.INNOCENT}
-          <p class="text-lg font-bold">ただの村人</p>
-          <p class="mt-2 text-sm">特別な能力を持たない村人の視点で観戦します。</p>
-        {:else if option === VillagerRoleOptions.SEER}
-          <p class="text-lg font-bold">占い師</p>
-          <p class="mt-2 text-sm">毎夜、誰かが人狼かどうかを占える視点で観戦します。</p>
-        {:else if option === VillagerRoleOptions.SHAMAN}
-          <p class="text-lg font-bold">霊能者</p>
-          <p class="mt-2 text-sm">処刑された者が人狼かどうかを知ることのできる視点で観戦します。</p>
-        {:else if option === VillagerRoleOptions.HUNTER}
-          <p class="text-lg font-bold">狩人</p>
-          <p class="mt-2 text-sm">誰かを人狼の襲撃から守れる視点で観戦します。</p>
-        {:else if option === VillagerRoleOptions.FRATER}
-          <p class="text-lg font-bold">共有者</p>
-          <p class="mt-2 text-sm">もうひとりの共有者が誰かを知ることができる視点で観戦します。</p>
-        {:else if option === VillagerRoleOptions.LONGEST_SURVIVOR}
-          <p class="text-lg font-bold">長く生き残った人</p>
-          <p class="mt-2 text-sm">村人側の人間のうち、最も長く生き残った人の視点で観戦します。</p>
-        {:else if option === VillagerRoleOptions.ANYTHING}
-          <p class="text-lg font-bold">村人側の中からおまかせ</p>
-          <p class="mt-2 text-sm">観戦データ作成時にシステムがランダムに決定します。</p>
-        {/if}
+      <OptionChooser class="mt-4" options={$roleOptions$} bind:value={$role$} onChoose={() => scene?.forwardFromSelectRoleOfVillagerStep()} >
+        {#snippet children(option)}
+          {#if option === VillagerRoleOptions.INNOCENT}
+            <p class="text-lg font-bold">ただの村人</p>
+            <p class="mt-2 text-sm">特別な能力を持たない村人の視点で観戦します。</p>
+          {:else if option === VillagerRoleOptions.SEER}
+            <p class="text-lg font-bold">占い師</p>
+            <p class="mt-2 text-sm">毎夜、誰かが人狼かどうかを占える視点で観戦します。</p>
+          {:else if option === VillagerRoleOptions.SHAMAN}
+            <p class="text-lg font-bold">霊能者</p>
+            <p class="mt-2 text-sm">処刑された者が人狼かどうかを知ることのできる視点で観戦します。</p>
+          {:else if option === VillagerRoleOptions.HUNTER}
+            <p class="text-lg font-bold">狩人</p>
+            <p class="mt-2 text-sm">誰かを人狼の襲撃から守れる視点で観戦します。</p>
+          {:else if option === VillagerRoleOptions.FRATER}
+            <p class="text-lg font-bold">共有者</p>
+            <p class="mt-2 text-sm">もうひとりの共有者が誰かを知ることができる視点で観戦します。</p>
+          {:else if option === VillagerRoleOptions.LONGEST_SURVIVOR}
+            <p class="text-lg font-bold">長く生き残った人</p>
+            <p class="mt-2 text-sm">村人側の人間のうち、最も長く生き残った人の視点で観戦します。</p>
+          {:else if option === VillagerRoleOptions.ANYTHING}
+            <p class="text-lg font-bold">村人側の中からおまかせ</p>
+            <p class="mt-2 text-sm">観戦データ作成時にシステムがランダムに決定します。</p>
+          {/if}
+        {/snippet}
       </OptionChooser>
     
       <div class="mt-4 flex place-content-end">

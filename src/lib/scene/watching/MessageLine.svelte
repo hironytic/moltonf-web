@@ -29,9 +29,13 @@ THE SOFTWARE.
   import { type TalkType, TalkTypes } from "../../story/TalkType"
   import type { HistoryLocation } from "../../../History"
 
-  export let segments: MessageSegment[] = []
-  export let talkType: TalkType = TalkTypes.PUBLIC
-  export let location = undefined as HistoryLocation | undefined
+  interface Props {
+    segments?: MessageSegment[]
+    talkType?: TalkType
+    location?: HistoryLocation;
+  }
+
+  let { segments = [], talkType = TalkTypes.PUBLIC, location }: Props = $props()
 </script>
 
 {#each segments as segment, index (index)}

@@ -32,19 +32,15 @@ THE SOFTWARE.
   import ArchiveFileChooser from "./ArchiveFileChooser.svelte"
   import ExternalSiteIcon from "../../icon/ExternalSiteIcon.svelte"
   import ChevronLeftIcon from "../../icon/ChevronLeftIcon.svelte"
-  import type { Readable } from "svelte/store"
   import { readable } from "svelte/store"
-  import type { Story } from "../../story/Story"
   import Footer from "../../ui-component/Footer.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(NewWorkspaceScene)
-  $: scene = $scene$
+  let scene = $derived($scene$)
 
-  let currentStory$: Readable<Story | undefined>
-  $: currentStory$ = scene?.story$ ?? readable(undefined)
-  let currentStoryName: string | undefined
-  $: currentStoryName = $currentStory$?.villageFullName
+  let currentStory$ = $derived(scene?.story$ ?? readable(undefined))
+  let currentStoryName = $derived($currentStory$?.villageFullName)
   
   async function onArchiveFileSelect(file: File | undefined) {
     if (file !== undefined) {
@@ -86,7 +82,7 @@ THE SOFTWARE.
         </p>
       </div>
       
-      <ArchiveFileChooser class="mt-4" currentStory={currentStoryName} on:select={(ev) => onArchiveFileSelect(ev.detail ?? undefined)}/>
+      <ArchiveFileChooser class="mt-4" currentStory={currentStoryName} onSelect={(file) => onArchiveFileSelect(file)}/>
     
       {#if currentStoryName !== undefined}
         <div class="my-4 text-end">

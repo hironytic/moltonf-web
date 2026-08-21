@@ -24,25 +24,32 @@ THE SOFTWARE.
 
 <script lang="ts">
   import classNames from "classnames"
-  import { createEventDispatcher } from "svelte"
+  import { type Snippet } from "svelte"
 
-  const dispatch = createEventDispatcher()
-  
-  export let options: string[] = []
-  export let value: string | undefined = undefined
+  interface Props {
+    options?: string[]
+    value?: string
+    class?: string
+    onChoose?: (option: string) => void
+    children?: Snippet<[string]>
+  }
 
-  let className: string | undefined = undefined
-  export { className as class }
+  let {
+    options = [],
+    value = $bindable(undefined),
+    class: className,
+    onChoose,
+    children
+  }: Props = $props()
 
-  let clsNames: string
-  $: clsNames = classNames(
+  let clsNames: string = $derived(classNames(
     "w-full flex flex-col space-y-2",
     className ?? ""
-  )
+  ))
   
   function onItemClicked(option: string) {
     value = option
-    dispatch("choose", option)
+    onChoose?.(option)
   }
 </script>
 
@@ -55,8 +62,8 @@ THE SOFTWARE.
       {"text-gray-400 border-gray-700 hover:text-gray-400": option !== value},
       {"text-red-500 border-red-600": option === value},
     )}
-    <button class={buttonClass} on:click={() => void onItemClicked(option)}>
-      <slot {option}/>
+    <button class={buttonClass} onclick={() => void onItemClicked(option)}>
+      {@render children?.(option)}
     </button>
   {/each}
 </div>

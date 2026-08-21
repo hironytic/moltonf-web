@@ -31,10 +31,8 @@ THE SOFTWARE.
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(InvalidScene)
-  $: scene = $scene$
-  
-  let message: string
-  $: message = scene?.message ?? ""
+  let scene = $derived($scene$)
+  let message: string = $derived(scene?.message ?? "")
 </script>
 
 <div class="h-full flex flex-col place-content-center">

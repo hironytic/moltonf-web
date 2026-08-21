@@ -32,14 +32,15 @@ THE SOFTWARE.
   const appContext = getContext<AppContext>(AppContext.Key)
   const watchingScene$ = appContext.sceneAs$(WatchingScene)
   
-  let title: string | undefined
-  $: title = $watchingScene$?.workspace.name
+  let title = $derived($watchingScene$?.workspace.name)
 </script>
 
 <div class="px-4 bg-black border-b-2 border-b-gray-900 flex items-center h-[6rem] shrink-0">
   <div class="flex flex-col space-y-1 shrink-0">
-    <HistoryLink to="/" let:href let:onClick>
-      <a href={href} on:click={onClick}><img src="moltonf.svg" alt="Moltonf" width="170"></a>
+    <HistoryLink to="/"  >
+      {#snippet children({ href, onClick })}
+        <a href={href} onclick={onClick}><img src="moltonf.svg" alt="Moltonf" width="170"></a>
+      {/snippet}
     </HistoryLink>
   </div>
   <div class="ml-4 grow flex flex-col items-start space-y-1">

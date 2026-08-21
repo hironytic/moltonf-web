@@ -26,35 +26,20 @@ THE SOFTWARE.
   import { getContext } from "svelte"
   import { AppContext } from "../../../AppContext"
   import { WatchingScene } from "./WatchingScene"
-  import { readable, type Readable } from "svelte/store"
-  import type { CharacterMap } from "../../story/CharacterMap"
-  import type { WatchingElement } from "./WatchingScene.js"
+  import { readable } from "svelte/store"
   import WatchingElementView from "./WatchingElementView.svelte"
-  import type { TalkMap } from "../../story/TalkMap"
   import { nullTalkMap } from "../../story/TalkMap"
-  import type { Talk } from "../../story/Talk"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(WatchingScene)
-  $: scene = $scene$
+  let scene = $derived($scene$)
 
-  let currentDay$: Readable<number>
-  $: currentDay$ = scene?.currentDay$ ?? readable(-1)
-  
-  let currentElements$: Readable<WatchingElement[]>
-  $: currentElements$ = scene?.currentElements$ ?? readable([])
-  
-  let characterMap$: Readable<CharacterMap>
-  $: characterMap$ = scene?.characterMap$ ?? readable(new Map())
-  
-  let faceIconUrlMap$: Readable<Map<string | symbol, string>>
-  $: faceIconUrlMap$ = scene?.faceIconUrlMap$ ?? readable(new Map())
-  
-  let talkMap$: Readable<TalkMap>
-  $: talkMap$ = scene?.talkMap$ ?? readable(nullTalkMap())
-
-  let isTalkVisible$: Readable<(day: number, talk: Talk) => boolean>
-  $: isTalkVisible$ = scene?.isTalkVisible$ ?? readable(() => false)
+  let currentDay$ = $derived(scene?.currentDay$ ?? readable(-1))
+  let currentElements$ = $derived(scene?.currentElements$ ?? readable([]))
+  let characterMap$ = $derived(scene?.characterMap$ ?? readable(new Map()))
+  let faceIconUrlMap$ = $derived(scene?.faceIconUrlMap$ ?? readable(new Map()))
+  let talkMap$ = $derived(scene?.talkMap$ ?? readable(nullTalkMap()))
+  let isTalkVisible$ = $derived(scene?.isTalkVisible$ ?? readable(() => false))
 </script>
 
 {#each $currentElements$ as element (element.elementId)}

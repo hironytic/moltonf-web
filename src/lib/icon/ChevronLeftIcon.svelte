@@ -26,9 +26,12 @@ THE SOFTWARE.
   import { Icon } from "@steeze-ui/svelte-icon"
   import { ChevronLeft } from "@steeze-ui/material-design-icons"
 
-  export let size = "1.5rem"
-  let className: string | undefined = undefined
-  export { className as class }
+  interface Props {
+    size?: string
+    class?: string
+  }
+
+  let { size = "1.5rem", class: className }: Props = $props()
 </script>
 
-<Icon src="{ChevronLeft}" theme="outlined" fill="currentColor" size={size} class={className}/>
+<Icon src={ChevronLeft} theme="outlined" fill="currentColor" size={size} class={className}/>

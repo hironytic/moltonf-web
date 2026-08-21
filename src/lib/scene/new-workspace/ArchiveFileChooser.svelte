@@ -23,24 +23,24 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
   import classNames from "classnames"
   import FileOpenIcon from "../../icon/FileOpenIcon.svelte"
   import { Dropzone } from "flowbite-svelte"
   import StoryIcon from "../../icon/StoryIcon.svelte"
 
-  const dispatch = createEventDispatcher()
-
-  export let currentStory: string | undefined = undefined
-  
-  let className: string | undefined = undefined
-  export { className as class }
-  
-  let files: FileList | undefined
-  $: {
-    const file: File | undefined = files?.[0]
-    dispatch("select", file)
+  interface Props {
+    currentStory?: string
+    class?: string
+    onSelect?: (file: File | undefined) => void
   }
+
+  let { currentStory, class: className, onSelect }: Props = $props()
+  
+  let files: FileList | undefined = $state()
+  $effect(() => {
+    const file: File | undefined = files?.[0]
+    onSelect?.(file)
+  })
   
   function onDragOver(ev: DragEvent) {
     const dataTransfer = ev.dataTransfer ?? undefined

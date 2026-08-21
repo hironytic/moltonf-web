@@ -28,14 +28,19 @@ THE SOFTWARE.
   import { EventFamilies } from "../../story/EventFamily"
   import { EventNames } from "../../story/StoryEventName"
 
-  export let storyEvent: StoryEvent = {
-    elementId: "",
-    elementType: StoryElementTypes.STORY_EVENT,
-    eventFamily: EventFamilies.ANNOUNCE,
-    eventName: EventNames.START_ENTRY,
-    messageLines: [],
-  } as StoryEvent
-  
+  interface Props {
+    storyEvent?: StoryEvent
+  }
+
+  let {
+    storyEvent = {
+      elementId: "",
+      elementType: StoryElementTypes.STORY_EVENT,
+      eventFamily: EventFamilies.ANNOUNCE,
+      eventName: EventNames.START_ENTRY,
+      messageLines: [],
+    }
+  }: Props = $props()
 </script>
 
 <div class="p-2 ef-{storyEvent.eventFamily}">

@@ -23,30 +23,30 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
-  import type { ExtendedMessageBoxItem, MessageBoxItemButton } from "./MessageBoxItem"
+  import type { MessageBoxItemButton } from "./MessageBoxItem"
   import { Button, Modal } from "flowbite-svelte"
   import { getContext } from "svelte"
   import { AppContext } from "../AppContext"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const messageBoxItems$ = appContext.messageBoxItems$
+
+  let messageBoxItem = $derived.by(() => {
+    const itemsLength = $messageBoxItems$.length
+    if (itemsLength === 0) {
+      return undefined
+    } else {
+      return $messageBoxItems$[itemsLength - 1]
+    }
+  })
   
-  let messageBoxItem: ExtendedMessageBoxItem | undefined = undefined
-  let open = false
+  let open = $derived(messageBoxItem !== undefined)
   
-  $: {
+  $effect(() => {
     if (!open && messageBoxItem !== undefined) {
       appContext.onMessageBoxClosed()
     }
-    
-    const itemsLength = $messageBoxItems$.length
-    if (itemsLength === 0) {
-      messageBoxItem = undefined
-    } else {
-      messageBoxItem = $messageBoxItems$[itemsLength - 1]
-    }
-    open = messageBoxItem !== undefined
-  }
+  })
   
   function onButtonClicked(button: MessageBoxItemButton) {
     if (messageBoxItem !== undefined) {

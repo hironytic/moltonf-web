@@ -25,27 +25,20 @@ THE SOFTWARE.
 <script lang="ts">
   import { getContext } from "svelte"
   import { AppContext } from "../../../AppContext"
-  import { NewWorkspaceScene, type TeamOption, TeamOptions } from "./NewWorkspaceScene"
+  import { NewWorkspaceScene, TeamOptions } from "./NewWorkspaceScene"
   import ChevronLeftIcon from "../../icon/ChevronLeftIcon.svelte"
   import { Button } from "flowbite-svelte"
   import HeaderTitle from "../../ui-component/HeaderTitle.svelte"
-  import type { Readable, Writable } from "svelte/store"
   import { readable, writable } from "svelte/store"
   import OptionChooser from "./OptionChooser.svelte"
   import Footer from "../../ui-component/Footer.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(NewWorkspaceScene)
-  $: scene = $scene$
-  
-  let teamOptions$: Readable<TeamOption[]>
-  $: teamOptions$ = scene?.teamOptions$ ?? readable([])
-  
-  let team$: Writable<TeamOption | undefined>
-  $: team$ = scene?.team$ ?? writable(undefined)
-
-  let canForward$: Readable<boolean>
-  $: canForward$ = scene?.canForwardFromSelectTeamStep$ ?? readable(false)
+  let scene = $derived($scene$)
+  let teamOptions$ = $derived(scene?.teamOptions$ ?? readable([]))
+  let team$ = $derived(scene?.team$ ?? writable(undefined))
+  let canForward$ = $derived(scene?.canForwardFromSelectTeamStep$ ?? readable(false))
 </script>
 
 <div class="overflow-y-auto">
@@ -61,20 +54,22 @@ THE SOFTWARE.
         <p>村人、人狼を選択した場合は、続けて次の画面で詳細を選択できます。</p>
       </div>
       
-      <OptionChooser class="mt-4" options={$teamOptions$} bind:value={$team$} on:choose={() => scene?.forwardFromSelectTeamStep()} let:option>
-        {#if option === TeamOptions.VILLAGER}
-          <p class="text-lg font-bold">村人</p>
-          <p class="mt-2 text-sm">村人側の視点で観戦します。</p>
-        {:else if option === TeamOptions.WOLF}
-          <p class="text-lg font-bold">人狼</p>
-          <p class="mt-2 text-sm">人狼側の視点で観戦します。狂人もこちらに含みます。</p>
-        {:else if option === TeamOptions.HAMSTER}
-          <p class="text-lg font-bold">ハムスター人間</p>
-          <p class="mt-2 text-sm">ハムスター人間の視点で観戦します。</p>
-        {:else if option === TeamOptions.ANYTHING}
-          <p class="text-lg font-bold">おまかせ</p>
-          <p class="mt-2 text-sm">観戦データ作成時にシステムがランダムに決定します。</p>
-        {/if}
+      <OptionChooser class="mt-4" options={$teamOptions$} bind:value={$team$} onChoose={() => scene?.forwardFromSelectTeamStep()} >
+        {#snippet children(option)}
+          {#if option === TeamOptions.VILLAGER}
+            <p class="text-lg font-bold">村人</p>
+            <p class="mt-2 text-sm">村人側の視点で観戦します。</p>
+          {:else if option === TeamOptions.WOLF}
+            <p class="text-lg font-bold">人狼</p>
+            <p class="mt-2 text-sm">人狼側の視点で観戦します。狂人もこちらに含みます。</p>
+          {:else if option === TeamOptions.HAMSTER}
+            <p class="text-lg font-bold">ハムスター人間</p>
+            <p class="mt-2 text-sm">ハムスター人間の視点で観戦します。</p>
+          {:else if option === TeamOptions.ANYTHING}
+            <p class="text-lg font-bold">おまかせ</p>
+            <p class="mt-2 text-sm">観戦データ作成時にシステムがランダムに決定します。</p>
+          {/if}
+        {/snippet}
       </OptionChooser>
       
       <div class="mt-4 flex place-content-end">

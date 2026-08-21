@@ -29,21 +29,20 @@ THE SOFTWARE.
   import HeaderTitle from "../../ui-component/HeaderTitle.svelte"
   import { Button, Input } from "flowbite-svelte"
   import ChevronLeftIcon from "../../icon/ChevronLeftIcon.svelte"
-  import type { Readable, Writable } from "svelte/store"
   import { readable, writable } from "svelte/store"
   import Footer from "../../ui-component/Footer.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(NewWorkspaceScene)
-  $: scene = $scene$
+  let scene = $derived($scene$)
+  let name$ = $derived(scene?.name$ ?? writable(""))
+  let nameInput: HTMLInputElement | undefined = $state(undefined)
+  let canForward$ = $derived(scene?.canForwardFromInputNameStep$ ?? readable(false))
   
-  let name$: Writable<string>
-  $: name$ = scene?.name$ ?? writable("")
-  
-  let nameInput: HTMLInputElement | undefined = undefined
-
-  let canForward$: Readable<boolean>
-  $: canForward$ = scene?.canForwardFromInputNameStep$ ?? readable(false)
+  function onSubmit(ev: Event) {
+    ev.preventDefault()
+    scene?.forwardFromInputNameStep ()
+  }
   
   onMount(() => {
     nameInput?.focus()
@@ -64,10 +63,7 @@ THE SOFTWARE.
         </p>
       </div>
     
-      <form
-        class="flex mt-4 space-x-2"
-        on:submit|preventDefault={() => scene?.forwardFromInputNameStep()}
-      >
+      <form class="flex mt-4 space-x-2" onsubmit={onSubmit}>
         <div class="grow">
           <Input required>
             {#snippet children(props)}

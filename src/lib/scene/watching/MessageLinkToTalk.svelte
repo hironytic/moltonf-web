@@ -32,29 +32,38 @@ THE SOFTWARE.
   import { TalkTypes } from "../../story/TalkType"
   import { HistoryLocation } from "../../../History"
 
-  export let segment = undefined as LinkToTalkSegment | undefined
-  export let talkType: TalkType = TalkTypes.PUBLIC
-  export let location = undefined as HistoryLocation | undefined
+  interface Props {
+    segment?: LinkToTalkSegment
+    talkType?: TalkType
+    location?: HistoryLocation
+  }
+
+  let {
+    segment = undefined,
+    talkType = TalkTypes.PUBLIC,
+    location = undefined,
+  }: Props = $props()
   
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(WatchingScene)
-  $: scene = $scene$
+  let scene = $derived($scene$)
   
-  let linkTo: HistoryLocation | undefined
-  $: {
-    linkTo = undefined
+  let linkTo = $derived.by(() => {
     if (segment !== undefined && scene !== undefined) {
       const talkWithDay = segment.talks[0]
       if (talkWithDay !== undefined) {
-        linkTo = scene.getLocation(talkWithDay.day, talkWithDay.talk.elementId)
+        return scene.getLocation(talkWithDay.day, talkWithDay.talk.elementId)
       }
     }
-  }
+    return undefined
+  })
 </script>
 
 {#if segment !== undefined && linkTo !== undefined}
-  <HistoryLink from={location} to={linkTo} let:href let:onClick>
-    <a class="tt-{talkType}" {href} on:click={onClick}>{segment.text}</a>
+  <HistoryLink from={location} to={linkTo}  >
+    {#snippet children({ href, onClick })}
+      <a class="tt-{talkType}" {href} onclick={onClick}>{segment.text}</a>
+    {/snippet}
   </HistoryLink>
 {/if}
 

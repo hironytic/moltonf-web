@@ -25,8 +25,7 @@ THE SOFTWARE.
 <script lang="ts">
   import { getContext } from "svelte"
   import { AppContext } from "../../../AppContext"
-  import { NewWorkspaceScene, type NewWorkspaceStep, NewWorkspaceSteps } from "./NewWorkspaceScene"
-  import type { Readable } from "svelte/store"
+  import { NewWorkspaceScene, NewWorkspaceSteps } from "./NewWorkspaceScene"
   import { readable } from "svelte/store"
   import SelectStory from "./SelectStory.svelte"
   import InputWorkspaceName from "./InputWorkspaceName.svelte"
@@ -37,10 +36,8 @@ THE SOFTWARE.
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(NewWorkspaceScene)
-  $: scene = $scene$
-  
-  let step$: Readable<NewWorkspaceStep | undefined>
-  $: step$ = scene?.step$ ?? readable(undefined)
+  let scene = $derived($scene$)
+  let step$ = $derived(scene?.step$ ?? readable(undefined))
 </script>
 
 <div class="h-full flex flex-col place-content-center">

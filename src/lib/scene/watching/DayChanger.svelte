@@ -26,28 +26,27 @@ THE SOFTWARE.
   import { Button, ButtonGroup } from "flowbite-svelte"
   import { getContext } from "svelte"
   import { AppContext } from "../../../AppContext"
-  import { type WatchableDay, WatchingScene } from "./WatchingScene"
-  import { type Readable, readable } from "svelte/store"
+  import { WatchingScene } from "./WatchingScene"
+  import { readable } from "svelte/store"
   import HistoryLink from "../../ui-component/HistoryLink.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(WatchingScene)
-  $: scene = $scene$
+  let scene = $derived($scene$)
   
-  let watchableDays$: Readable<WatchableDay[]>
-  $: watchableDays$ = scene?.watchableDays$ ?? readable([])
-  
-  let currentDay$: Readable<number>
-  $: currentDay$ = scene?.currentDay$ ?? readable(0)
+  let watchableDays$ = $derived(scene?.watchableDays$ ?? readable([]))
+  let currentDay$ = $derived(scene?.currentDay$ ?? readable(0))
 </script>
 
 {#if scene !== undefined}
   <ButtonGroup class="overflow-x-auto">
     {#each $watchableDays$ as wday (wday.day)}
-      <HistoryLink to={scene.getLocation(wday.day)} let:href let:onClick>
-        <Button size="xs" color="red" class="shrink-0" href={href} onclick={onClick} outline={wday.day !== $currentDay$}>
-          {wday.text}
-        </Button>
+      <HistoryLink to={scene.getLocation(wday.day)}  >
+        {#snippet children({ href, onClick })}
+          <Button size="xs" color="red" class="shrink-0" href={href} onclick={onClick} outline={wday.day !== $currentDay$}>
+            {wday.text}
+          </Button>
+        {/snippet}
       </HistoryLink>
     {/each}
   </ButtonGroup>

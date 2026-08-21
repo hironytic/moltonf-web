@@ -29,16 +29,13 @@ THE SOFTWARE.
   import ChevronLeftIcon from "../../icon/ChevronLeftIcon.svelte"
   import { Button } from "flowbite-svelte"
   import HeaderTitle from "../../ui-component/HeaderTitle.svelte"
-  import type { Readable } from "svelte/store"
   import { readable } from "svelte/store"
   import Footer from "../../ui-component/Footer.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(NewWorkspaceScene)
-  $: scene = $scene$
-  
-  let name$: Readable<string>
-  $: name$ = scene?.name$ ?? readable("")
+  let scene = $derived($scene$)
+  let name$ = $derived(scene?.name$ ?? readable(""))
 </script>
 
 <div class="overflow-y-auto">
