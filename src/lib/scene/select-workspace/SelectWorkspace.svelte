@@ -23,16 +23,13 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
-  import { preventDefault, stopPropagation } from 'svelte/legacy'
-
   import { getContext } from "svelte"
   import { AppContext } from "../../../AppContext"
-  import { SelectWorkspaceScene } from "./SelectWorkspaceScene"
+  import { SelectWorkspaceScene } from "./SelectWorkspaceScene.svelte"
   import { Button, Listgroup, ListgroupItem, Spinner } from "flowbite-svelte"
   import HeaderTitle from "../../ui-component/HeaderTitle.svelte"
   import WorkspaceIcon from "../../icon/WorkspaceIcon.svelte"
   import DeleteIcon from "../../icon/DeleteIcon.svelte"
-  import { readable, type Readable } from "svelte/store"
   import type { Workspace } from "../../workspace/Workspace"
   import { HistoryLocation } from "../../../History"
   import HistoryLink from "../../ui-component/HistoryLink.svelte"
@@ -42,10 +39,12 @@ THE SOFTWARE.
   const scene$ = appContext.sceneAs$(SelectWorkspaceScene)
   let scene = $derived($scene$)
   
-  let workspaces$: Readable<Workspace[] | undefined> = $derived(scene?.workspaces$ ?? readable(undefined))
+  let workspaces = $derived(scene?.workspaces)
   
-  
-  async function deleteWorkspace(workspace: Workspace) {
+  async function deleteWorkspace(ev: Event, workspace: Workspace) {
+    ev.stopPropagation()
+    ev.preventDefault()
+    
     const result = await appContext.showMessageBox({
       title: "観戦データの削除",
       message: `観戦データ「${workspace.name}」を削除します。\n\n削除したデータを復活させることはできません。\nよろしいですか？`,
@@ -71,9 +70,9 @@ THE SOFTWARE.
 <div class="h-full flex flex-col place-content-center">
   <div class="overflow-y-auto">
     <div class="flex place-content-center">
-      {#if $workspaces$ === undefined}
+      {#if workspaces === undefined}
         <Spinner />
-      {:else if $workspaces$.length === 0}
+      {:else if workspaces.length === 0}
         <div class="bg-black max-w-[600px] p-10 rounded-md">
           <HeaderTitle class="mb-4">観戦を始めましょう！</HeaderTitle>
           
@@ -106,7 +105,7 @@ THE SOFTWARE.
           </div>
           
           <Listgroup class="mt-4" active>
-            {#each $workspaces$ as item (item.id)}
+            {#each workspaces as item (item.id)}
               {@const location = HistoryLocation.fromComponents(["/", item.id])}
               <HistoryLink to={location}  >
                 {#snippet children({ href, onClick })}
@@ -115,7 +114,7 @@ THE SOFTWARE.
                       <div class="inline-flex">
                         <WorkspaceIcon size="1.25rem" class="mr-2"/>{item.name}
                       </div>
-                      <button class="hover:text-red-500" onclick={stopPropagation(preventDefault(() => void deleteWorkspace(item)))}>
+                      <button class="hover:text-red-500" onclick={(ev) => void deleteWorkspace(ev, item)}>
                         <DeleteIcon size="1.25rem"/>
                       </button>
                     </div>

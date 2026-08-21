@@ -1,5 +1,5 @@
 //
-// SelectWorkspaceScene.ts
+// SelectWorkspaceScene.svelte.ts
 //
 // Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
 //
@@ -24,7 +24,6 @@
 
 import type { AppContext } from "../../../AppContext"
 import { Scene } from "../../../Scene"
-import { type Readable, writable } from "svelte/store"
 import type { Workspace } from "../../workspace/Workspace"
 import { HistoryLocation } from "../../../History"
 
@@ -34,12 +33,12 @@ export class SelectWorkspaceScene extends Scene {
     void this.reloadWorkspaces()
   }
   
-  private _workspaces$ = writable<Workspace[] | undefined>(undefined)
-  get workspaces$(): Readable<Workspace[] | undefined> { return this._workspaces$ }
+  private _workspaces = $state.raw<Workspace[] | undefined>(undefined)
+  get workspaces(): Workspace[] | undefined { return this._workspaces }
   
   private async reloadWorkspaces(): Promise<void> {
     const workspaceStore = await this.appContext.getWorkspaceStore()
-    this._workspaces$.set(await workspaceStore.getWorkspaces())
+    this._workspaces = await workspaceStore.getWorkspaces()
   }
   
   createNewWorkspace() {
@@ -49,6 +48,6 @@ export class SelectWorkspaceScene extends Scene {
   async deleteWorkspace(workspace: Workspace) {
     const workspaceStore = await this.appContext.getWorkspaceStore()
     await workspaceStore.remove(workspace)
-    this._workspaces$.set(await workspaceStore.getWorkspaces())
+    this._workspaces = await workspaceStore.getWorkspaces()
   }
 }

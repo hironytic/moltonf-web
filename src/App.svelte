@@ -28,7 +28,7 @@ THE SOFTWARE.
   import SelectWorkspace from "./lib/scene/select-workspace/SelectWorkspace.svelte"
   import NewWorkspace from "./lib/scene/new-workspace/NewWorkspace.svelte"
   import Watching from "./lib/scene/watching/Watching.svelte"
-  import { SelectWorkspaceScene } from "./lib/scene/select-workspace/SelectWorkspaceScene"
+  import { SelectWorkspaceScene } from "./lib/scene/select-workspace/SelectWorkspaceScene.svelte"
   import { NewWorkspaceScene } from "./lib/scene/new-workspace/NewWorkspaceScene"
   import { WatchingScene } from "./lib/scene/watching/WatchingScene.svelte"
   import MessageBox from "./lib/MessageBox.svelte"
