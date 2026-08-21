@@ -50,7 +50,7 @@ THE SOFTWARE.
 <main class="h-screen">
   <div class="flex flex-col h-full">
     <NavBar/>
-    <div class="grow overflow-y-clip">
+    <div class="grow overflow-y-hidden">
       {#if $scene$ instanceof SelectWorkspaceScene}
         <SelectWorkspace/>
       {:else if $scene$ instanceof NewWorkspaceScene}
