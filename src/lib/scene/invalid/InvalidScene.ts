@@ -23,7 +23,7 @@
 //
 
 import { Scene } from "../../../Scene"
-import { AppContext } from "../../../AppContext"
+import { AppContext } from "../../../AppContext.svelte"
 
 export class InvalidScene extends Scene {
   readonly message: string

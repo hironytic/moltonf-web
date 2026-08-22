@@ -26,7 +26,7 @@ THE SOFTWARE.
   import { HashHistory, HistoryLocation } from "../../History"
   import { getContext } from "svelte"
   import type { Snippet } from "svelte"
-  import { AppContext } from "../../AppContext"
+  import { AppContext } from "../../AppContext.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const history = appContext.history

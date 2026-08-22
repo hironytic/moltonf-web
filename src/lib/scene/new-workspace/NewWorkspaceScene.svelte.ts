@@ -22,7 +22,7 @@
 // THE SOFTWARE.
 //
 
-import { type AppContext } from "../../../AppContext"
+import { type AppContext } from "../../../AppContext.svelte"
 import { Scene } from "../../../Scene"
 import type { Story } from "../../story/Story"
 import type { Character, CharacterMap } from "../../story/CharacterMap"

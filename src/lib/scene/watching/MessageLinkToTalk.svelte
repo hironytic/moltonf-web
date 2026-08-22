@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 <script lang="ts">
   import { getContext } from "svelte"
-  import { AppContext } from "../../../AppContext"
+  import { AppContext } from "../../../AppContext.svelte"
   import { WatchingScene } from "./WatchingScene.svelte"
   import type { LinkToTalkSegment } from "./MessageSegment"
   import HistoryLink from "../../ui-component/HistoryLink.svelte"
@@ -45,8 +45,7 @@ THE SOFTWARE.
   }: Props = $props()
   
   const appContext = getContext<AppContext>(AppContext.Key)
-  const scene$ = appContext.sceneAs$(WatchingScene)
-  let scene = $derived($scene$)
+  let scene = $derived(appContext.sceneAs(WatchingScene))
   
   let linkTo = $derived.by(() => {
     if (segment !== undefined && scene !== undefined) {

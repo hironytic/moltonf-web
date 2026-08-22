@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 <script lang="ts">
   import { getContext, onMount } from "svelte"
-  import { AppContext } from "../../../AppContext"
+  import { AppContext } from "../../../AppContext.svelte"
   import { NewWorkspaceScene } from "./NewWorkspaceScene.svelte"
   import HeaderTitle from "../../ui-component/HeaderTitle.svelte"
   import { Button, Input } from "flowbite-svelte"
@@ -32,8 +32,7 @@ THE SOFTWARE.
   import Footer from "../../ui-component/Footer.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
-  const scene$ = appContext.sceneAs$(NewWorkspaceScene)
-  let scene = $derived($scene$)
+  let scene = $derived(appContext.sceneAs(NewWorkspaceScene))
   let nameInput: HTMLInputElement | undefined = $state(undefined)
   
   function onSubmit(ev: Event) {

@@ -23,7 +23,7 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
-  import { AppContext } from "./AppContext"
+  import { AppContext } from "./AppContext.svelte"
   import { onDestroy, setContext } from "svelte"
   import SelectWorkspace from "./lib/scene/select-workspace/SelectWorkspace.svelte"
   import NewWorkspace from "./lib/scene/new-workspace/NewWorkspace.svelte"
@@ -43,21 +43,19 @@ THE SOFTWARE.
   onDestroy(() => {
     appContext.destroy()
   })
-
-  const scene$ = appContext.scene$
 </script>
 
 <main class="h-screen">
   <div class="flex flex-col h-full">
     <NavBar/>
     <div class="grow overflow-y-hidden">
-      {#if $scene$ instanceof SelectWorkspaceScene}
+      {#if appContext.scene instanceof SelectWorkspaceScene}
         <SelectWorkspace/>
-      {:else if $scene$ instanceof NewWorkspaceScene}
+      {:else if appContext.scene instanceof NewWorkspaceScene}
         <NewWorkspace/>
-      {:else if $scene$ instanceof WatchingScene}
+      {:else if appContext.scene instanceof WatchingScene}
         <Watching/>
-      {:else if $scene$ instanceof InvalidScene}
+      {:else if appContext.scene instanceof InvalidScene}
         <Invalid/>
       {/if}
     </div>

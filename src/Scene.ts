@@ -22,7 +22,7 @@
 // THE SOFTWARE.
 //
 
-import type { AppContext } from "./AppContext"
+import type { AppContext } from "./AppContext.svelte"
 
 export abstract class Scene {
   appContext: AppContext

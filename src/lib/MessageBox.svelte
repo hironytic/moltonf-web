@@ -26,17 +26,16 @@ THE SOFTWARE.
   import type { MessageBoxItemButton } from "./MessageBoxItem"
   import { Button, Modal } from "flowbite-svelte"
   import { getContext } from "svelte"
-  import { AppContext } from "../AppContext"
+  import { AppContext } from "../AppContext.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
-  const messageBoxItems$ = appContext.messageBoxItems$
 
   let messageBoxItem = $derived.by(() => {
-    const itemsLength = $messageBoxItems$.length
+    const itemsLength = appContext.messageBoxItems.length
     if (itemsLength === 0) {
       return undefined
     } else {
-      return $messageBoxItems$[itemsLength - 1]
+      return appContext.messageBoxItems[itemsLength - 1]
     }
   })
   

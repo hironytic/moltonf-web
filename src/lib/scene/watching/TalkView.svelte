@@ -37,7 +37,7 @@ THE SOFTWARE.
   import { nullTalkMap } from "../../story/TalkMap"
   import MessageLine from "./MessageLine.svelte"
   import { getContext } from "svelte"
-  import { AppContext } from "../../../AppContext"
+  import { AppContext } from "../../../AppContext.svelte"
   import { WatchingScene } from "./WatchingScene.svelte"
 
   
@@ -69,8 +69,7 @@ THE SOFTWARE.
   }: Props = $props()
 
   const appContext = getContext<AppContext>(AppContext.Key)
-  const scene$ = appContext.sceneAs$(WatchingScene)
-  let scene = $derived($scene$)
+  let scene = $derived(appContext.sceneAs(WatchingScene))
   
   let avatar = $derived(characterMap.get(talk.avatarId)?.avatar)
   

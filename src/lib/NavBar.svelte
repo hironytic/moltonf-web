@@ -23,16 +23,14 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
-  import { AppContext } from "../AppContext"
+  import { AppContext } from "../AppContext.svelte"
   import { getContext } from "svelte"
   import { WatchingScene } from "./scene/watching/WatchingScene.svelte"
   import DayChanger from "./scene/watching/DayChanger.svelte"
   import HistoryLink from "./ui-component/HistoryLink.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
-  const watchingScene$ = appContext.sceneAs$(WatchingScene)
-  
-  let title = $derived($watchingScene$?.workspace.name)
+  let watchingScene = $derived(appContext.sceneAs(WatchingScene))
 </script>
 
 <div class="px-4 bg-black border-b-2 border-b-gray-900 flex items-center h-[6rem] shrink-0">
@@ -44,8 +42,8 @@ THE SOFTWARE.
     </HistoryLink>
   </div>
   <div class="ml-4 grow flex flex-col items-start space-y-1">
-  {#if $watchingScene$ !== undefined}
-      <p class="text-lg font-medium">{title ?? ""}</p>
+  {#if watchingScene !== undefined}
+      <p class="text-lg font-medium">{watchingScene.workspace.name ?? ""}</p>
       <DayChanger/>
   {/if}
   </div>

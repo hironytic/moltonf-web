@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 <script lang="ts">
   import { getContext } from "svelte"
-  import { AppContext } from "../../../AppContext"
+  import { AppContext } from "../../../AppContext.svelte"
   import { NewWorkspaceScene } from "./NewWorkspaceScene.svelte"
   import { Button } from "flowbite-svelte"
   import HeaderTitle from "../../ui-component/HeaderTitle.svelte"
@@ -35,8 +35,7 @@ THE SOFTWARE.
   import Footer from "../../ui-component/Footer.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
-  const scene$ = appContext.sceneAs$(NewWorkspaceScene)
-  let scene = $derived($scene$)
+  let scene = $derived(appContext.sceneAs(NewWorkspaceScene))
 
   let currentStoryName = $derived(scene?.story?.villageFullName)
   

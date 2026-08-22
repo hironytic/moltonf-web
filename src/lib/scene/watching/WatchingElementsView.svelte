@@ -24,14 +24,13 @@ THE SOFTWARE.
 
 <script lang="ts">
   import { getContext } from "svelte"
-  import { AppContext } from "../../../AppContext"
+  import { AppContext } from "../../../AppContext.svelte"
   import { WatchingScene } from "./WatchingScene.svelte"
   import WatchingElementView from "./WatchingElementView.svelte"
   import type { Talk } from "../../story/Talk"
 
   const appContext = getContext<AppContext>(AppContext.Key)
-  const scene$ = appContext.sceneAs$(WatchingScene)
-  let scene = $derived($scene$)
+  let scene = $derived(appContext.sceneAs(WatchingScene))
   
   function isTalkVisible(day: number, talk: Talk): boolean {
     return scene?.isTalkVisible(day, talk) ?? false
