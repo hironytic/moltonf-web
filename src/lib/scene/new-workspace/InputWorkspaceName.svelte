@@ -25,19 +25,16 @@ THE SOFTWARE.
 <script lang="ts">
   import { getContext, onMount } from "svelte"
   import { AppContext } from "../../../AppContext"
-  import { NewWorkspaceScene } from "./NewWorkspaceScene"
+  import { NewWorkspaceScene } from "./NewWorkspaceScene.svelte"
   import HeaderTitle from "../../ui-component/HeaderTitle.svelte"
   import { Button, Input } from "flowbite-svelte"
   import ChevronLeftIcon from "../../icon/ChevronLeftIcon.svelte"
-  import { readable, writable } from "svelte/store"
   import Footer from "../../ui-component/Footer.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(NewWorkspaceScene)
   let scene = $derived($scene$)
-  let name$ = $derived(scene?.name$ ?? writable(""))
   let nameInput: HTMLInputElement | undefined = $state(undefined)
-  let canForward$ = $derived(scene?.canForwardFromInputNameStep$ ?? readable(false))
   
   function onSubmit(ev: Event) {
     ev.preventDefault()
@@ -49,31 +46,33 @@ THE SOFTWARE.
   })
 </script>
 
-<div class="overflow-y-auto">
-  <div class="flex place-content-center">
-    <div class="bg-black max-w-[600px] p-10 rounded-md">
-      <Button color="alternative" size="xs" onclick={() => scene?.backFromInputNameStep()}>
-        <ChevronLeftIcon size="1rem"/> 戻る
-      </Button>
-      <HeaderTitle class="mt-4">観戦データの名前</HeaderTitle>
-    
-      <div class="text-sm mt-4">
-        <p>
-          この観戦データに後で自分が見てわかりやすい名前を付けてください。
-        </p>
-      </div>
-    
-      <form class="flex mt-4 space-x-2" onsubmit={onSubmit}>
-        <div class="grow">
-          <Input required>
-            {#snippet children(props)}
-              <input type="text" bind:value={$name$} bind:this={nameInput} {...props}/>
-            {/snippet}
-          </Input>
+{#if scene !== undefined}
+  <div class="overflow-y-auto">
+    <div class="flex place-content-center">
+      <div class="bg-black max-w-[600px] p-10 rounded-md">
+        <Button color="alternative" size="xs" onclick={() => scene?.backFromInputNameStep()}>
+          <ChevronLeftIcon size="1rem"/> 戻る
+        </Button>
+        <HeaderTitle class="mt-4">観戦データの名前</HeaderTitle>
+      
+        <div class="text-sm mt-4">
+          <p>
+            この観戦データに後で自分が見てわかりやすい名前を付けてください。
+          </p>
         </div>
-        <Button class="shrink-0" type="submit" color="red" disabled={!$canForward$}>次へ</Button>
-      </form>
+      
+        <form class="flex mt-4 space-x-2" onsubmit={onSubmit}>
+          <div class="grow">
+            <Input required>
+              {#snippet children(props)}
+                <input type="text" bind:value={scene.name} bind:this={nameInput} {...props}/>
+              {/snippet}
+            </Input>
+          </div>
+          <Button class="shrink-0" type="submit" color="red" disabled={!scene.canForwardFromInputNameStep}>次へ</Button>
+        </form>
+      </div>
     </div>
+    <Footer/>
   </div>
-  <Footer/>
-</div>
+{/if}

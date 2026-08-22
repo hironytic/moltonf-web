@@ -1,5 +1,5 @@
 //
-// NewWorkspaceScene.ts
+// NewWorkspaceScene.svelte.ts
 //
 // Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
 //
@@ -24,9 +24,7 @@
 
 import { type AppContext } from "../../../AppContext"
 import { Scene } from "../../../Scene"
-import { derived, type Readable, type Writable, writable } from "svelte/store"
 import type { Story } from "../../story/Story"
-import { currentValueWritable } from "../../CurrentValueStore"
 import type { Character, CharacterMap } from "../../story/CharacterMap"
 import { createCharacterMap } from "../../story/CharacterMap"
 import { type Role, Roles } from "../../story/Role"
@@ -37,15 +35,15 @@ export class NewWorkspaceScene extends Scene {
     super(appContext)
   }
   
-  private readonly _step$ = writable<NewWorkspaceStep>(NewWorkspaceSteps.SELECT_STORY)
-  get step$(): Readable<NewWorkspaceStep> { return this._step$ }
+  private _step = $state<NewWorkspaceStep>(NewWorkspaceSteps.SELECT_STORY)
+  get step(): NewWorkspaceStep { return this._step }
 
-  private readonly _story$ = currentValueWritable<Story | undefined>(undefined)
-  private readonly _characterMap$ = currentValueWritable<CharacterMap | undefined>(undefined)
-  private readonly _team$ = currentValueWritable<TeamOption | undefined>(undefined)
-  private readonly _villagerRoll$ = currentValueWritable<VillagerRoleOption | undefined>(undefined)
-  private readonly _wolfRoll$ = currentValueWritable<WolfRoleOption | undefined>(undefined)
-  private readonly _name$ = currentValueWritable<string>("")
+  private _story = $state.raw<Story | undefined>(undefined)
+  private _characterMap = $state.raw<CharacterMap | undefined>(undefined)
+  private _team = $state<TeamOption | undefined>(undefined)
+  private _villagerRoll = $state<VillagerRoleOption | undefined>(undefined)
+  private _wolfRoll = $state<WolfRoleOption | undefined>(undefined)
+  private _name = $state<string>("")
 
   //#region Select Story
 
@@ -53,19 +51,19 @@ export class NewWorkspaceScene extends Scene {
     this.appContext.history.navigate(HistoryLocation.fromPath("/"), false)
   }
 
-  get story$(): Readable<Story | undefined> { return this._story$ }
+  get story(): Story | undefined { return this._story }
   
   setStory(story: Story) {
-    if (this._story$.currentValue !== story) {
-      this._story$.set(story)
-      this._characterMap$.set(createCharacterMap(story))
+    if (this._story !== story) {
+      this._story = story
+      this._characterMap = createCharacterMap(story)
     }
-    this._step$.set(NewWorkspaceSteps.SELECT_TEAM)
+    this._step = NewWorkspaceSteps.SELECT_TEAM
   }
 
   forwardFromSelectStoryStep() {
-    if (this._story$.currentValue !== undefined) {
-      this._step$.set(NewWorkspaceSteps.SELECT_TEAM)
+    if (this._story !== undefined) {
+      this._step = NewWorkspaceSteps.SELECT_TEAM
     }
   }
   
@@ -74,14 +72,14 @@ export class NewWorkspaceScene extends Scene {
   //#region Select Team
   
   backFromSelectTeamStep() {
-    this._step$.set(NewWorkspaceSteps.SELECT_STORY)
+    this._step = NewWorkspaceSteps.SELECT_STORY
   }
   
-  readonly teamOptions$: Readable<TeamOption[]> = derived(this._characterMap$, characterMap => {
-    if (characterMap === undefined) {
+  readonly teamOptions: TeamOption[] = $derived.by(() => {
+    if (this._characterMap === undefined) {
       return []
     }
-    const characters = Array.from(characterMap.values())
+    const characters = Array.from(this._characterMap.values())
     const options: TeamOption[] = [
       TeamOptions.VILLAGER,
       TeamOptions.WOLF,
@@ -93,19 +91,22 @@ export class NewWorkspaceScene extends Scene {
     return options
   })
   
-  get team$(): Writable<TeamOption | undefined> { return this._team$ }
+  get team(): TeamOption | undefined { return this._team }
+  set team(newValue: TeamOption | undefined) { 
+    this._team = newValue
+  }
   
-  readonly canForwardFromSelectTeamStep$: Readable<boolean> = derived([this.teamOptions$, this._team$], ([options, value]) => {
-    return value !== undefined && options.includes(value)
+  readonly canForwardFromSelectTeamStep: boolean = $derived.by(() => {
+    return this._team !== undefined && this.teamOptions.includes(this._team)
   })
   
   forwardFromSelectTeamStep() {
-    switch (this._team$.currentValue) {
+    switch (this._team) {
       case TeamOptions.VILLAGER:
-        this._step$.set(NewWorkspaceSteps.SELECT_ROLE_OF_VILLAGER)
+        this._step = NewWorkspaceSteps.SELECT_ROLE_OF_VILLAGER
         break
       case TeamOptions.WOLF:
-        this._step$.set(NewWorkspaceSteps.SELECT_ROLE_OF_WOLF)
+        this._step = NewWorkspaceSteps.SELECT_ROLE_OF_WOLF
         break
       case TeamOptions.ANYTHING:
       case TeamOptions.HAMSTER:
@@ -119,15 +120,15 @@ export class NewWorkspaceScene extends Scene {
   //#region Select Role of Villager
   
   backFromSelectRoleOfVillagerStep() {
-    this._step$.set(NewWorkspaceSteps.SELECT_TEAM)
+    this._step = NewWorkspaceSteps.SELECT_TEAM
   }
   
-  readonly villagerRoleOptions$: Readable<VillagerRoleOption[]> = derived(this._characterMap$, characterMap => {
-    if (characterMap === undefined) {
+  readonly villagerRoleOptions: VillagerRoleOption[] = $derived.by(() => {
+    if (this._characterMap === undefined) {
       return []
     }
 
-    const characters = Array.from(characterMap.values())
+    const characters = Array.from(this._characterMap.values())
     const options: VillagerRoleOption[] = []
     if (characters.find(it => it.role === Roles.INNOCENT) !== undefined) {
       options.push(VillagerRoleOptions.INNOCENT)
@@ -149,10 +150,12 @@ export class NewWorkspaceScene extends Scene {
     return options
   })
   
-  get villagerRole$(): Writable<VillagerRoleOption | undefined> { return this._villagerRoll$ }
+  get villagerRole(): VillagerRoleOption | undefined { return this._villagerRoll }
+  set villagerRole(newValue: VillagerRoleOption | undefined) { this._villagerRoll = newValue }
 
-  readonly canForwardFromSelectRoleOfVillagerStep$: Readable<boolean> = derived([this.villagerRoleOptions$, this._villagerRoll$], ([options, value]) => {
-    return value !== undefined && options.includes(value)
+  readonly canForwardFromSelectRoleOfVillagerStep: boolean = $derived.by(() => {
+    return this._villagerRoll !== undefined && this.villagerRoleOptions.includes(this._villagerRoll)
+    
   })
 
   forwardFromSelectRoleOfVillagerStep() {
@@ -164,15 +167,15 @@ export class NewWorkspaceScene extends Scene {
   //#region Select Roll of Wolf
   
   backFromSelectRoleOfWolfStep() {
-    this._step$.set(NewWorkspaceSteps.SELECT_TEAM)
+    this._step = NewWorkspaceSteps.SELECT_TEAM
   }
 
-  readonly wolfRoleOptions$: Readable<WolfRoleOption[]> = derived(this._characterMap$, characterMap => {
-    if (characterMap === undefined) {
+  readonly wolfRoleOptions: WolfRoleOption[] = $derived.by(() => {
+    if (this._characterMap === undefined) {
       return []
     }
 
-    const characters = Array.from(characterMap.values())
+    const characters = Array.from(this._characterMap.values())
     const options: WolfRoleOption[] = []
     if (characters.find(it => it.role === Roles.WOLF) !== undefined) {
       options.push(WolfRoleOptions.WOLF)
@@ -185,10 +188,11 @@ export class NewWorkspaceScene extends Scene {
     return options
   })
   
-  get wolfRole$(): Writable<WolfRoleOption | undefined> { return this._wolfRoll$ }
+  get wolfRole(): WolfRoleOption | undefined { return this._wolfRoll }
+  set wolfRole(newValue: WolfRoleOption | undefined) { this._wolfRoll = newValue }
 
-  readonly canForwardFromSelectRoleOfWolfStep$: Readable<boolean> = derived([this.wolfRoleOptions$, this._wolfRoll$], ([options, value]) => {
-    return value !== undefined && options.includes(value)
+  readonly canForwardFromSelectRoleOfWolfStep: boolean = $derived.by(() => {
+    return this._wolfRoll !== undefined && this.wolfRoleOptions.includes(this._wolfRoll)
   })
 
   forwardFromSelectRoleOfWolfStep() {
@@ -200,10 +204,9 @@ export class NewWorkspaceScene extends Scene {
   //#region Input Name
   
   moveToInputNameStep() {
-    const role = this.roleNameOf(this._team$.currentValue, this._villagerRoll$.currentValue, this._wolfRoll$.currentValue)
-    const name = (this._story$.currentValue?.villageFullName ?? "") + ((role !== "") ? `（${role}）` : "")
-    this._name$.set(name)
-    this._step$.set(NewWorkspaceSteps.INPUT_NAME)
+    const role = this.roleNameOf(this._team, this._villagerRoll, this._wolfRoll)
+    this._name = (this._story?.villageFullName ?? "") + ((role !== "") ? `（${role}）` : "")
+    this._step = NewWorkspaceSteps.INPUT_NAME
   }
 
   private roleNameOf(team: TeamOption | undefined, villagerRoleOption: VillagerRoleOption | undefined, wolfRoleOption: WolfRoleOption | undefined): string {
@@ -243,25 +246,26 @@ export class NewWorkspaceScene extends Scene {
   }
   
   backFromInputNameStep() {
-    switch (this._team$.currentValue) {
+    switch (this._team) {
       case TeamOptions.VILLAGER:
-        this._step$.set(NewWorkspaceSteps.SELECT_ROLE_OF_VILLAGER)
+        this._step = NewWorkspaceSteps.SELECT_ROLE_OF_VILLAGER
         break
       case TeamOptions.WOLF:
-        this._step$.set(NewWorkspaceSteps.SELECT_ROLE_OF_WOLF)
+        this._step = NewWorkspaceSteps.SELECT_ROLE_OF_WOLF
         break
       default:
-        this._step$.set(NewWorkspaceSteps.SELECT_TEAM)
+        this._step = NewWorkspaceSteps.SELECT_TEAM
         break       
     }
   }
 
-  get name$(): Writable<string> { return this._name$ }
+  get name(): string { return this._name }
+  set name(newValue: string) { this._name = newValue }
 
-  readonly canForwardFromInputNameStep$: Readable<boolean> = derived(this._name$, name => name.length > 0)
+  readonly canForwardFromInputNameStep: boolean = $derived(this._name.length > 0)
   
   forwardFromInputNameStep() {
-    this._step$.set(NewWorkspaceSteps.CONFIRM)
+    this._step = NewWorkspaceSteps.CONFIRM
   }
 
   //#endregion
@@ -269,17 +273,17 @@ export class NewWorkspaceScene extends Scene {
   //#region Confirm
 
   backFromConfirmStep() {
-    this._step$.set(NewWorkspaceSteps.INPUT_NAME)
+    this._step = NewWorkspaceSteps.INPUT_NAME
   }
   
   async registerNewWorkspace(): Promise<void> {
-    const story = this._story$.currentValue
+    const story = this._story
     if (story === undefined) {
       console.error("Story is not set!")
       return
     }
 
-    const name = this._name$.currentValue
+    const name = this._name
     if (name === undefined) {
       console.error("Name is not set!")
       return
@@ -293,7 +297,7 @@ export class NewWorkspaceScene extends Scene {
 
     const workspaceStore = await this.appContext.getWorkspaceStore()
     const workspaceData = {
-      name: this._name$.currentValue,
+      name,
       currentDay: 0,
       dayProgress: 0,
       playerCharacter: character.avatar.avatarId,
@@ -306,11 +310,11 @@ export class NewWorkspaceScene extends Scene {
   private pickCharacter(): Character | undefined {
     const villagerRoles: Role[] = [Roles.INNOCENT, Roles.SEER, Roles.SHAMAN, Roles.HUNTER, Roles.FRATER]
     const wolfRoles: Role[] = [Roles.WOLF, Roles.MADMAN]
-    const characters = this.shuffleCharacters(this._characterMap$.currentValue ?? new Map())
+    const characters = this.shuffleCharacters(this._characterMap ?? new Map())
 
-    switch (this._team$.currentValue) {
+    switch (this._team) {
       case TeamOptions.VILLAGER:
-        switch (this._villagerRoll$.currentValue) {
+        switch (this._villagerRoll) {
           case VillagerRoleOptions.INNOCENT:
             return characters.find(it => it.role === Roles.INNOCENT)
           case VillagerRoleOptions.SEER:
@@ -332,7 +336,7 @@ export class NewWorkspaceScene extends Scene {
         }
         
       case TeamOptions.WOLF:
-        switch (this._wolfRoll$.currentValue) {
+        switch (this._wolfRoll) {
           case WolfRoleOptions.WOLF:
             return characters.find(it => it.role === Roles.WOLF)
           case WolfRoleOptions.MADMAN:

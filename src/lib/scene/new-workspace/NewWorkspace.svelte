@@ -25,8 +25,7 @@ THE SOFTWARE.
 <script lang="ts">
   import { getContext } from "svelte"
   import { AppContext } from "../../../AppContext"
-  import { NewWorkspaceScene, NewWorkspaceSteps } from "./NewWorkspaceScene"
-  import { readable } from "svelte/store"
+  import { NewWorkspaceScene, NewWorkspaceSteps } from "./NewWorkspaceScene.svelte"
   import SelectStory from "./SelectStory.svelte"
   import InputWorkspaceName from "./InputWorkspaceName.svelte"
   import SelectTeam from "./SelectTeam.svelte"
@@ -37,21 +36,21 @@ THE SOFTWARE.
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(NewWorkspaceScene)
   let scene = $derived($scene$)
-  let step$ = $derived(scene?.step$ ?? readable(undefined))
+  let step = $derived(scene?.step)
 </script>
 
 <div class="h-full flex flex-col place-content-center">
-  {#if $step$ === NewWorkspaceSteps.SELECT_STORY}
+  {#if step === NewWorkspaceSteps.SELECT_STORY}
     <SelectStory/>
-  {:else if $step$ === NewWorkspaceSteps.SELECT_TEAM}
+  {:else if step === NewWorkspaceSteps.SELECT_TEAM}
     <SelectTeam/>
-  {:else if $step$ === NewWorkspaceSteps.SELECT_ROLE_OF_VILLAGER}
+  {:else if step === NewWorkspaceSteps.SELECT_ROLE_OF_VILLAGER}
     <SelectRoleOfVillager/>
-  {:else if $step$ === NewWorkspaceSteps.SELECT_ROLE_OF_WOLF}
+  {:else if step === NewWorkspaceSteps.SELECT_ROLE_OF_WOLF}
     <SelectRoleOfWolf/>
-  {:else if $step$ === NewWorkspaceSteps.INPUT_NAME}
+  {:else if step === NewWorkspaceSteps.INPUT_NAME}
     <InputWorkspaceName/>
-  {:else if $step$ === NewWorkspaceSteps.CONFIRM}
+  {:else if step === NewWorkspaceSteps.CONFIRM}
     <Confirm/>
   {/if}
 </div>

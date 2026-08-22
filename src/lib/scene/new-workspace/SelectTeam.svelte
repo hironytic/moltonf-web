@@ -25,57 +25,55 @@ THE SOFTWARE.
 <script lang="ts">
   import { getContext } from "svelte"
   import { AppContext } from "../../../AppContext"
-  import { NewWorkspaceScene, TeamOptions } from "./NewWorkspaceScene"
+  import { NewWorkspaceScene, TeamOptions } from "./NewWorkspaceScene.svelte"
   import ChevronLeftIcon from "../../icon/ChevronLeftIcon.svelte"
   import { Button } from "flowbite-svelte"
   import HeaderTitle from "../../ui-component/HeaderTitle.svelte"
-  import { readable, writable } from "svelte/store"
   import OptionChooser from "./OptionChooser.svelte"
   import Footer from "../../ui-component/Footer.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(NewWorkspaceScene)
   let scene = $derived($scene$)
-  let teamOptions$ = $derived(scene?.teamOptions$ ?? readable([]))
-  let team$ = $derived(scene?.team$ ?? writable(undefined))
-  let canForward$ = $derived(scene?.canForwardFromSelectTeamStep$ ?? readable(false))
 </script>
 
-<div class="overflow-y-auto">
-  <div class="flex place-content-center">
-    <div class="bg-black max-w-[600px] p-10 rounded-md">
-      <Button color="dark" outline size="xs" onclick={() => scene?.backFromSelectTeamStep()}>
-        <ChevronLeftIcon size="1rem"/> 戻る
-      </Button>
-      <HeaderTitle class="mt-4">どの視点で観戦しますか？</HeaderTitle>
-    
-      <div class="text-sm mt-4">
-        <p>エピローグになるまでは、選んだ視点に合わせて表示されるものが変わります。例えば、村人の視点では人狼たちのささやきは表示されません。</p>
-        <p>村人、人狼を選択した場合は、続けて次の画面で詳細を選択できます。</p>
+{#if scene !== undefined}
+  <div class="overflow-y-auto">
+    <div class="flex place-content-center">
+      <div class="bg-black max-w-[600px] p-10 rounded-md">
+        <Button color="dark" outline size="xs" onclick={() => scene?.backFromSelectTeamStep()}>
+          <ChevronLeftIcon size="1rem"/> 戻る
+        </Button>
+        <HeaderTitle class="mt-4">どの視点で観戦しますか？</HeaderTitle>
+      
+        <div class="text-sm mt-4">
+          <p>エピローグになるまでは、選んだ視点に合わせて表示されるものが変わります。例えば、村人の視点では人狼たちのささやきは表示されません。</p>
+          <p>村人、人狼を選択した場合は、続けて次の画面で詳細を選択できます。</p>
+        </div>
+        
+        <OptionChooser class="mt-4" options={scene.teamOptions} bind:value={scene.team} onChoose={() => scene?.forwardFromSelectTeamStep()} >
+          {#snippet children(option)}
+            {#if option === TeamOptions.VILLAGER}
+              <p class="text-lg font-bold">村人</p>
+              <p class="mt-2 text-sm">村人側の視点で観戦します。</p>
+            {:else if option === TeamOptions.WOLF}
+              <p class="text-lg font-bold">人狼</p>
+              <p class="mt-2 text-sm">人狼側の視点で観戦します。狂人もこちらに含みます。</p>
+            {:else if option === TeamOptions.HAMSTER}
+              <p class="text-lg font-bold">ハムスター人間</p>
+              <p class="mt-2 text-sm">ハムスター人間の視点で観戦します。</p>
+            {:else if option === TeamOptions.ANYTHING}
+              <p class="text-lg font-bold">おまかせ</p>
+              <p class="mt-2 text-sm">観戦データ作成時にシステムがランダムに決定します。</p>
+            {/if}
+          {/snippet}
+        </OptionChooser>
+        
+        <div class="mt-4 flex place-content-end">
+          <Button color="red" disabled={!scene.canForwardFromSelectTeamStep} onclick={() => scene?.forwardFromSelectTeamStep()}>次へ</Button>
+        </div>    
       </div>
-      
-      <OptionChooser class="mt-4" options={$teamOptions$} bind:value={$team$} onChoose={() => scene?.forwardFromSelectTeamStep()} >
-        {#snippet children(option)}
-          {#if option === TeamOptions.VILLAGER}
-            <p class="text-lg font-bold">村人</p>
-            <p class="mt-2 text-sm">村人側の視点で観戦します。</p>
-          {:else if option === TeamOptions.WOLF}
-            <p class="text-lg font-bold">人狼</p>
-            <p class="mt-2 text-sm">人狼側の視点で観戦します。狂人もこちらに含みます。</p>
-          {:else if option === TeamOptions.HAMSTER}
-            <p class="text-lg font-bold">ハムスター人間</p>
-            <p class="mt-2 text-sm">ハムスター人間の視点で観戦します。</p>
-          {:else if option === TeamOptions.ANYTHING}
-            <p class="text-lg font-bold">おまかせ</p>
-            <p class="mt-2 text-sm">観戦データ作成時にシステムがランダムに決定します。</p>
-          {/if}
-        {/snippet}
-      </OptionChooser>
-      
-      <div class="mt-4 flex place-content-end">
-        <Button color="red" disabled={!$canForward$} onclick={() => scene?.forwardFromSelectTeamStep()}>次へ</Button>
-      </div>    
     </div>
+    <Footer/>
   </div>
-  <Footer/>
-</div>
+{/if}

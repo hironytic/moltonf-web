@@ -29,7 +29,7 @@ THE SOFTWARE.
   import NewWorkspace from "./lib/scene/new-workspace/NewWorkspace.svelte"
   import Watching from "./lib/scene/watching/Watching.svelte"
   import { SelectWorkspaceScene } from "./lib/scene/select-workspace/SelectWorkspaceScene.svelte"
-  import { NewWorkspaceScene } from "./lib/scene/new-workspace/NewWorkspaceScene"
+  import { NewWorkspaceScene } from "./lib/scene/new-workspace/NewWorkspaceScene.svelte"
   import { WatchingScene } from "./lib/scene/watching/WatchingScene.svelte"
   import MessageBox from "./lib/MessageBox.svelte"
   import NavBar from "./lib/NavBar.svelte"

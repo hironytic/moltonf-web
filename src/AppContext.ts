@@ -34,7 +34,7 @@ import type { ExtendedMessageBoxItem, MessageBoxItem } from "./lib/MessageBoxIte
 import type { History } from "./History"
 import { HistoryLocation } from "./History"
 import { currentValueWritable } from "./lib/CurrentValueStore"
-import { NewWorkspaceScene } from "./lib/scene/new-workspace/NewWorkspaceScene"
+import { NewWorkspaceScene } from "./lib/scene/new-workspace/NewWorkspaceScene.svelte"
 import { WatchingScene } from "./lib/scene/watching/WatchingScene.svelte"
 import { InvalidScene } from "./lib/scene/invalid/InvalidScene"
 import { runDetached } from "./lib/Utils"

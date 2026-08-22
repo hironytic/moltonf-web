@@ -25,43 +25,44 @@ THE SOFTWARE.
 <script lang="ts">
   import { getContext } from "svelte"
   import { AppContext } from "../../../AppContext"
-  import { NewWorkspaceScene } from "./NewWorkspaceScene"
+  import { NewWorkspaceScene } from "./NewWorkspaceScene.svelte"
   import ChevronLeftIcon from "../../icon/ChevronLeftIcon.svelte"
   import { Button } from "flowbite-svelte"
   import HeaderTitle from "../../ui-component/HeaderTitle.svelte"
-  import { readable } from "svelte/store"
   import Footer from "../../ui-component/Footer.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const scene$ = appContext.sceneAs$(NewWorkspaceScene)
   let scene = $derived($scene$)
-  let name$ = $derived(scene?.name$ ?? readable(""))
+  let name = $derived(scene?.name ?? "")
 </script>
 
-<div class="overflow-y-auto">
-  <div class="flex place-content-center">
-    <div class="bg-black max-w-[600px] p-10 rounded-md">
-      <Button color="dark" outline size="xs" onclick={() => scene?.backFromConfirmStep()}>
-        <ChevronLeftIcon size="1rem"/> 戻る
-      </Button>
-      <HeaderTitle class="mt-4">観戦データの登録</HeaderTitle>
-    
-      <div class="text-sm mt-4">
-        <p>観戦データ「{$name$}」を登録します。</p>
-      </div>
-
-      <div class="mt-8 text-center">
-        <Button color="red" onclick={() => scene?.registerNewWorkspace()}>登録してプロローグへ</Button>
-      </div>
+{#if scene !== undefined}
+  <div class="overflow-y-auto">
+    <div class="flex place-content-center">
+      <div class="bg-black max-w-[600px] p-10 rounded-md">
+        <Button color="dark" outline size="xs" onclick={() => scene?.backFromConfirmStep()}>
+          <ChevronLeftIcon size="1rem"/> 戻る
+        </Button>
+        <HeaderTitle class="mt-4">観戦データの登録</HeaderTitle>
       
-      <div class="text-sm mt-8">
-        <p>
-          選択した役職に応じてあなたが着目するキャラクターが選ばれます。
-          選ばれたキャラクターは、1日目の先頭で明らかになります。
-          どのキャラクターになるかを楽しみにしながらプロローグをお読みください。
-        </p>
+        <div class="text-sm mt-4">
+          <p>観戦データ「{name}」を登録します。</p>
+        </div>
+
+        <div class="mt-8 text-center">
+          <Button color="red" onclick={() => scene?.registerNewWorkspace()}>登録してプロローグへ</Button>
+        </div>
+        
+        <div class="text-sm mt-8">
+          <p>
+            選択した役職に応じてあなたが着目するキャラクターが選ばれます。
+            選ばれたキャラクターは、1日目の先頭で明らかになります。
+            どのキャラクターになるかを楽しみにしながらプロローグをお読みください。
+          </p>
+        </div>
       </div>
     </div>
+    <Footer/>
   </div>
-  <Footer/>
-</div>
+{/if}
