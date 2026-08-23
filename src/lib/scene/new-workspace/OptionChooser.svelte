@@ -1,7 +1,7 @@
 <!--
 OptionChooser.svelte
 
-Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,30 +24,37 @@ THE SOFTWARE.
 
 <script lang="ts">
   import classNames from "classnames"
-  import { createEventDispatcher } from "svelte"
+  import { type Snippet } from "svelte"
 
-  const dispatch = createEventDispatcher()
-  
-  export let options: string[] = []
-  export let value: string | undefined = undefined
+  interface Props {
+    options?: string[]
+    value?: string
+    class?: string
+    onChoose?: (option: string) => void
+    children?: Snippet<[string]>
+  }
 
-  let className: string | undefined = undefined
-  export { className as class }
+  let {
+    options = [],
+    value = $bindable(undefined),
+    class: className,
+    onChoose,
+    children
+  }: Props = $props()
 
-  let clsNames: string
-  $: clsNames = classNames(
+  let clsNames: string = $derived(classNames(
     "w-full flex flex-col space-y-2",
     className ?? ""
-  )
+  ))
   
   function onItemClicked(option: string) {
     value = option
-    dispatch("choose", option)
+    onChoose?.(option)
   }
 </script>
 
 <div class={clsNames}>
-  {#each options as option}
+  {#each options as option (option)}
     {@const buttonClass = classNames(
       "w-full p-5 text-left rounded-lg cursor-pointer",
       "bg-gray-800 hover:bg-gray-700",
@@ -55,8 +62,8 @@ THE SOFTWARE.
       {"text-gray-400 border-gray-700 hover:text-gray-400": option !== value},
       {"text-red-500 border-red-600": option === value},
     )}
-    <button class={buttonClass} on:click={() => void onItemClicked(option)}>
-      <slot {option}/>
+    <button class={buttonClass} onclick={() => void onItemClicked(option)}>
+      {@render children?.(option)}
     </button>
   {/each}
 </div>

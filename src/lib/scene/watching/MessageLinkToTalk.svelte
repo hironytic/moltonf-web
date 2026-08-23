@@ -1,7 +1,7 @@
 <!--
 MessageLinkToTalk.svelte
 
-Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,37 +24,45 @@ THE SOFTWARE.
 
 <script lang="ts">
   import { getContext } from "svelte"
-  import { AppContext } from "../../../AppContext"
-  import { WatchingScene } from "./WatchingScene"
+  import { AppContext } from "../../../AppContext.svelte"
+  import { WatchingScene } from "./WatchingScene.svelte"
   import type { LinkToTalkSegment } from "./MessageSegment"
   import HistoryLink from "../../ui-component/HistoryLink.svelte"
   import type { TalkType } from "../../story/TalkType"
   import { TalkTypes } from "../../story/TalkType"
-  import { HistoryLocation } from "../../../History"
+  import { HistoryLocation } from "../../../History.svelte"
 
-  export let segment = undefined as LinkToTalkSegment | undefined
-  export let talkType: TalkType = TalkTypes.PUBLIC
-  export let location = undefined as HistoryLocation | undefined
+  interface Props {
+    segment?: LinkToTalkSegment
+    talkType?: TalkType
+    location?: HistoryLocation
+  }
+
+  let {
+    segment = undefined,
+    talkType = TalkTypes.PUBLIC,
+    location = undefined,
+  }: Props = $props()
   
   const appContext = getContext<AppContext>(AppContext.Key)
-  const scene$ = appContext.sceneAs$(WatchingScene)
-  $: scene = $scene$
+  let scene = $derived(appContext.sceneAs(WatchingScene))
   
-  let linkTo: HistoryLocation | undefined
-  $: {
-    linkTo = undefined
+  let linkTo = $derived.by(() => {
     if (segment !== undefined && scene !== undefined) {
       const talkWithDay = segment.talks[0]
       if (talkWithDay !== undefined) {
-        linkTo = scene.getLocation(talkWithDay.day, talkWithDay.talk.elementId)
+        return scene.getLocation(talkWithDay.day, talkWithDay.talk.elementId)
       }
     }
-  }
+    return undefined
+  })
 </script>
 
 {#if segment !== undefined && linkTo !== undefined}
-  <HistoryLink from={location} to={linkTo} let:href let:onClick>
-    <a class="tt-{talkType}" {href} on:click={onClick}>{segment.text}</a>
+  <HistoryLink from={location} to={linkTo}  >
+    {#snippet children({ href, onClick })}
+      <a class="tt-{talkType}" {href} onclick={onClick}>{segment.text}</a>
+    {/snippet}
   </HistoryLink>
 {/if}
 

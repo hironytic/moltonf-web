@@ -1,7 +1,7 @@
 //
 // InvalidScene.ts
 //
-// Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+// Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@
 //
 
 import { Scene } from "../../../Scene"
-import { AppContext } from "../../../AppContext"
+import { AppContext } from "../../../AppContext.svelte"
 
 export class InvalidScene extends Scene {
   readonly message: string

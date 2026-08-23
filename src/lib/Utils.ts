@@ -22,12 +22,10 @@
 // THE SOFTWARE.
 //
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function doNothing(..._args: unknown[]) {
   // do nothing
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function unusedParameter(..._args: unknown[]) {
   // do nothing
 }
@@ -35,7 +33,7 @@ export function unusedParameter(..._args: unknown[]) {
 export async function delay(msec: number, signal?: AbortSignal): Promise<void> {
   let abortListener: (() => void) | undefined = undefined
   const promise = new Promise((resolve, reject) => {
-    let timeout: NodeJS.Timeout | undefined = undefined
+    let timeout: number | undefined = undefined
     if (signal !== undefined) {
       abortListener = () => {
         if (timeout !== undefined) {

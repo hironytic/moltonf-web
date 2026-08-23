@@ -22,5 +22,5 @@
 // THE SOFTWARE.
 //
 
-export const version = "6"
+export const version = "7"
 export const commitHash = import.meta.env["VITE_COMMIT_HASH"]

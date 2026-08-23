@@ -1,7 +1,7 @@
 <!--
 TalkView.svelte
 
-Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,6 @@ THE SOFTWARE.
   import type { Talk } from "../../story/Talk"
   import { StoryElementTypes } from "../../story/StoryElement"
   import { TalkTypes } from "../../story/TalkType"
-  import type { Avatar } from "../../story/Avatar"
   import { timeString } from "../../story/TimePart.js"
   import SpeechTail from "./SpeechTail.svelte"
   import ThoughtTail from "./ThoughtTail.svelte"
@@ -37,58 +36,63 @@ THE SOFTWARE.
   import type { TalkMap, TalkWithDay } from "../../story/TalkMap"
   import { nullTalkMap } from "../../story/TalkMap"
   import MessageLine from "./MessageLine.svelte"
-  import type { HistoryLocation } from "../../../History"
   import { getContext } from "svelte"
-  import { AppContext } from "../../../AppContext"
-  import { WatchingScene } from "./WatchingScene"
+  import { AppContext } from "../../../AppContext.svelte"
+  import { WatchingScene } from "./WatchingScene.svelte"
 
-  export let talk: Talk = {
-    elementId: "",
-    elementType: StoryElementTypes.TALK,
-    talkType: TalkTypes.PUBLIC,
-    avatarId: "",
-    xname: "",
-    time: 0,
-    talkNo: undefined,
-    messageLines: []
-  }
   
-  export let characterMap: CharacterMap = new Map()
-  export let faceIconUrlMap: Map<string | symbol, string> = new Map()
-  export let talkMap: TalkMap = nullTalkMap()
-  export let isTalkVisible: (day: number, talk: Talk) => boolean = (() => true)
-  export let currentDay = -1
+  interface Props {
+    talk?: Talk
+    characterMap?: CharacterMap
+    faceIconUrlMap?: Map<string | symbol, string>
+    talkMap?: TalkMap
+    isTalkVisible?: (day: number, talk: Talk) => boolean
+    currentDay?: number
+  }
+
+  let {
+    talk = {
+      elementId: "",
+      elementType: StoryElementTypes.TALK,
+      talkType: TalkTypes.PUBLIC,
+      avatarId: "",
+      xname: "",
+      time: 0,
+      talkNo: undefined,
+      messageLines: []
+    },
+    characterMap = new Map(),
+    faceIconUrlMap = new Map(),
+    talkMap = nullTalkMap(),
+    isTalkVisible = () => true,
+    currentDay = -1
+  }: Props = $props()
 
   const appContext = getContext<AppContext>(AppContext.Key)
-  const scene$ = appContext.sceneAs$(WatchingScene)
-  $: scene = $scene$
+  let scene = $derived(appContext.sceneAs(WatchingScene))
   
-  let avatar: Avatar | undefined
-  $: avatar = characterMap.get(talk.avatarId)?.avatar
+  let avatar = $derived(characterMap.get(talk.avatarId)?.avatar)
   
-  let faceIconUrl: string | undefined
-  $: {
+  let faceIconUrl = $derived.by(() => {
     if (talk.talkType === TalkTypes.GRAVE) {
-      faceIconUrl = faceIconUrlMap.get(graveIcon)
+      return faceIconUrlMap.get(graveIcon)
     } else {
       const avatarId = avatar?.avatarId
       if (avatarId !== undefined) {
-        faceIconUrl = faceIconUrlMap.get(avatarId)
+        return faceIconUrlMap.get(avatarId)
       } else {
-        faceIconUrl = undefined
+        return undefined
       }
     }
-  }
+  })
   
-  let segmentsLines: MessageSegment[][]
-  $: segmentsLines = talk.messageLines.map(line => parseMessageSegments(line, {
+  let segmentsLines: MessageSegment[][] = $derived(talk.messageLines.map(line => parseMessageSegments(line, {
     currentDay,
     talkMap,
     isTalkVisible: (talk: TalkWithDay) => isTalkVisible(talk.day, talk.talk), 
-  }))
+  })))
   
-  let location: HistoryLocation | undefined
-  $: location = scene?.getLocation(currentDay, talk.elementId)
+  let location = $derived(scene?.getLocation(currentDay, talk.elementId))
 </script>
 
 <div>
@@ -117,7 +121,7 @@ THE SOFTWARE.
   </div>
   <div class="grow p-2 rounded tt-{talk.talkType}">
     <p class="message">
-      {#each segmentsLines as line, index}
+      {#each segmentsLines as line, index (index)}
         {#if index !== 0}
           <br/>
         {/if}

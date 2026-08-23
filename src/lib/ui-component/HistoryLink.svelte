@@ -1,7 +1,7 @@
 <!--
 HistoryLink.svelte
 
-Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,26 +23,32 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
-  import { HashHistory, HistoryLocation } from "../../History"
+  import { HashHistory, HistoryLocation } from "../../History.svelte"
   import { getContext } from "svelte"
-  import { AppContext } from "../../AppContext"
+  import type { Snippet } from "svelte"
+  import { AppContext } from "../../AppContext.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
   const history = appContext.history
   const isBrowserHistory = (history instanceof HashHistory)
   
-  export let from = undefined as string | HistoryLocation | undefined
-  export let to = "/" as string | HistoryLocation
-  export let replace = false
+  interface Props {
+    from?: string | HistoryLocation | undefined
+    to?: string | HistoryLocation
+    replace?: boolean
+    children?: Snippet<[{ href: string, onClick: (ev: MouseEvent) => void }]>
+  }
+
+  let {
+    from = undefined,
+    to = "/",
+    replace = false,
+    children
+  }: Props = $props()
   
-  let fromLocation: HistoryLocation | undefined
-  $: fromLocation = (from !== undefined) ? ((from instanceof HistoryLocation) ? from : HistoryLocation.fromPath(from)) : undefined
-  
-  let location: HistoryLocation
-  $: location = (to instanceof HistoryLocation) ? to : HistoryLocation.fromPath(to)
-  
-  let href: string
-  $: href = (isBrowserHistory) ? history.getHref(location) : ""
+  let fromLocation = $derived((from !== undefined) ? ((from instanceof HistoryLocation) ? from : HistoryLocation.fromPath(from)) : undefined)
+  let location = $derived((to instanceof HistoryLocation) ? to : HistoryLocation.fromPath(to))
+  let href = $derived((isBrowserHistory) ? history.getHref(location) : "")
 
   function onClick(ev: MouseEvent) {
     function navigate() {
@@ -65,4 +71,4 @@ THE SOFTWARE.
   }
 </script>
 
-<slot {href} {onClick}/>
+{@render children?.({ href, onClick, })}

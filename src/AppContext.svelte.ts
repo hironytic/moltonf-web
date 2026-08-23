@@ -1,7 +1,7 @@
 //
-// AppContext.ts
+// AppContext.svelte.ts
 //
-// Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+// Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,65 +26,66 @@ import type { MoltonfDB } from "./lib/storage/MoltonfDB"
 import { openMoltonfDB } from "./lib/storage/MoltonfDB"
 import type { IDBPDatabase } from "idb"
 import { WorkspaceStore } from "./lib/storage/WorkspaceStore"
-import type { Readable } from "svelte/store"
-import { derived, writable } from "svelte/store"
 import type { Scene } from "./Scene"
-import { SelectWorkspaceScene } from "./lib/scene/select-workspace/SelectWorkspaceScene"
+import { SelectWorkspaceScene } from "./lib/scene/select-workspace/SelectWorkspaceScene.svelte"
 import type { ExtendedMessageBoxItem, MessageBoxItem } from "./lib/MessageBoxItem"
-import type { History } from "./History"
-import { HistoryLocation } from "./History"
-import { currentValueWritable } from "./lib/CurrentValueStore"
-import { NewWorkspaceScene } from "./lib/scene/new-workspace/NewWorkspaceScene"
-import { WatchingScene } from "./lib/scene/watching/WatchingScene"
+import type { History } from "./History.svelte"
+import { HistoryLocation } from "./History.svelte"
+import { NewWorkspaceScene } from "./lib/scene/new-workspace/NewWorkspaceScene.svelte"
+import { WatchingScene } from "./lib/scene/watching/WatchingScene.svelte"
 import { InvalidScene } from "./lib/scene/invalid/InvalidScene"
 import { runDetached } from "./lib/Utils"
+import { untrack } from "svelte"
 
 export class AppContext {
   static readonly Key = Symbol()
   
   readonly history: History
-  private _unsubscribeHistoryLocation: () => void
+  private _cleanupEffectRoot: () => void
   private _dbPromise: Promise<IDBPDatabase<MoltonfDB> | undefined>
-  private readonly _scene$ = currentValueWritable<Scene>(new SelectWorkspaceScene(this))
-  private readonly _messageBoxItems$ = writable<ExtendedMessageBoxItem[]>([])
+  private _scene = $state<Scene>(new SelectWorkspaceScene(this))
+  private _messageBoxItems = $state<ExtendedMessageBoxItem[]>([])
   
   constructor(history: History) {
     this.history = history
     this._dbPromise = Promise.resolve(undefined)
-    this._unsubscribeHistoryLocation = history.location$.subscribe(it => {
-      this.changeSceneByLocation(it.location)
-    })
+    this._cleanupEffectRoot = $effect.root(() => {
+      $effect(() => {
+        this.changeSceneByLocation(history.locationWithId.location)
+      })
+    }) 
   }
 
   destroy() {
-    this._unsubscribeHistoryLocation()
+    this._cleanupEffectRoot()
+    this.history.destroy()
   }
   
   //#region Scene
   
-  get scene$(): Readable<Scene> { return this._scene$ }
-  
+  get scene(): Scene { return this._scene }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  sceneAs$<T>(sceneClass: new (...args: any[]) => T): Readable<T | undefined> {
-    return derived(this._scene$, it => (it instanceof sceneClass) ? it : undefined)
+  sceneAs<T>(sceneClass: new (...args: any[]) => T): T | undefined {
+    return (this._scene instanceof sceneClass) ? this._scene : undefined
   }
   
   private changeSceneByLocation(location: HistoryLocation) {
-    const currentScene = this._scene$.currentValue
+    const currentScene = untrack(() => this._scene)
     const [first, second] = location.components
     if (first !== "/") {
       // Invalid
-      this._scene$.set(new InvalidScene(this, "Not Found"))
+      this._scene = new InvalidScene(this, "Not Found")
     } else {
       if (second === undefined) {
         // Select Workspace
         if (!(currentScene instanceof SelectWorkspaceScene)) {
-          this._scene$.set(new SelectWorkspaceScene(this))
+          this._scene = new SelectWorkspaceScene(this)
         }
       } else if (second === "new") {
         // New Workspace
         if (!(currentScene instanceof NewWorkspaceScene)) {
-          this._scene$.set(new NewWorkspaceScene(this))
+          this._scene = new NewWorkspaceScene(this)
         }
       } else {
         // Watching
@@ -96,9 +97,9 @@ export class AppContext {
             const workspaceStore = await this.getWorkspaceStore()
             const workspace = await workspaceStore.getWorkspace(workspaceId)
             if (workspace === undefined) {
-              this._scene$.set(new InvalidScene(this, "観戦データが見つかりません。"))
+              this._scene = new InvalidScene(this, "観戦データが見つかりません。")
             } else {
-              this._scene$.set(new WatchingScene(this, workspace, location))
+              this._scene = new WatchingScene(this, workspace, location)
             }
           })
         }
@@ -110,29 +111,23 @@ export class AppContext {
 
   //#region Message box
   
-  get messageBoxItems$(): Readable<ExtendedMessageBoxItem[]> { return this._messageBoxItems$ }
+  get messageBoxItems(): ExtendedMessageBoxItem[] { return this._messageBoxItems }
   
   showMessageBox(item: MessageBoxItem): Promise<string | undefined> {
     return new Promise(resolve => {
-      this._messageBoxItems$.update(it => {
-        it.push({
-          ...item,
-          selected: undefined,
-          resolve,
-        })
-        return it
+      this._messageBoxItems.push({
+        ...item,
+        selected: undefined,
+        resolve,
       })
     })
   }
   
   onMessageBoxClosed() {
-    this._messageBoxItems$.update(it => {
-      const lastItem = it.pop()
-      if (lastItem !== undefined) {
-        lastItem.resolve(lastItem.selected)
-      }
-      return it
-    })
+    const lastItem = this._messageBoxItems.pop()
+    if (lastItem !== undefined) {
+      lastItem.resolve(lastItem.selected)
+    }
   }
   
   //#endregion

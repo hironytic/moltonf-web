@@ -1,7 +1,7 @@
 <!--
 DeleteIcon.svelte
 
-Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,9 +26,12 @@ THE SOFTWARE.
   import { Icon } from "@steeze-ui/svelte-icon"
   import { Delete } from "@steeze-ui/material-design-icons"
 
-  export let size = "1.5rem"
-  let className: string | undefined = undefined
-  export { className as class }
+  interface Props {
+    size?: string
+    class?: string
+  }
+
+  let { size = "1.5rem", class: className }: Props = $props()
 </script>
 
 <Icon src={Delete} theme="outlined" fill="currentColor" size={size} class={className}/>

@@ -1,7 +1,7 @@
 <!--
 MessageBox.svelte
 
-Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,30 +23,29 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
-  import type { ExtendedMessageBoxItem, MessageBoxItemButton } from "./MessageBoxItem"
+  import type { MessageBoxItemButton } from "./MessageBoxItem"
   import { Button, Modal } from "flowbite-svelte"
   import { getContext } from "svelte"
-  import { AppContext } from "../AppContext"
+  import { AppContext } from "../AppContext.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
-  const messageBoxItems$ = appContext.messageBoxItems$
+
+  let messageBoxItem = $derived.by(() => {
+    const itemsLength = appContext.messageBoxItems.length
+    if (itemsLength === 0) {
+      return undefined
+    } else {
+      return appContext.messageBoxItems[itemsLength - 1]
+    }
+  })
   
-  let messageBoxItem: ExtendedMessageBoxItem | undefined = undefined
-  let open = false
+  let open = $derived(messageBoxItem !== undefined)
   
-  $: {
+  $effect(() => {
     if (!open && messageBoxItem !== undefined) {
       appContext.onMessageBoxClosed()
     }
-    
-    const itemsLength = $messageBoxItems$.length
-    if (itemsLength === 0) {
-      messageBoxItem = undefined
-    } else {
-      messageBoxItem = $messageBoxItems$[itemsLength - 1]
-    }
-    open = messageBoxItem !== undefined
-  }
+  })
   
   function onButtonClicked(button: MessageBoxItemButton) {
     if (messageBoxItem !== undefined) {
@@ -62,7 +61,7 @@ THE SOFTWARE.
     <div class="text-center">
       <h2 class="mb-4 text-xl font-medium text-gray-300">{messageBoxItem.title}</h2>
       <div class="mb-4">
-        {#each messageLines as line}
+        {#each messageLines as line, index (index)}
           {#if line === ""}
             <p><br></p>
           {:else}
@@ -71,7 +70,7 @@ THE SOFTWARE.
         {/each}
       </div>
       {#each messageBoxItem.buttons as button (button.key)}
-        <Button color={button.color} class="first:ml-0 ml-2" on:click={() => onButtonClicked(button)}>{button.text}</Button>
+        <Button color={button.color} class="first:ml-0 ml-2" onclick={() => onButtonClicked(button)}>{button.text}</Button>
       {/each}
     </div>
   {/if}

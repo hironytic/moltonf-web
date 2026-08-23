@@ -1,7 +1,7 @@
 <!--
 NewWorkspace.svelte
 
-Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,10 +24,8 @@ THE SOFTWARE.
 
 <script lang="ts">
   import { getContext } from "svelte"
-  import { AppContext } from "../../../AppContext"
-  import { NewWorkspaceScene, type NewWorkspaceStep, NewWorkspaceSteps } from "./NewWorkspaceScene"
-  import type { Readable } from "svelte/store"
-  import { readable } from "svelte/store"
+  import { AppContext } from "../../../AppContext.svelte"
+  import { NewWorkspaceScene, NewWorkspaceSteps } from "./NewWorkspaceScene.svelte"
   import SelectStory from "./SelectStory.svelte"
   import InputWorkspaceName from "./InputWorkspaceName.svelte"
   import SelectTeam from "./SelectTeam.svelte"
@@ -36,25 +34,23 @@ THE SOFTWARE.
   import Confirm from "./Confirm.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
-  const scene$ = appContext.sceneAs$(NewWorkspaceScene)
-  $: scene = $scene$
-  
-  let step$: Readable<NewWorkspaceStep | undefined>
-  $: step$ = scene?.step$ ?? readable(undefined)
+  let scene = $derived(appContext.sceneAs(NewWorkspaceScene))
 </script>
 
-<div class="h-full flex flex-col place-content-center">
-  {#if $step$ === NewWorkspaceSteps.SELECT_STORY}
-    <SelectStory/>
-  {:else if $step$ === NewWorkspaceSteps.SELECT_TEAM}
-    <SelectTeam/>
-  {:else if $step$ === NewWorkspaceSteps.SELECT_ROLE_OF_VILLAGER}
-    <SelectRoleOfVillager/>
-  {:else if $step$ === NewWorkspaceSteps.SELECT_ROLE_OF_WOLF}
-    <SelectRoleOfWolf/>
-  {:else if $step$ === NewWorkspaceSteps.INPUT_NAME}
-    <InputWorkspaceName/>
-  {:else if $step$ === NewWorkspaceSteps.CONFIRM}
-    <Confirm/>
-  {/if}
-</div>
+{#if scene !== undefined}
+  <div class="h-full flex flex-col place-content-center">
+    {#if scene.step === NewWorkspaceSteps.SELECT_STORY}
+      <SelectStory/>
+    {:else if scene.step === NewWorkspaceSteps.SELECT_TEAM}
+      <SelectTeam/>
+    {:else if scene.step === NewWorkspaceSteps.SELECT_ROLE_OF_VILLAGER}
+      <SelectRoleOfVillager/>
+    {:else if scene.step === NewWorkspaceSteps.SELECT_ROLE_OF_WOLF}
+      <SelectRoleOfWolf/>
+    {:else if scene.step === NewWorkspaceSteps.INPUT_NAME}
+      <InputWorkspaceName/>
+    {:else if scene.step === NewWorkspaceSteps.CONFIRM}
+      <Confirm/>
+    {/if}
+  </div>
+{/if}

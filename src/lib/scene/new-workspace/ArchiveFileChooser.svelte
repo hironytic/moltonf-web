@@ -1,7 +1,7 @@
 <!--
 ArchiveFileChooser.svelte
 
-Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,43 +23,36 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
+  import classNames from "classnames"
   import FileOpenIcon from "../../icon/FileOpenIcon.svelte"
   import { Dropzone } from "flowbite-svelte"
   import StoryIcon from "../../icon/StoryIcon.svelte"
 
-  const dispatch = createEventDispatcher()
-
-  export let currentStory: string | undefined = undefined
-  
-  let className: string | undefined = undefined
-  export { className as class }
-  
-  let files: FileList | undefined
-  $: {
-    const file: File | undefined = files?.[0]
-    dispatch("select", file)
+  interface Props {
+    currentStory?: string
+    class?: string
+    onSelect?: (file: File | undefined) => void
   }
+
+  let { currentStory, class: className, onSelect }: Props = $props()
+  
+  let files: FileList | undefined = $state()
+  $effect(() => {
+    const file: File | undefined = files?.[0]
+    onSelect?.(file)
+  })
   
   function onDragOver(ev: DragEvent) {
-    ev.preventDefault()
     const dataTransfer = ev.dataTransfer ?? undefined
     if (dataTransfer !== undefined) {
       dataTransfer.dropEffect = "copy"
     }
   }
-
-  function onDrop(ev: DragEvent) {
-    ev.preventDefault()
-    files = ev.dataTransfer?.files
-  }
 </script>
 
 <Dropzone
-  defaultClass="flex flex-col justify-center items-center w-full h-32 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
-  class={className}
-  on:dragover={onDragOver}
-  on:drop={onDrop}
+  class={classNames("h-32", className)}
+  onDragOver={onDragOver}
   bind:files
 >
   <div class="flex items-center space-x-2 mb-4">

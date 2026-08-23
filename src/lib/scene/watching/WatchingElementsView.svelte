@@ -1,7 +1,7 @@
 <!--
 WatchingElementsView.svelte
 
-Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,46 +24,28 @@ THE SOFTWARE.
 
 <script lang="ts">
   import { getContext } from "svelte"
-  import { AppContext } from "../../../AppContext"
-  import { WatchingScene } from "./WatchingScene"
-  import { readable, type Readable } from "svelte/store"
-  import type { CharacterMap } from "../../story/CharacterMap"
-  import type { WatchingElement } from "./WatchingScene.js"
+  import { AppContext } from "../../../AppContext.svelte"
+  import { WatchingScene } from "./WatchingScene.svelte"
   import WatchingElementView from "./WatchingElementView.svelte"
-  import type { TalkMap } from "../../story/TalkMap"
-  import { nullTalkMap } from "../../story/TalkMap"
   import type { Talk } from "../../story/Talk"
 
   const appContext = getContext<AppContext>(AppContext.Key)
-  const scene$ = appContext.sceneAs$(WatchingScene)
-  $: scene = $scene$
-
-  let currentDay$: Readable<number>
-  $: currentDay$ = scene?.currentDay$ ?? readable(-1)
+  let scene = $derived(appContext.sceneAs(WatchingScene))
   
-  let currentElements$: Readable<WatchingElement[]>
-  $: currentElements$ = scene?.currentElements$ ?? readable([])
-  
-  let characterMap$: Readable<CharacterMap>
-  $: characterMap$ = scene?.characterMap$ ?? readable(new Map())
-  
-  let faceIconUrlMap$: Readable<Map<string | symbol, string>>
-  $: faceIconUrlMap$ = scene?.faceIconUrlMap$ ?? readable(new Map())
-  
-  let talkMap$: Readable<TalkMap>
-  $: talkMap$ = scene?.talkMap$ ?? readable(nullTalkMap())
-
-  let isTalkVisible$: Readable<(day: number, talk: Talk) => boolean>
-  $: isTalkVisible$ = scene?.isTalkVisible$ ?? readable(() => false)
+  function isTalkVisible(day: number, talk: Talk): boolean {
+    return scene?.isTalkVisible(day, talk) ?? false
+  }
 </script>
 
-{#each $currentElements$ as element (element.elementId)}
-  <WatchingElementView
-    element={element}
-    characterMap={$characterMap$}
-    faceIconUrlMap={$faceIconUrlMap$}
-    talkMap={$talkMap$}
-    currentDay={$currentDay$}
-    isTalkVisible={$isTalkVisible$}
-  />
-{/each}
+{#if scene !== undefined}
+  {#each scene.currentElements as element (element.elementId)}
+    <WatchingElementView
+      element={element}
+      characterMap={scene.characterMap}
+      faceIconUrlMap={scene.faceIconUrlMap}
+      talkMap={scene.talkMap}
+      currentDay={scene.currentDay}
+      isTalkVisible={isTalkVisible}
+    />
+  {/each}
+{/if}

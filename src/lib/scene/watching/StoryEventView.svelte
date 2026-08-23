@@ -1,7 +1,7 @@
 <!--
 StoryEventView.svelte
 
-Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,19 +28,24 @@ THE SOFTWARE.
   import { EventFamilies } from "../../story/EventFamily"
   import { EventNames } from "../../story/StoryEventName"
 
-  export let storyEvent: StoryEvent = {
-    elementId: "",
-    elementType: StoryElementTypes.STORY_EVENT,
-    eventFamily: EventFamilies.ANNOUNCE,
-    eventName: EventNames.START_ENTRY,
-    messageLines: [],
-  } as StoryEvent
-  
+  interface Props {
+    storyEvent?: StoryEvent
+  }
+
+  let {
+    storyEvent = {
+      elementId: "",
+      elementType: StoryElementTypes.STORY_EVENT,
+      eventFamily: EventFamilies.ANNOUNCE,
+      eventName: EventNames.START_ENTRY,
+      messageLines: [],
+    }
+  }: Props = $props()
 </script>
 
 <div class="p-2 ef-{storyEvent.eventFamily}">
   <p class="message">
-  {#each storyEvent.messageLines as line, index}
+  {#each storyEvent.messageLines as line, index (index)}
     {#if index !== 0}
       <br/>
     {/if}
