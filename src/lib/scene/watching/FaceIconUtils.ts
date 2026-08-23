@@ -1,7 +1,7 @@
 //
 // FaceIconUtils.ts
 //
-// Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+// Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,17 @@ export function createFaceIconUrlMap(story: Story): Map<string | symbol, string>
   return result
 }
 
+// Built-in face icons: face01.jpg - face20.jpg, face99.jpg
+const builtInFaceIconRegExp = /^face(0[1-9]|1[0-9]|20|99).jpg$/
+
 function createFaceIconUrl(baseURI: string, iconURI: string): string {
+  // Replace to Built-In icons
+  const lastSep = iconURI.lastIndexOf("/")
+  const fileName = (lastSep >= 0) ? iconURI.substring(lastSep + 1) : iconURI
+  if (fileName.match(builtInFaceIconRegExp) !== null) {
+    return `face/${fileName}`
+  }
+  
   function relocateBaseURI(baseURI: string): string {
     switch (baseURI) {
       case "http://www.wolfg.x0.com/":
