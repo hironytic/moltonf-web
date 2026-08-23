@@ -1,7 +1,7 @@
 <!--
 MessageLine.svelte
 
-Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,11 +27,15 @@ THE SOFTWARE.
   import { MessageSegmentTypes } from "./MessageSegment"
   import MessageLinkToTalk from "./MessageLinkToTalk.svelte"
   import { type TalkType, TalkTypes } from "../../story/TalkType"
-  import type { HistoryLocation } from "../../../History"
+  import type { HistoryLocation } from "../../../History.svelte"
 
-  export let segments: MessageSegment[] = []
-  export let talkType: TalkType = TalkTypes.PUBLIC
-  export let location = undefined as HistoryLocation | undefined
+  interface Props {
+    segments?: MessageSegment[]
+    talkType?: TalkType
+    location?: HistoryLocation;
+  }
+
+  let { segments = [], talkType = TalkTypes.PUBLIC, location }: Props = $props()
 </script>
 
 {#each segments as segment, index (index)}

@@ -1,7 +1,7 @@
 <!--
 MoltonfMessageView.svelte
 
-Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,15 +23,20 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
-  import type { MoltonfMessage } from "./WatchingScene"
-  import { MoltonfMessageType } from "./WatchingScene"
+  import type { MoltonfMessage } from "./WatchingScene.svelte"
+  import { MoltonfMessageType } from "./WatchingScene.svelte"
 
-  export let message: MoltonfMessage = {
-    elementId: "",
-    elementType: MoltonfMessageType,
-    messageLines: [],
-  } as MoltonfMessage
-  
+  interface Props {
+    message?: MoltonfMessage
+  }
+
+  let {
+    message = {
+      elementId: "",
+      elementType: MoltonfMessageType,
+      messageLines: [],
+    }
+  }: Props = $props()
 </script>
 
 <div class="p-2 ef-moltonf">

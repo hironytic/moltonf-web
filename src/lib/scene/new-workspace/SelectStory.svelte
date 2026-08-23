@@ -1,7 +1,7 @@
 <!--
 SelectStory.svelte
 
-Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,27 +24,20 @@ THE SOFTWARE.
 
 <script lang="ts">
   import { getContext } from "svelte"
-  import { AppContext } from "../../../AppContext"
-  import { NewWorkspaceScene } from "./NewWorkspaceScene"
+  import { AppContext } from "../../../AppContext.svelte"
+  import { NewWorkspaceScene } from "./NewWorkspaceScene.svelte"
   import { Button } from "flowbite-svelte"
   import HeaderTitle from "../../ui-component/HeaderTitle.svelte"
   import { loadStoryFromArchiveFile } from "../../story/Archive"
   import ArchiveFileChooser from "./ArchiveFileChooser.svelte"
   import ExternalSiteIcon from "../../icon/ExternalSiteIcon.svelte"
   import ChevronLeftIcon from "../../icon/ChevronLeftIcon.svelte"
-  import type { Readable } from "svelte/store"
-  import { readable } from "svelte/store"
-  import type { Story } from "../../story/Story"
   import Footer from "../../ui-component/Footer.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
-  const scene$ = appContext.sceneAs$(NewWorkspaceScene)
-  $: scene = $scene$
+  let scene = $derived(appContext.sceneAs(NewWorkspaceScene))
 
-  let currentStory$: Readable<Story | undefined>
-  $: currentStory$ = scene?.story$ ?? readable(undefined)
-  let currentStoryName: string | undefined
-  $: currentStoryName = $currentStory$?.villageFullName
+  let currentStoryName = $derived(scene?.story?.villageFullName)
   
   async function onArchiveFileSelect(file: File | undefined) {
     if (file !== undefined) {
@@ -69,32 +62,34 @@ THE SOFTWARE.
   }
 </script>
 
-<div class="overflow-y-auto">
-  <div class="flex place-content-center">
-    <div class="bg-black max-w-[600px] p-10 rounded-md">
-      <Button color="dark" outline size="xs" onclick={() => scene?.backFromSelectStoryStep()}>
-        <ChevronLeftIcon size="1rem"/> 戻る
-      </Button>
-      <HeaderTitle class="mt-4">村データの読み込み</HeaderTitle>
-    
-      <div class="text-sm mt-4">
-        <p>
-          <a class="text-red-500 underline hover:text-gray-300 inline-flex items-baseline" href="https://github.com/olyutorskii/XmlScheme" target="_blank" rel="noopener noreferrer">Jindolf XmlScheme <ExternalSiteIcon size="0.8rem"/></a>形式のXMLファイルを用意してください。
-          そのXMLファイルの村データを読み込みます。
-          読み込んだデータはブラウザが管理するローカルコンピューター上のストレージに保存されます
-          （観戦データが作成された後は、ここで選択したXMLファイルはもう参照しません）。
-        </p>
-      </div>
+{#if scene !== undefined}
+  <div class="overflow-y-auto">
+    <div class="flex place-content-center">
+      <div class="bg-black max-w-[600px] p-10 rounded-md">
+        <Button color="dark" outline size="xs" onclick={() => scene?.backFromSelectStoryStep()}>
+          <ChevronLeftIcon size="1rem"/> 戻る
+        </Button>
+        <HeaderTitle class="mt-4">村データの読み込み</HeaderTitle>
       
-      <ArchiveFileChooser class="mt-4" currentStory={currentStoryName} on:select={(ev) => onArchiveFileSelect(ev.detail ?? undefined)}/>
-    
-      {#if currentStoryName !== undefined}
-        <div class="my-4 text-end">
-          <Button color="red" onclick={() => scene?.forwardFromSelectStoryStep()}>次へ</Button>
+        <div class="text-sm mt-4">
+          <p>
+            <a class="text-red-500 underline hover:text-gray-300 inline-flex items-baseline" href="https://github.com/olyutorskii/XmlScheme" target="_blank" rel="noopener noreferrer">Jindolf XmlScheme <ExternalSiteIcon size="0.8rem"/></a>形式のXMLファイルを用意してください。
+            そのXMLファイルの村データを読み込みます。
+            読み込んだデータはブラウザが管理するローカルコンピューター上のストレージに保存されます
+            （観戦データが作成された後は、ここで選択したXMLファイルはもう参照しません）。
+          </p>
         </div>
-      {/if}
+        
+        <ArchiveFileChooser class="mt-4" currentStory={currentStoryName} onSelect={(file) => onArchiveFileSelect(file)}/>
       
+        {#if currentStoryName !== undefined}
+          <div class="my-4 text-end">
+            <Button color="red" onclick={() => scene?.forwardFromSelectStoryStep()}>次へ</Button>
+          </div>
+        {/if}
+        
+      </div>
     </div>
+    <Footer/>
   </div>
-  <Footer/>
-</div>
+{/if}

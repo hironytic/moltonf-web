@@ -1,7 +1,7 @@
 <!--
 DayChanger.svelte
 
-Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,29 +25,26 @@ THE SOFTWARE.
 <script lang="ts">
   import { Button, ButtonGroup } from "flowbite-svelte"
   import { getContext } from "svelte"
-  import { AppContext } from "../../../AppContext"
-  import { type WatchableDay, WatchingScene } from "./WatchingScene"
-  import { type Readable, readable } from "svelte/store"
+  import { AppContext } from "../../../AppContext.svelte"
+  import { WatchingScene } from "./WatchingScene.svelte"
   import HistoryLink from "../../ui-component/HistoryLink.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
-  const scene$ = appContext.sceneAs$(WatchingScene)
-  $: scene = $scene$
+  let scene = $derived(appContext.sceneAs(WatchingScene))
   
-  let watchableDays$: Readable<WatchableDay[]>
-  $: watchableDays$ = scene?.watchableDays$ ?? readable([])
-  
-  let currentDay$: Readable<number>
-  $: currentDay$ = scene?.currentDay$ ?? readable(0)
+  let watchableDays = $derived(scene?.watchableDays ?? [])
+  let currentDay = $derived(scene?.currentDay ?? 0)
 </script>
 
 {#if scene !== undefined}
   <ButtonGroup class="overflow-x-auto">
-    {#each $watchableDays$ as wday (wday.day)}
-      <HistoryLink to={scene.getLocation(wday.day)} let:href let:onClick>
-        <Button size="xs" color="red" class="shrink-0" href={href} onclick={onClick} outline={wday.day !== $currentDay$}>
-          {wday.text}
-        </Button>
+    {#each watchableDays as wday (wday.day)}
+      <HistoryLink to={scene.getLocation(wday.day)}  >
+        {#snippet children({ href, onClick })}
+          <Button size="xs" color="red" class="shrink-0" href={href} onclick={onClick} outline={wday.day !== currentDay}>
+            {wday.text}
+          </Button>
+        {/snippet}
       </HistoryLink>
     {/each}
   </ButtonGroup>

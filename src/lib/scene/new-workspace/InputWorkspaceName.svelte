@@ -1,7 +1,7 @@
 <!--
 InputWorkspaceName.svelte
 
-Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,60 +24,54 @@ THE SOFTWARE.
 
 <script lang="ts">
   import { getContext, onMount } from "svelte"
-  import { AppContext } from "../../../AppContext"
-  import { NewWorkspaceScene } from "./NewWorkspaceScene"
+  import { AppContext } from "../../../AppContext.svelte"
+  import { NewWorkspaceScene } from "./NewWorkspaceScene.svelte"
   import HeaderTitle from "../../ui-component/HeaderTitle.svelte"
   import { Button, Input } from "flowbite-svelte"
   import ChevronLeftIcon from "../../icon/ChevronLeftIcon.svelte"
-  import type { Readable, Writable } from "svelte/store"
-  import { readable, writable } from "svelte/store"
   import Footer from "../../ui-component/Footer.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
-  const scene$ = appContext.sceneAs$(NewWorkspaceScene)
-  $: scene = $scene$
+  let scene = $derived(appContext.sceneAs(NewWorkspaceScene))
+  let nameInput: HTMLInputElement | undefined = $state(undefined)
   
-  let name$: Writable<string>
-  $: name$ = scene?.name$ ?? writable("")
-  
-  let nameInput: HTMLInputElement | undefined = undefined
-
-  let canForward$: Readable<boolean>
-  $: canForward$ = scene?.canForwardFromInputNameStep$ ?? readable(false)
+  function onSubmit(ev: Event) {
+    ev.preventDefault()
+    scene?.forwardFromInputNameStep ()
+  }
   
   onMount(() => {
     nameInput?.focus()
   })
 </script>
 
-<div class="overflow-y-auto">
-  <div class="flex place-content-center">
-    <div class="bg-black max-w-[600px] p-10 rounded-md">
-      <Button color="alternative" size="xs" onclick={() => scene?.backFromInputNameStep()}>
-        <ChevronLeftIcon size="1rem"/> 戻る
-      </Button>
-      <HeaderTitle class="mt-4">観戦データの名前</HeaderTitle>
-    
-      <div class="text-sm mt-4">
-        <p>
-          この観戦データに後で自分が見てわかりやすい名前を付けてください。
-        </p>
-      </div>
-    
-      <form
-        class="flex mt-4 space-x-2"
-        on:submit|preventDefault={() => scene?.forwardFromInputNameStep()}
-      >
-        <div class="grow">
-          <Input required>
-            {#snippet children(props)}
-              <input type="text" bind:value={$name$} bind:this={nameInput} {...props}/>
-            {/snippet}
-          </Input>
+{#if scene !== undefined}
+  <div class="overflow-y-auto">
+    <div class="flex place-content-center">
+      <div class="bg-black max-w-[600px] p-10 rounded-md">
+        <Button color="alternative" size="xs" onclick={() => scene?.backFromInputNameStep()}>
+          <ChevronLeftIcon size="1rem"/> 戻る
+        </Button>
+        <HeaderTitle class="mt-4">観戦データの名前</HeaderTitle>
+      
+        <div class="text-sm mt-4">
+          <p>
+            この観戦データに後で自分が見てわかりやすい名前を付けてください。
+          </p>
         </div>
-        <Button class="shrink-0" type="submit" color="red" disabled={!$canForward$}>次へ</Button>
-      </form>
+      
+        <form class="flex mt-4 space-x-2" onsubmit={onSubmit}>
+          <div class="grow">
+            <Input required>
+              {#snippet children(props)}
+                <input type="text" bind:value={scene.name} bind:this={nameInput} {...props}/>
+              {/snippet}
+            </Input>
+          </div>
+          <Button class="shrink-0" type="submit" color="red" disabled={!scene.canForwardFromInputNameStep}>次へ</Button>
+        </form>
+      </div>
     </div>
+    <Footer/>
   </div>
-  <Footer/>
-</div>
+{/if}

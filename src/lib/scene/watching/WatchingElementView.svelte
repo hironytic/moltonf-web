@@ -1,7 +1,7 @@
 <!--
 WatchingElementView.svelte
 
-Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,8 @@ THE SOFTWARE.
 
 <script lang="ts">
   import type { CharacterMap } from "../../story/CharacterMap"
-  import type { WatchingElement } from "./WatchingScene"
-  import { MoltonfMessageType } from "./WatchingScene"
+  import type { WatchingElement } from "./WatchingScene.svelte"
+  import { MoltonfMessageType } from "./WatchingScene.svelte"
   import { StoryElementTypes } from "../../story/StoryElement"
   import { EventNames } from "../../story/StoryEventName"
   import TalkView from "./TalkView.svelte"
@@ -40,42 +40,53 @@ THE SOFTWARE.
 
   const watchingContext = getContext<WatchingContext>(WatchingContext.Key)
   
-  export let characterMap: CharacterMap = new Map()
-  export let faceIconUrlMap: Map<string | symbol, string> = new Map()
-  export let talkMap: TalkMap = nullTalkMap()
-  export let isTalkVisible: (day: number, talk: Talk) => boolean = (() => true)  
-  export let currentDay = -1
-  export let element: WatchingElement = ({
-    elementId: "",
-    elementType: MoltonfMessageType,
-    messageLines: [],
-  })
+  interface Props {
+    characterMap?: CharacterMap
+    faceIconUrlMap?: Map<string | symbol, string>
+    talkMap?: TalkMap
+    isTalkVisible?: (day: number, talk: Talk) => boolean
+    currentDay?: number;
+    element?: WatchingElement;
+  }
+
+  let {
+    characterMap = new Map(),
+    faceIconUrlMap = new Map(),
+    talkMap = nullTalkMap(),
+    isTalkVisible = () => true,
+    currentDay = -1,
+    element = {
+      elementId: "",
+      elementType: MoltonfMessageType,
+      messageLines: [],
+    }
+  }: Props = $props()
   
-  let elementDiv: HTMLDivElement | undefined = (undefined)
+  let elementDiv: HTMLDivElement | undefined = $state(undefined)
   
   function registerElement(elementId: string) {
     if (elementDiv !== undefined) {
-      if (unreactives.lastElementId !== elementId) {
-        if (unreactives.lastElementId !== undefined) {
-          watchingContext.removeElement(unreactives.lastElementId)
+      if (lastElementId !== elementId) {
+        if (lastElementId !== undefined) {
+          watchingContext.removeElement(lastElementId)
         }
-        unreactives.lastElementId = elementId
+        lastElementId = elementId
         watchingContext.addElement(elementId, elementDiv)
       }
     }
   }
   
-  const unreactives = {
-    lastElementId: undefined as string | undefined,
-  }
+  let lastElementId: string | undefined = undefined
   
-  $: registerElement(element.elementId)
+  $effect(() => {
+    registerElement(element.elementId)
+  })
   
   onMount(() => {
     registerElement(element.elementId)
     return () => {
-      if (unreactives.lastElementId !== undefined) {
-        watchingContext.removeElement(unreactives.lastElementId)
+      if (lastElementId !== undefined) {
+        watchingContext.removeElement(lastElementId)
       }
     }
   })

@@ -10,4 +10,7 @@ export default {
       postcss: true,
     }),
   ],
+  compilerOptions: {
+    runes: true
+  }
 };

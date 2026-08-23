@@ -1,7 +1,7 @@
 <!--
 SelectWorkspace.svelte
 
-Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,26 +24,26 @@ THE SOFTWARE.
 
 <script lang="ts">
   import { getContext } from "svelte"
-  import { AppContext } from "../../../AppContext"
-  import { SelectWorkspaceScene } from "./SelectWorkspaceScene"
+  import { AppContext } from "../../../AppContext.svelte"
+  import { SelectWorkspaceScene } from "./SelectWorkspaceScene.svelte"
   import { Button, Listgroup, ListgroupItem, Spinner } from "flowbite-svelte"
   import HeaderTitle from "../../ui-component/HeaderTitle.svelte"
   import WorkspaceIcon from "../../icon/WorkspaceIcon.svelte"
   import DeleteIcon from "../../icon/DeleteIcon.svelte"
-  import { readable, type Readable } from "svelte/store"
   import type { Workspace } from "../../workspace/Workspace"
-  import { HistoryLocation } from "../../../History"
+  import { HistoryLocation } from "../../../History.svelte"
   import HistoryLink from "../../ui-component/HistoryLink.svelte"
   import Footer from "../../ui-component/Footer.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
-  const scene$ = appContext.sceneAs$(SelectWorkspaceScene)
-  $: scene = $scene$
+  let scene = $derived(appContext.sceneAs(SelectWorkspaceScene))
   
-  let workspaces$: Readable<Workspace[] | undefined>
-  $: workspaces$ = scene?.workspaces$ ?? readable(undefined)
+  let workspaces = $derived(scene?.workspaces)
   
-  async function deleteWorkspace(workspace: Workspace) {
+  async function deleteWorkspace(ev: Event, workspace: Workspace) {
+    ev.stopPropagation()
+    ev.preventDefault()
+    
     const result = await appContext.showMessageBox({
       title: "観戦データの削除",
       message: `観戦データ「${workspace.name}」を削除します。\n\n削除したデータを復活させることはできません。\nよろしいですか？`,
@@ -69,9 +69,9 @@ THE SOFTWARE.
 <div class="h-full flex flex-col place-content-center">
   <div class="overflow-y-auto">
     <div class="flex place-content-center">
-      {#if $workspaces$ === undefined}
+      {#if workspaces === undefined}
         <Spinner />
-      {:else if $workspaces$.length === 0}
+      {:else if workspaces.length === 0}
         <div class="bg-black max-w-[600px] p-10 rounded-md">
           <HeaderTitle class="mb-4">観戦を始めましょう！</HeaderTitle>
           
@@ -104,19 +104,21 @@ THE SOFTWARE.
           </div>
           
           <Listgroup class="mt-4" active>
-            {#each $workspaces$ as item (item.id)}
+            {#each workspaces as item (item.id)}
               {@const location = HistoryLocation.fromComponents(["/", item.id])}
-              <HistoryLink to={location} let:href let:onClick>
-                <ListgroupItem href={href} onclick={onClick}>
-                  <div class="flex items-center justify-between w-full">
-                    <div class="inline-flex">
-                      <WorkspaceIcon size="1.25rem" class="mr-2"/>{item.name}
+              <HistoryLink to={location}  >
+                {#snippet children({ href, onClick })}
+                  <ListgroupItem href={href} onclick={onClick}>
+                    <div class="flex items-center justify-between w-full">
+                      <div class="inline-flex">
+                        <WorkspaceIcon size="1.25rem" class="mr-2"/>{item.name}
+                      </div>
+                      <button class="hover:text-red-500" onclick={(ev) => void deleteWorkspace(ev, item)}>
+                        <DeleteIcon size="1.25rem"/>
+                      </button>
                     </div>
-                    <button class="hover:text-red-500" on:click|preventDefault|stopPropagation={() => void deleteWorkspace(item)}>
-                      <DeleteIcon size="1.25rem"/>
-                    </button>
-                  </div>
-                </ListgroupItem>
+                  </ListgroupItem>
+                {/snippet}
               </HistoryLink>
             {/each}
           </Listgroup>

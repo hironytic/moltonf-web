@@ -1,7 +1,7 @@
 <!--
 NavBar.svelte
 
-Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,28 +23,27 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
-  import { AppContext } from "../AppContext"
+  import { AppContext } from "../AppContext.svelte"
   import { getContext } from "svelte"
-  import { WatchingScene } from "./scene/watching/WatchingScene"
+  import { WatchingScene } from "./scene/watching/WatchingScene.svelte"
   import DayChanger from "./scene/watching/DayChanger.svelte"
   import HistoryLink from "./ui-component/HistoryLink.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
-  const watchingScene$ = appContext.sceneAs$(WatchingScene)
-  
-  let title: string | undefined
-  $: title = $watchingScene$?.workspace.name
+  let watchingScene = $derived(appContext.sceneAs(WatchingScene))
 </script>
 
 <div class="px-4 bg-black border-b-2 border-b-gray-900 flex items-center h-[6rem] shrink-0">
   <div class="flex flex-col space-y-1 shrink-0">
-    <HistoryLink to="/" let:href let:onClick>
-      <a href={href} on:click={onClick}><img src="moltonf.svg" alt="Moltonf" width="170"></a>
+    <HistoryLink to="/"  >
+      {#snippet children({ href, onClick })}
+        <a href={href} onclick={onClick}><img src="moltonf.svg" alt="Moltonf" width="170"></a>
+      {/snippet}
     </HistoryLink>
   </div>
   <div class="ml-4 grow flex flex-col items-start space-y-1">
-  {#if $watchingScene$ !== undefined}
-      <p class="text-lg font-medium">{title ?? ""}</p>
+  {#if watchingScene !== undefined}
+      <p class="text-lg font-medium">{watchingScene.workspace.name ?? ""}</p>
       <DayChanger/>
   {/if}
   </div>

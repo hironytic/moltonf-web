@@ -1,7 +1,7 @@
 //
-// WatchingScene.ts
+// WatchingScene.svelte.ts
 //
-// Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+// Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,10 +22,9 @@
 // THE SOFTWARE.
 //
 
-import { type AppContext } from "../../../AppContext"
+import { type AppContext } from "../../../AppContext.svelte"
 import { Scene } from "../../../Scene"
 import type { Workspace } from "../../workspace/Workspace"
-import { derived, type Readable, type Writable, writable } from "svelte/store"
 import type { Story } from "../../story/Story"
 import type { StoryElement } from "../../story/StoryElement"
 import { PeriodTypes } from "../../story/PeriodType"
@@ -34,7 +33,7 @@ import type { Period } from "../../story/Period"
 import { delay, runDetached } from "../../Utils"
 import { type CharacterMap, createCharacterMap } from "../../story/CharacterMap"
 import { currentElements, isTalkVisible } from "./CurrentElements"
-import { HistoryLocation } from "../../../History"
+import { HistoryLocation } from "../../../History.svelte"
 import type { TalkMap } from "../../story/TalkMap"
 import { createTalkMap, nullTalkMap } from "../../story/TalkMap"
 import type { Talk } from "../../story/Talk"
@@ -53,35 +52,35 @@ function getNameOfDay(period: Period, day: number) {
 }
 
 export class WatchingScene extends Scene {
-  private readonly _story$ = writable<Story | undefined>(undefined)
-  private readonly _locationPath$: Writable<string>
-  private readonly _currentDay$: Readable<number>
-  private readonly _dayProgress$: Writable<number | undefined>
+  private _story = $state<Story | undefined>(undefined)
+  private _locationPath: string
+  private _currentDay: number
+  private _dayProgress: number | undefined
   private _isWorkspaceModified = false
   readonly workspace: Workspace
-  readonly characterMap$: Readable<CharacterMap>
-  readonly faceIconUrlMap$: Readable<Map<string | symbol, string>>
-  readonly talkMap$: Readable<TalkMap>
+  readonly characterMap: CharacterMap
+  readonly faceIconUrlMap: Map<string | symbol, string>
+  readonly talkMap: TalkMap
   
   constructor(appContext: AppContext, workspace: Workspace, location: HistoryLocation) {
     super(appContext)
     this.workspace = workspace
-    this._locationPath$ = writable(location.path)
+    this._locationPath = $state(location.path)
 
-    this._dayProgress$ = writable(workspace.dayProgress)
+    this._dayProgress = $state(workspace.dayProgress)
 
-    this._currentDay$ = derived([this._locationPath$, this._dayProgress$, this._story$], ([locationPath, dayProgress, story]) => {
-      const location = HistoryLocation.fromPath(locationPath)
+    this._currentDay = $derived.by(() => {
+      const location = HistoryLocation.fromPath(this._locationPath)
       const dayString = location.components[2]
       const day = (dayString !== undefined) ? parseInt(dayString) : NaN
       if (isNaN(day)) {
         return this.workspace.currentDay
       } else {
         let currentDay: number
-        if (dayProgress !== undefined) {
-          currentDay = Math.min(day, dayProgress)
+        if (this._dayProgress !== undefined) {
+          currentDay = Math.min(day, this._dayProgress)
         } else {
-          currentDay = Math.min(day, (story?.periods.length ?? 1) - 1)
+          currentDay = Math.min(day, (this._story?.periods.length ?? 1) - 1)
         }
         
         // Side effect: save current day to workspace
@@ -92,8 +91,8 @@ export class WatchingScene extends Scene {
       }
     })
     
-    this.focusedElementId$ = derived(this._locationPath$, locationPath => {
-      const location = HistoryLocation.fromPath(locationPath)
+    this.focusedElementId = $derived.by(() => {
+      const location = HistoryLocation.fromPath(this._locationPath)
       const elementId = location.components[3]
       if (elementId === undefined) {
         return undefined
@@ -102,73 +101,56 @@ export class WatchingScene extends Scene {
       }
     })
     
-    this.watchableDays$ = derived([this._story$, this._dayProgress$], ([story, dayProgress]) => {
-      if (story === undefined) {
+    this.watchableDays = $derived.by(() => {
+      if (this._story === undefined) {
         return [{ day: 0, text: PROLOGUE_NAME }]
       }
 
-      const periods = (dayProgress === undefined) ? story.periods : story.periods.slice(0, dayProgress + 1)
+      const periods = (this._dayProgress === undefined) ? this._story.periods : this._story.periods.slice(0, this._dayProgress + 1)
       return periods.map((period, day) => ({
         day: day,
         text: getNameOfDay(period, day)
       }))
     })
     
-    this.characterMap$ = derived(this._story$, story => {
-      if (story === undefined) {
+    this.characterMap = $derived.by(() => {
+      if (this._story === undefined) {
         return new Map()
       }
-      return createCharacterMap(story)
+      return createCharacterMap(this._story)
     })
     
-    this.faceIconUrlMap$ = derived(this._story$, story => {
-      if (story === undefined) {
+    this.faceIconUrlMap = $derived.by(() => {
+      if (this._story === undefined) {
         return new Map()
       }
-      return createFaceIconUrlMap(story)
+      return createFaceIconUrlMap(this._story)
     })
     
-    this.talkMap$ = derived(this._story$, story => {
-      if (story === undefined) {
+    this.talkMap = $derived.by(() => {
+      if (this._story === undefined) {
         return nullTalkMap()
       }
-      return createTalkMap(story)
+      return createTalkMap(this._story)
+      
     })
     
-    this.canMoveToNextDay$ = derived([this._story$, this._currentDay$], ([story, currentDay]) => {
-      if (story === undefined) {
+    this.canMoveToNextDay = $derived.by(() => {
+      if (this._story === undefined) {
         return false
       }
-      return (currentDay < story.periods.length - 1)
+      return (this._currentDay < this._story.periods.length - 1)
     })
 
-    this.moveToNextDay$ = derived([this._story$, this._currentDay$], ([story, currentDay]) => {
-      return () => this.moveToNextDay(story, currentDay)
-    })
-
-    this.currentElements$ = derived([this._story$, this.characterMap$, this._dayProgress$, this._currentDay$],
-      ([story, characterMap, dayProgress, currentDay,]) => {
-      return currentElements(story, characterMap, workspace.playerCharacter, dayProgress, currentDay)
-    })
-    
-    this.isTalkVisible$ = derived([this._story$, this.characterMap$, this._dayProgress$], ([story, characterMap, dayProgress]) => {
-      return (day: number, talk: Talk) => {
-        if (story === undefined) {
-          return false
-        }
-        const character = characterMap.get(workspace.playerCharacter)
-        if (character === undefined) {
-          return false
-        }
-        return isTalkVisible(story, day, talk, character, dayProgress)
-      }
-    })
+    this.currentElements = $derived(
+      currentElements(this._story, this.characterMap, workspace.playerCharacter, this._dayProgress, this._currentDay)
+    )
     
     void this.loadStory()
   }
 
   updateLocation(location: HistoryLocation) {
-    this._locationPath$.set(location.path)
+    this._locationPath = location.path
   }
   
   private updateWorkspace(update: (workspace: Workspace) => void) {
@@ -189,19 +171,25 @@ export class WatchingScene extends Scene {
     })
   }
   
-  get story$(): Readable<Story | undefined> { return this._story$ }
+  get story(): Story | undefined {
+    return this._story
+  }
   
   private async loadStory() {
     const workspaceStore = await this.appContext.getWorkspaceStore()
     const story = await workspaceStore.getStory(this.workspace.storyId)
     //TODO: check errors
-    this._story$.set(story)
+    this._story = story
   }
   
-  get currentDay$(): Readable<number> { return this._currentDay$ }
-  readonly watchableDays$: Readable<WatchableDay[]>
+  get currentDay(): number {
+    return this._currentDay
+  }
+  readonly watchableDays: WatchableDay[]
   
-  private moveToNextDay(story: Story | undefined, day: number) {
+  moveToNextDay() {
+    const story = this._story
+    const day = this._currentDay
     if (story === undefined) {
       return
     }
@@ -213,7 +201,7 @@ export class WatchingScene extends Scene {
         this.updateWorkspace(it => {
           it.dayProgress = nextDayProgress
         })
-        this._dayProgress$.set(nextDayProgress)
+        this._dayProgress = nextDayProgress
       }
       this.appContext.history.navigate(this.getLocation(day + 1), false)
     }
@@ -227,12 +215,21 @@ export class WatchingScene extends Scene {
     }
   }
   
-  readonly canMoveToNextDay$: Readable<boolean>
-  readonly moveToNextDay$: Readable<() => void> 
+  readonly canMoveToNextDay: boolean
+  
+  readonly currentElements: WatchingElement[]
+  readonly focusedElementId: string | undefined
 
-  readonly currentElements$: Readable<WatchingElement[]>
-  readonly focusedElementId$: Readable<string | undefined>
-  readonly isTalkVisible$: Readable<(day: number, talk: Talk) => boolean>
+  isTalkVisible(day: number, talk: Talk): boolean {
+    if (this._story === undefined) {
+      return false
+    }
+    const character = this.characterMap.get(this.workspace.playerCharacter)
+    if (character === undefined) {
+      return false
+    }
+    return isTalkVisible(this._story, day, talk, character, this._dayProgress)
+  }
 }
 
 export interface WatchableDay {

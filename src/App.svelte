@@ -1,7 +1,7 @@
 <!--
 App.svelte
 
-Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,17 +23,17 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
-  import { AppContext } from "./AppContext"
+  import { AppContext } from "./AppContext.svelte"
   import { onDestroy, setContext } from "svelte"
   import SelectWorkspace from "./lib/scene/select-workspace/SelectWorkspace.svelte"
   import NewWorkspace from "./lib/scene/new-workspace/NewWorkspace.svelte"
   import Watching from "./lib/scene/watching/Watching.svelte"
-  import { SelectWorkspaceScene } from "./lib/scene/select-workspace/SelectWorkspaceScene"
-  import { NewWorkspaceScene } from "./lib/scene/new-workspace/NewWorkspaceScene"
-  import { WatchingScene } from "./lib/scene/watching/WatchingScene"
+  import { SelectWorkspaceScene } from "./lib/scene/select-workspace/SelectWorkspaceScene.svelte"
+  import { NewWorkspaceScene } from "./lib/scene/new-workspace/NewWorkspaceScene.svelte"
+  import { WatchingScene } from "./lib/scene/watching/WatchingScene.svelte"
   import MessageBox from "./lib/MessageBox.svelte"
   import NavBar from "./lib/NavBar.svelte"
-  import { HashHistory } from "./History"
+  import { HashHistory } from "./History.svelte"
   import { InvalidScene } from "./lib/scene/invalid/InvalidScene"
   import Invalid from "./lib/scene/invalid/Invalid.svelte"
 
@@ -43,21 +43,19 @@ THE SOFTWARE.
   onDestroy(() => {
     appContext.destroy()
   })
-
-  const scene$ = appContext.scene$
 </script>
 
 <main class="h-screen">
   <div class="flex flex-col h-full">
     <NavBar/>
     <div class="grow overflow-y-hidden">
-      {#if $scene$ instanceof SelectWorkspaceScene}
+      {#if appContext.scene instanceof SelectWorkspaceScene}
         <SelectWorkspace/>
-      {:else if $scene$ instanceof NewWorkspaceScene}
+      {:else if appContext.scene instanceof NewWorkspaceScene}
         <NewWorkspace/>
-      {:else if $scene$ instanceof WatchingScene}
+      {:else if appContext.scene instanceof WatchingScene}
         <Watching/>
-      {:else if $scene$ instanceof InvalidScene}
+      {:else if appContext.scene instanceof InvalidScene}
         <Invalid/>
       {/if}
     </div>

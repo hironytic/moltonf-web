@@ -1,7 +1,7 @@
 //
-// History.ts
+// History.svelte.ts
 //
-// Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+// Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,6 @@
 // THE SOFTWARE.
 //
 
-import type { Readable } from "svelte/store"
-import { writable } from "svelte/store"
 import { v4 as uuidv4 } from 'uuid'
 
 export class HistoryLocation {
@@ -60,21 +58,29 @@ export interface HistoryLocationWithId {
 }
 
 export interface History {
-  readonly location$: Readable<HistoryLocationWithId>
+  readonly locationWithId: HistoryLocationWithId
+  destroy(): void
   navigate(location: HistoryLocation, replace: boolean, noStore?: boolean): void
   getHref(location: HistoryLocation): string
 }
 
 export class HashHistory implements History {
-  readonly location$ = writable(this.getLocationFromWindow(), () => {
+  private _locationWithId: HistoryLocationWithId
+  
+  get locationWithId(): HistoryLocationWithId { return this._locationWithId }
+  
+  constructor() {
+    this._locationWithId = $state<HistoryLocationWithId>(this.getLocationFromWindow())
     const popStateListener = () => {
       this.onPopState()
     }
     window.addEventListener("popstate", popStateListener)
-    return () => {
+    this.destroy = () => {
       window.removeEventListener("popstate", popStateListener)
     }
-  })
+  }
+
+  destroy: () => void
   
   private getLocationFromWindow(): HistoryLocationWithId {
     const id = window.history.state?.id ?? "initial"
@@ -87,7 +93,7 @@ export class HashHistory implements History {
   }
   
   private onPopState() {
-    this.location$.set(this.getLocationFromWindow())
+    this._locationWithId = this.getLocationFromWindow()
   }
   
   navigate(location: HistoryLocation, replace: boolean, noStore = false) {
@@ -110,7 +116,7 @@ export class HashHistory implements History {
     }
     
     if (!noStore) {
-      this.location$.set(this.getLocationFromWindow())
+      this._locationWithId = this.getLocationFromWindow()
     }
   }
   

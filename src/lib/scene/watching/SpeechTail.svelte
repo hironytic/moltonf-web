@@ -1,7 +1,7 @@
 <!--
 SpeechTail.svelte
 
-Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,11 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
-  export let color = "currentColor"
+  interface Props {
+    color?: string
+  }
+
+  let { color = "currentColor" }: Props = $props()
 </script>
 
 <svg fill={color} width="16px" height="8px" viewBox="0 0 16 8" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">

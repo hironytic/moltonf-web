@@ -1,7 +1,7 @@
 <!--
 Invalid.svelte
 
-Copyright (c) 2023 Hironori Ichimiya <hiron@hironytic.com>
+Copyright (c) 2023-2026 Hironori Ichimiya <hiron@hironytic.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,17 +24,13 @@ THE SOFTWARE.
 
 <script lang="ts">
   import { getContext } from "svelte"
-  import { AppContext } from "../../../AppContext"
+  import { AppContext } from "../../../AppContext.svelte"
   import { InvalidScene } from "./InvalidScene"
   import Footer from "../../ui-component/Footer.svelte"
   import HeaderTitle from "../../ui-component/HeaderTitle.svelte"
 
   const appContext = getContext<AppContext>(AppContext.Key)
-  const scene$ = appContext.sceneAs$(InvalidScene)
-  $: scene = $scene$
-  
-  let message: string
-  $: message = scene?.message ?? ""
+  let scene = $derived(appContext.sceneAs(InvalidScene))
 </script>
 
 <div class="h-full flex flex-col place-content-center">
@@ -42,7 +38,7 @@ THE SOFTWARE.
     <div class="flex place-content-center">
       <div class="bg-black max-w-[600px] p-10 rounded-md">
         <HeaderTitle class="mb-4">Error</HeaderTitle>        
-        <div class="text-sm">{message}</div>
+        <div class="text-sm">{scene?.message ?? ""}</div>
       </div>
     </div>
     <Footer/>
