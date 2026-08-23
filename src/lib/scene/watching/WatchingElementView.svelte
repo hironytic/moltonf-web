@@ -66,19 +66,17 @@ THE SOFTWARE.
   
   function registerElement(elementId: string) {
     if (elementDiv !== undefined) {
-      if (unreactives.lastElementId !== elementId) {
-        if (unreactives.lastElementId !== undefined) {
-          watchingContext.removeElement(unreactives.lastElementId)
+      if (lastElementId !== elementId) {
+        if (lastElementId !== undefined) {
+          watchingContext.removeElement(lastElementId)
         }
-        unreactives.lastElementId = elementId
+        lastElementId = elementId
         watchingContext.addElement(elementId, elementDiv)
       }
     }
   }
   
-  const unreactives = {
-    lastElementId: undefined as string | undefined,
-  }
+  let lastElementId: string | undefined = undefined
   
   $effect(() => {
     registerElement(element.elementId)
@@ -87,8 +85,8 @@ THE SOFTWARE.
   onMount(() => {
     registerElement(element.elementId)
     return () => {
-      if (unreactives.lastElementId !== undefined) {
-        watchingContext.removeElement(unreactives.lastElementId)
+      if (lastElementId !== undefined) {
+        watchingContext.removeElement(lastElementId)
       }
     }
   })

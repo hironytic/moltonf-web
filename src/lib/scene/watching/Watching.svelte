@@ -23,7 +23,7 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
-  import { getContext, onDestroy, setContext } from "svelte"
+  import { getContext, setContext } from "svelte"
   import { AppContext } from "../../../AppContext.svelte"
   import { WatchingScene } from "./WatchingScene.svelte"
   import { Button, Spinner } from "flowbite-svelte"
@@ -31,10 +31,7 @@ THE SOFTWARE.
   import { WatchingContext } from "./WatchingContext"
   import Footer from "../../ui-component/Footer.svelte"
 
-  const unreactives = {
-    lastCurrentDay: -1,
-    scrollTimer: undefined as number | undefined,
-  }
+  let lastCurrentDay = -1
 
   const appContext = getContext<AppContext>(AppContext.Key)
   let scene = $derived(appContext.sceneAs(WatchingScene))
@@ -47,8 +44,8 @@ THE SOFTWARE.
   
   $effect(() => {
     // If current day has been changed, reset the scroll position to top. 
-    if (currentDay !== unreactives.lastCurrentDay) {
-      unreactives.lastCurrentDay = currentDay
+    if (currentDay !== lastCurrentDay) {
+      lastCurrentDay = currentDay
       if (scroller !== undefined) {
         scroller.scrollTo(0, 0)
       }
@@ -58,18 +55,24 @@ THE SOFTWARE.
   let focusedElementId = $derived(scene?.focusedElementId ?? undefined)
   
   $effect(() => {
+    let scrollTimer: number | undefined = undefined
     if (focusedElementId !== undefined) {
-      if (unreactives.scrollTimer !== undefined) {
-        window.clearTimeout(unreactives.scrollTimer)
-      }
-      unreactives.scrollTimer = window.setTimeout(() => {
-        unreactives.scrollTimer = undefined
+      console.log("set timeout")
+      scrollTimer = window.setTimeout(() => {
+        console.log("timeout")
+        scrollTimer = undefined
         watchingContext.scrollToElement(focusedElementId)
         const location = scene?.getLocation(currentDay)
         if (location !== undefined) {
           appContext.history.navigate(location, true)
         }
       }, 200)
+    }
+    return () => {
+      if (scrollTimer !== undefined) {
+        console.log(scrollTimer)
+        window.clearTimeout(scrollTimer)
+      }
     }
   })
   
@@ -80,12 +83,6 @@ THE SOFTWARE.
   function moveToNextDay() {
     scene?.moveToNextDay()
   }
-
-  onDestroy(() => {
-    if (unreactives.scrollTimer !== undefined) {
-      clearTimeout(unreactives.scrollTimer)
-    }
-  })
 </script>
 
 {#if scene !== undefined}
