@@ -23,7 +23,7 @@ THE SOFTWARE.
 -->
 
 <script lang="ts">
-  import { HashHistory, HistoryLocation } from "../../History"
+  import { HashHistory, HistoryLocation } from "../../History.svelte"
   import { getContext } from "svelte"
   import type { Snippet } from "svelte"
   import { AppContext } from "../../AppContext.svelte"

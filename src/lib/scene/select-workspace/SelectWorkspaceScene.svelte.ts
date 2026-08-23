@@ -25,7 +25,7 @@
 import type { AppContext } from "../../../AppContext.svelte"
 import { Scene } from "../../../Scene"
 import type { Workspace } from "../../workspace/Workspace"
-import { HistoryLocation } from "../../../History"
+import { HistoryLocation } from "../../../History.svelte"
 
 export class SelectWorkspaceScene extends Scene {
   constructor(appContext: AppContext) {

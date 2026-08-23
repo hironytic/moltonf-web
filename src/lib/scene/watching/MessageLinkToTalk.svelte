@@ -30,7 +30,7 @@ THE SOFTWARE.
   import HistoryLink from "../../ui-component/HistoryLink.svelte"
   import type { TalkType } from "../../story/TalkType"
   import { TalkTypes } from "../../story/TalkType"
-  import { HistoryLocation } from "../../../History"
+  import { HistoryLocation } from "../../../History.svelte"
 
   interface Props {
     segment?: LinkToTalkSegment

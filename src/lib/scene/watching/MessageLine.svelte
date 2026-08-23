@@ -27,7 +27,7 @@ THE SOFTWARE.
   import { MessageSegmentTypes } from "./MessageSegment"
   import MessageLinkToTalk from "./MessageLinkToTalk.svelte"
   import { type TalkType, TalkTypes } from "../../story/TalkType"
-  import type { HistoryLocation } from "../../../History"
+  import type { HistoryLocation } from "../../../History.svelte"
 
   interface Props {
     segments?: MessageSegment[]

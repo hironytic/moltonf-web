@@ -29,8 +29,8 @@ import { WorkspaceStore } from "./lib/storage/WorkspaceStore"
 import type { Scene } from "./Scene"
 import { SelectWorkspaceScene } from "./lib/scene/select-workspace/SelectWorkspaceScene.svelte"
 import type { ExtendedMessageBoxItem, MessageBoxItem } from "./lib/MessageBoxItem"
-import type { History } from "./History"
-import { HistoryLocation } from "./History"
+import type { History } from "./History.svelte"
+import { HistoryLocation } from "./History.svelte"
 import { NewWorkspaceScene } from "./lib/scene/new-workspace/NewWorkspaceScene.svelte"
 import { WatchingScene } from "./lib/scene/watching/WatchingScene.svelte"
 import { InvalidScene } from "./lib/scene/invalid/InvalidScene"
@@ -41,7 +41,7 @@ export class AppContext {
   static readonly Key = Symbol()
   
   readonly history: History
-  private _unsubscribeHistoryLocation: () => void
+  private _cleanupEffectRoot: () => void
   private _dbPromise: Promise<IDBPDatabase<MoltonfDB> | undefined>
   private _scene = $state<Scene>(new SelectWorkspaceScene(this))
   private _messageBoxItems = $state<ExtendedMessageBoxItem[]>([])
@@ -49,13 +49,16 @@ export class AppContext {
   constructor(history: History) {
     this.history = history
     this._dbPromise = Promise.resolve(undefined)
-    this._unsubscribeHistoryLocation = history.location$.subscribe(it => {
-      this.changeSceneByLocation(it.location)
-    })
+    this._cleanupEffectRoot = $effect.root(() => {
+      $effect(() => {
+        this.changeSceneByLocation(history.locationWithId.location)
+      })
+    }) 
   }
 
   destroy() {
-    this._unsubscribeHistoryLocation()
+    this._cleanupEffectRoot()
+    this.history.destroy()
   }
   
   //#region Scene

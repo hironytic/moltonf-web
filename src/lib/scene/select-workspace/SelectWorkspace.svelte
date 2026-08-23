@@ -31,7 +31,7 @@ THE SOFTWARE.
   import WorkspaceIcon from "../../icon/WorkspaceIcon.svelte"
   import DeleteIcon from "../../icon/DeleteIcon.svelte"
   import type { Workspace } from "../../workspace/Workspace"
-  import { HistoryLocation } from "../../../History"
+  import { HistoryLocation } from "../../../History.svelte"
   import HistoryLink from "../../ui-component/HistoryLink.svelte"
   import Footer from "../../ui-component/Footer.svelte"
 

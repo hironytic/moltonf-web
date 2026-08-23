@@ -28,7 +28,7 @@ import type { Story } from "../../story/Story"
 import type { Character, CharacterMap } from "../../story/CharacterMap"
 import { createCharacterMap } from "../../story/CharacterMap"
 import { type Role, Roles } from "../../story/Role"
-import { HistoryLocation } from "../../../History"
+import { HistoryLocation } from "../../../History.svelte"
 
 export class NewWorkspaceScene extends Scene {
   constructor(appContext: AppContext) {

@@ -33,7 +33,7 @@ THE SOFTWARE.
   import { WatchingScene } from "./lib/scene/watching/WatchingScene.svelte"
   import MessageBox from "./lib/MessageBox.svelte"
   import NavBar from "./lib/NavBar.svelte"
-  import { HashHistory } from "./History"
+  import { HashHistory } from "./History.svelte"
   import { InvalidScene } from "./lib/scene/invalid/InvalidScene"
   import Invalid from "./lib/scene/invalid/Invalid.svelte"
 
