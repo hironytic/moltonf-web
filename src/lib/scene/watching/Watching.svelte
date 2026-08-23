@@ -57,9 +57,7 @@ THE SOFTWARE.
   $effect(() => {
     let scrollTimer: number | undefined = undefined
     if (focusedElementId !== undefined) {
-      console.log("set timeout")
       scrollTimer = window.setTimeout(() => {
-        console.log("timeout")
         scrollTimer = undefined
         watchingContext.scrollToElement(focusedElementId)
         const location = scene?.getLocation(currentDay)
@@ -70,7 +68,6 @@ THE SOFTWARE.
     }
     return () => {
       if (scrollTimer !== undefined) {
-        console.log(scrollTimer)
         window.clearTimeout(scrollTimer)
       }
     }
