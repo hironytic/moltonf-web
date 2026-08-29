@@ -49,4 +49,32 @@ describe("Archive", () => {
       expect(talk?.messageLines).toEqual(["これは〜です"])
     })
   })
+
+  describe("time attribute with fractional seconds", () => {
+    const baseMilliseconds = 20 * 3600000 + 1 * 60000
+
+    it.each([
+      ["20:01:00.5", 500],
+      ["20:01:00.05", 50],
+      ["20:01:00.500", 500],
+      ["20:01:00.5000", 500],
+    ])("should scale the fractional part of time=\"%s\" to %i milliseconds", async (time, expectedMilliseconds) => {
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<village fullName="テスト村" xml:base="https://example.com/" landId="test" graveIconURI="https://example.com/grave.png">
+  <avatarList>
+    <avatar avatarId="1" fullName="ヨアヒム" shortName="ヨアヒム"/>
+  </avatarList>
+  <period type="progress" day="1">
+    <talk type="public" avatarId="1" xname="1" time="${time}">
+      <li>これはテストです</li>
+    </talk>
+  </period>
+</village>
+`
+      const file = new File([xml], "archive.xml", { type: "text/xml" })
+      const story = await loadStoryFromArchiveFile(file)
+      const talk = story.periods[0]?.elements[0] as { time: number }
+      expect(talk.time - baseMilliseconds).toBe(expectedMilliseconds)
+    })
+  })
 })
