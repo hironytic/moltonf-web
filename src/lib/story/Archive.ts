@@ -143,7 +143,7 @@ function parseArchiveDocument(document: XMLDocument): Story {
     const hourPart = parseInt(match[1], 10)
     const minutePart = parseInt(match[2], 10)
     const secondPart = parseInt(match[3], 10)
-    const millisecondPart = match[4] ? parseInt(match[4], 10) : 0
+    const millisecondPart = match[4] ? parseInt(match[4].padEnd(3, "0").slice(0, 3), 10) : 0
 
     return millisecondsFromTimePart({
       hourPart,
