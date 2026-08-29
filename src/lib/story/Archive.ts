@@ -329,11 +329,11 @@ function parseArchiveDocument(document: XMLDocument): Story {
     for (const node of childNodes) {
       switch (node.nodeType) {
         case 1: // ELEMENT_NODE
-        if (node.nodeName === "rawdata") {
-          result += node.nodeValue
-        }
-        break
-        case 3: // TET_NODE
+          if (node.nodeName === "rawdata") {
+            result += node.textContent
+          }
+          break
+        case 3: // TEXT_NODE
           result += node.nodeValue
           break
       }
